@@ -1,0 +1,14 @@
+[tool.pdm]
+
+[project]
+name = "zkp_hack"
+version = ""
+description = ""
+authors = [
+    {name = "zk_health_team", email = "piergiuseppe.mallozzi@gmail.com"},
+]
+dependencies = [
+    "cryptography>=39.0.2",
+]
+requires-python = ">=3.11"
+license = {text = "MIT"}
