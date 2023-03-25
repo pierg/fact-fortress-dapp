@@ -16,22 +16,26 @@ authorities = ["hospital", "dna_company", "23_and_me"]
 priv_keys = {}
 pub_keys = {}
 
-for authority in authorities:
+for i, authority in enumerate(authorities):
     seed = random.randint(1, 10000)  # Generate a new random seed at each iteration.
-    priv_key = 123456 * seed + 654321
+    priv_key = 123456 * seed + 654321  # See "Safety note" below.
     priv_keys[authority] = priv_key
+
     pub_key = private_to_stark_key(priv_key)
     pub_keys[authority] = pub_key
 
-# Generate 3 records of recordrs 3, 5, and 8.
+# Generate 3 records
 records = []
-for (authority, record) in [("hospital", 1), ("dna_company", 1), ("23_and_me", 0)]:
+for i, (authority, record) in enumerate(
+    [("hospital", 1), ("dna_company", 1), ("23_and_me", 0)]
+):
     r, s = sign(
         msg_hash=pedersen_hash(PERSON_ID, record), priv_key=priv_keys[authority]
     )
     records.append(
         {
-            "authority": authority.encode("utf-8").hex(),
+            "authority": authority,
+            "authority_id": i, # index of the corresponding public hash
             "record": record,
             "r": hex(r),
             "s": hex(s),
@@ -40,7 +44,7 @@ for (authority, record) in [("hospital", 1), ("dna_company", 1), ("23_and_me", 0
 
 # Write the data (public keys and records) to a JSON file.
 input_data = {
-    "public_keys": list(map(hex, pub_keys.values())),
+    "public_keys": pub_keys,
     "records": records,
 }
 

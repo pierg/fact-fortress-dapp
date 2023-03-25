@@ -1,27 +1,30 @@
 {
-    "public_keys": [
-        "0x1f1d1c4edf50136e7a860b31ec422144483065332fc12604c04500f3f3e023c",
-        "0x7c83fd9ca21854015f37069092a939b0ac4093d4265679c8b9680a2effbcc48",
-        "0x538c067e5ff0ae8ceda0592637ddbc917474e1c1fdd720325999614faf2a49d"
-    ],
+    "public_keys": {
+        "hospital": 1069085654156154561209334649948696915184045090850175325430696661742241501640,
+        "dna_company": 1825062516215084773312574619152890086140393092586281174789165791762052020470,
+        "23_and_me": 1128928969952847761973152469786865298958715084509424032215037819867200636180
+    },
     "records": [
         {
-            "authority": "686f73706974616c",
+            "authority": "hospital",
+            "authority_id": 0,
             "record": 1,
-            "r": "0x17bb558be1171e7d6de6b747c552ee231caa68aec505457c2dddedb9ec2b855",
-            "s": "0x452058a252336b8f831b1aa486fa1cf1d222bf5c02028d687c998a776f4f8dd"
+            "r": "0x2f68f0c272c6927a4314ce6c5acb7b2628960472520578b3f3e4ffad8c6869d",
+            "s": "0x40091fdfa40780bb1e8f46013cd790e7d2010a1d4e6a999db3661e3a39d9051"
         },
         {
-            "authority": "646e615f636f6d70616e79",
+            "authority": "dna_company",
+            "authority_id": 1,
             "record": 1,
-            "r": "0x7f14037bbb62a92eb9e0081ae0271fbfa2f84d884d1317079d38ce14576b82d",
-            "s": "0x24c8349ea9208a7b7fb7994dcc6359d9d76dc56fd8907a74cbceb0f05292a00"
+            "r": "0x5b3ac0cdbcf0a3f5f98f8c1ed59a65aa85bd5786649078c9bd8f14858a12210",
+            "s": "0x5ff98166144f336e0c847ec21f60f8c22ca46751699a9b24b634e8aa96ca9c"
         },
         {
-            "authority": "32335f616e645f6d65",
+            "authority": "23_and_me",
+            "authority_id": 2,
             "record": 0,
-            "r": "0x6b9da01e77796180b3617c35a510a468b45079787dda51cad9a45f95cc61c53",
-            "s": "0x6cb0ff3618658b2d60cadae5c0fbfcdf6876a7a23349074177706c95d250686"
+            "r": "0xe32f25b3d9a8d2e8b5c07c79b912ed896281be20277df9b6c10513bbb865a8",
+            "s": "0x2bf575fdd27888a2069f850c194ea1cab99a49605e55bd1a901a9d2cc03898e"
         }
     ]
 }

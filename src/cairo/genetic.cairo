@@ -27,7 +27,7 @@ from starkware.cairo.common.small_merkle_tree import (
 
 struct RecordInfo {
     // The ID of the recordr.
-    authority: felt,
+    authority_id: felt,
     // The recordr's public key.
     pub_key: felt,
     // The record (0 or 1).
@@ -48,17 +48,16 @@ func get_claimed_records() -> (records: RecordInfo*, n: felt) {
     let (records: RecordInfo*) = alloc();
     %{
         ids.n = len(program_input['records'])
-        public_keys = [
-            int(pub_key, 16)
-            for pub_key in program_input['public_keys']]
+        public_keys = [pub_key for pub_key in program_input['public_keys'].values()]
+        
         for i, record in enumerate(program_input['records']):
             # Get the address of the i-th record.
             base_addr = \
                 ids.records.address_ + ids.RecordInfo.SIZE * i
-            memory[base_addr + ids.RecordInfo.authority] = \
-                record['authority']
+            memory[base_addr + ids.RecordInfo.authority_id] = \
+                record['authority_id']
             memory[base_addr + ids.RecordInfo.pub_key] = \
-                public_keys[record['authority']]
+                public_keys[record['authority_id']]
             memory[base_addr + ids.RecordInfo.record] = \
                 record['record']
             memory[base_addr + ids.RecordInfo.r] = \
@@ -113,9 +112,7 @@ func init_voting_state() -> (state: VotingState) {
     assert state.n_yes_records = 0;
     assert state.n_no_records = 0;
     %{
-        public_keys = [
-            int(pub_key, 16)
-            for pub_key in program_input['public_keys']]
+        public_keys = [pub_key for pub_key in program_input['public_keys'].values()]
         initial_dict = dict(enumerate(public_keys))
     %}
     let (dict: DictAccess*) = dict_new();
@@ -141,7 +138,7 @@ func process_record{
     // Update the public key dict.
     let public_key_tree_end = state.public_key_tree_end;
     dict_update{dict_ptr=public_key_tree_end}(
-        key=record_info_ptr.authority,
+        key=record_info_ptr.authority_id,
         prev_value=record_info_ptr.pub_key,
         new_value=0,
     );
