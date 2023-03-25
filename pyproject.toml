@@ -1,14 +1,14 @@
 [tool.pdm]
 
 [project]
-name = "zkp_hack"
+name = ""
 version = ""
 description = ""
 authors = [
-    {name = "zk_health_team", email = "piergiuseppe.mallozzi@gmail.com"},
+    {name = "pier", email = "piergiuseppe.mallozzi@gmail.com"},
 ]
 dependencies = [
-    "cryptography>=39.0.2",
+    "cairo-lang>=0.11.0.1",
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = {text = "MIT"}
