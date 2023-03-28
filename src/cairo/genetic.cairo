@@ -149,7 +149,7 @@ func process_record{
         state.public_key_tree_start);
     assert new_state.public_key_tree_end = (
         public_key_tree_end);
-
+        
     // Update the counters.
     tempvar record = record_info_ptr.record;
     if (record == 0) {
