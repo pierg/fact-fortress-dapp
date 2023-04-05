@@ -5,16 +5,14 @@ from beaker.lib.storage import BoxList, BoxMapping
 class MyState:
     result = bk.GlobalStateValue(pt.TealType.uint64)
 
-    # publicKeys = bk.GlobalStateValue(key=pt.abi.uint64, stack_type=pt.abi.String)
+    # Map: tokenId - Address of the Hospital
     publicKeys = bk.ReservedGlobalStateValue(
         stack_type=pt.abi.String,
         max_keys=32,
         descr="A reserved app state variable, with 32 possible keys",
     )
 
-    authorizedUsers = bk.GlobalStateValue(pt.abi.Array)
-
-app = bk.Application("test", state=MyState())
+app = bk.Application("ProofStorageContract", state=MyState())
 
 @app.external#(authorize=beaker.Authorize.only_creator())
 def add(a: pt.abi.Uint64, b: pt.abi.Uint64, *, output: pt.abi.Uint64) -> pt.Expr:
