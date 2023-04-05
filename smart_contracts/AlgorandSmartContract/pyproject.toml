@@ -1,33 +1,13 @@
+# Python project configuration - https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/
 [tool.poetry]
-name = "ZKP"
+name = "playground"
 version = "0.1.0"
-description = "Algorand smart contracts"
-authors = ["Michele <None>"]
+description = "Interactive examples of Algorand examples built with beaker"
+authors = ["MakerX <cto@makerx.com.au>"]
 readme = "README.md"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.10"
 beaker-pyteal = "^1.0.0"
-
-[tool.poetry.group.dev.dependencies]
-black = {extras = ["d"], version = "*"}
-mypy = "*"
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-
-
-
-
-[tool.mypy]
-files = "./"
-python_version = "3.10"
-check_untyped_defs = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-allow_untyped_defs = false
-strict_equality = true
-
+algokit-utils = "^1.0.1"
