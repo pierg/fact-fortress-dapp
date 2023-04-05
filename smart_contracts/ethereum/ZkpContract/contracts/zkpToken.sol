@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract ZkpToken is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    mapping(address => uint256) private _userToToken;
 
     constructor() ERC721("ZKP Token", "ZKP") {}
 
@@ -18,6 +19,31 @@ contract ZkpToken is ERC721 {
         uint256 newItemId = _tokenIds.current();
         _mint(user, newItemId);
 
+        _userToToken[user] = newItemId;
+
         return newItemId;
+    }
+
+    function userToToken(address user) public view returns (uint256) {
+        return _userToToken[user];
+    }
+
+    function isApprovedOrOwner(
+        address spender,
+        uint256 tokenId
+    ) public view returns (bool) {
+        require(_exists(tokenId), "nonexistent ZKP token");
+        address owner = ownerOf(tokenId);
+        return (spender == owner ||
+            getApproved(tokenId) == spender ||
+            isApprovedForAll(owner, spender));
+    }
+
+    function tokenIdExists(uint256 tokenId) public view returns (bool) {
+        return _exists(tokenId);
+    }
+
+    function totalSupply() public view returns (uint256) {
+        return _tokenIds.current();
     }
 }
