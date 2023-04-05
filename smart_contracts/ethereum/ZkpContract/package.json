@@ -1,0 +1,25 @@
+{
+    "name": "zkpcontract",
+    "version": "1.0.0",
+    "description": "",
+    "main": "truffle-config.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "test": "truffle test"
+    },
+    "author": "Guillaume Lethuillier",
+    "license": "MIT",
+    "dependencies": {
+        "@openzeppelin/contracts": "^4.8.2",
+        "chai": "^4.3.7",
+        "chai-as-promised": "^7.1.1",
+        "ganache-cli": "^6.12.2",
+        "truffle": "^5.8.1"
+    },
+    "engines": {
+        "pnpm": ">=8.1.0",
+        "node": ">=18.15.0"
+    }
+}

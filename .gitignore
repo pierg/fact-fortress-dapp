@@ -233,3 +233,5 @@ fabric.properties
 # Ignore dynaconf secret files
 .secrets.*
 /eval_pipeline/simple_uam/
+
+**/node_modules
