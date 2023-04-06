@@ -2,11 +2,17 @@ module github.com/pierg/zkp-hackathon/gnark/prove
 
 go 1.20
 
+replace github.com/pierg/zkp-hackathon/gnark/common v0.0.0 => ./../common
+
+require (
+	github.com/consensys/gnark v0.8.0
+	github.com/consensys/gnark-crypto v0.9.1
+	github.com/pierg/zkp-hackathon/gnark/common v0.0.0
+)
+
 require (
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/consensys/bavard v0.1.13 // indirect
-	github.com/consensys/gnark v0.8.0 // indirect
-	github.com/consensys/gnark-crypto v0.9.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
 	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect

@@ -2,9 +2,12 @@ module github.com/pierg/zkp-hackathon/gnark/generate
 
 go 1.20
 
+replace github.com/pierg/zkp-hackathon/gnark/common v0.0.0 => ./../common
+
 require (
 	github.com/consensys/gnark v0.8.0
 	github.com/consensys/gnark-crypto v0.9.1
+	github.com/pierg/zkp-hackathon/gnark/common v0.0.0
 )
 
 require (
