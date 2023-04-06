@@ -4,6 +4,8 @@ Generate the proof
 
 ## Run
 
+(ensure to have run `generate` beforehand).
+
 ```
 go run main.go
 ```
