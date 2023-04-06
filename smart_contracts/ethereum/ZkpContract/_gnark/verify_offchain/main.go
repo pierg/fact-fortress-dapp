@@ -25,8 +25,8 @@ func main() {
 
 	// verify the proof
 	if err := groth16.Verify(proof, vk, publicWitness); err != nil {
-		color.Red("Verification: reject (%v)", err)
+		color.Red("verification -> reject (%v)", err)
 	} else {
-		color.Green("Verification: accept")
+		color.Green("verification -> accept")
 	}
 }

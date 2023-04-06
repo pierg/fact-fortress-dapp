@@ -15,3 +15,8 @@ go run main.go
 cd ../verify_offchain
 go run main.go
 ```
+
+## TODO
+
+* Verify onchain (using the Ethereum smart contract)
+* Use our own circuit

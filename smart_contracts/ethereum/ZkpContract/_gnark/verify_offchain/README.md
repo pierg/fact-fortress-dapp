@@ -12,4 +12,4 @@ go run main.go
 
 ## Expected output [WIP]
 
-* stdout: `Verification: accept` or `Verification: reject (<error>)`
+* stdout: `verification -> accept` or `verification -> reject (<error>)`
