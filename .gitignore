@@ -235,3 +235,5 @@ fabric.properties
 /eval_pipeline/simple_uam/
 
 **/node_modules
+**/*.bin
+**/zkpProofVerifier.sol
