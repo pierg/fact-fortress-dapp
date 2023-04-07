@@ -12,14 +12,14 @@ import (
 )
 
 func main() {
-	// compiles the circuit into a R1CS
+	// compil the circuit into a R1CS
 	var circuit circuit.CubicCircuit
 	ccs, _ := frontend.Compile(ecc.BN254.ScalarField(), r1cs.NewBuilder, &circuit)
 
-	// Setup groth16 zkSNARK
+	// setup groth16 zkSNARK
 	pk, vk, _ := groth16.Setup(ccs)
 
-	// Write solidity smart contract into a file
+	// generate the solidity smart contract
 	f, err := os.Create("zkpProofVerifier.sol")
 	if err != nil {
 		panic(err)
