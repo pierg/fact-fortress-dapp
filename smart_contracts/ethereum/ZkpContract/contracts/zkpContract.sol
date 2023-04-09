@@ -3,7 +3,7 @@
 
 pragma solidity ^0.8.0;
 
-import "./ZkpToken.sol";
+import "./zkpToken.sol";
 
 contract ZkpContract {
     // tokenId => public key name => public key
