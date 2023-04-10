@@ -4,6 +4,7 @@
 pragma solidity ^0.8.0;
 
 import "./zkpToken.sol";
+import "./zkpVerifier.sol";
 
 contract ZkpContract {
     // tokenId => public key name => public key
@@ -11,17 +12,21 @@ contract ZkpContract {
 
     address private owner;
     ZkpToken private zkpToken;
+    ZkpVerifier private zkpVerifier;
 
-    constructor(address zkpTokenAddress) {
+    constructor(address zkpTokenAddress, address zkpVerifierAddress) {
         owner = msg.sender;
         zkpToken = ZkpToken(zkpTokenAddress);
+        zkpVerifier = ZkpVerifier(zkpVerifierAddress);
     }
+
+    // PUBLIC KEYS MANAGEMENT
 
     function getPublicKey(
         uint256 tokenId,
         string memory name,
         uint version
-    ) public view returns (string memory) {
+    ) external view returns (string memory) {
         require(
             version < publicKeys[tokenId][name].length,
             "Public key does not exist (invalid version)"
@@ -32,7 +37,7 @@ contract ZkpContract {
     function getLatestPublicKey(
         uint256 tokenId,
         string memory name
-    ) public view returns (string memory) {
+    ) external view returns (string memory) {
         require(
             publicKeys[tokenId][name].length > 0,
             "Public key does not exist for this token ID and name"
@@ -77,7 +82,13 @@ contract ZkpContract {
         return publicKeys[tokenId][name].length - 1;
     }
 
-    function isUserAuthorized(uint256 tokenId) public view returns (bool) {
+    function isUserAuthorized(uint256 tokenId) external view returns (bool) {
         return zkpToken.isApprovedOrOwner(msg.sender, tokenId);
+    }
+
+    // ZKP PROOF VERIFICATION
+
+    function verify(bytes memory proof) external view returns (bool result) {
+        return zkpVerifier.verify(proof);
     }
 }

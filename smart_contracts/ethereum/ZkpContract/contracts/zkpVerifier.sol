@@ -1,5 +1,3 @@
-
-
 // SPDX-License-Identifier: GPL-2.0-only
 // Copyright 2020 Spilsbury Holdings Ltd
 
@@ -23,7 +21,7 @@ pragma experimental ABIEncoderV2;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-contract HelloVerifier {
+contract ZkpVerifier {
     using Bn254Crypto for Types.G1Point;
     using Bn254Crypto for Types.G2Point;
     using Transcript for Transcript.TranscriptData;
@@ -40,12 +38,7 @@ contract HelloVerifier {
      * @dev Verify a Plonk proof
      * @param - array of serialized proof data
      */
-    function verify(bytes calldata)
-        external
-        view
-        returns (bool result)
-    {
-
+    function verify(bytes calldata) external view returns (bool result) {
         Types.VerificationKey memory vk = get_verification_key();
         uint256 num_public_inputs = vk.num_inputs;
 
@@ -129,56 +122,169 @@ contract HelloVerifier {
         require(result, "Proof failed");
     }
 
-    
-    function get_verification_key() internal pure returns (Types.VerificationKey memory) {
+    function get_verification_key()
+        internal
+        pure
+        returns (Types.VerificationKey memory)
+    {
         Types.VerificationKey memory vk;
 
         assembly {
-            mstore(add(vk, 0x00), 64) // vk.circuit_size
-            mstore(add(vk, 0x20), 2) // vk.num_inputs
-            mstore(add(vk, 0x40),0x1418144d5b080fcac24cdb7649bdadf246a6cb2426e324bedb94fb05118f023a) // vk.work_root
-            mstore(add(vk, 0x60),0x2fa2bd3915acd9a9116f049fa77b52fbb39318a757d28acefed26dbda0400001) // vk.domain_inverse
-            mstore(add(vk, 0x80),0x26177cf2b2a13d3a035cdc7567a8a676d80396ec1d3213ee78ce6a0b763d698f) // vk.work_root_inverse
-            mstore(mload(add(vk, 0xa0)), 0x1a0af7428f6ae4348f85d40a0404096f1c25291e6e9872f1ed8f55d84b60e871)//vk.Q1
-            mstore(add(mload(add(vk, 0xa0)), 0x20), 0x1fed0ac51bd6bbf79be7d10feaa99764c5d370e332e0a521574125c3d50614bc)
-            mstore(mload(add(vk, 0xc0)), 0x0815b38d6e93332fc31b5311a9f286d6f385218ec3cc27b7e89160f0c72c721f)//vk.Q2
-            mstore(add(mload(add(vk, 0xc0)), 0x20), 0x164ab63b80abe8e536ce428267b729b22ce4abbef68394370c959e5cf7cb550c)
-            mstore(mload(add(vk, 0xe0)), 0x115594c136b2855258207da5d7e2c7626129beb289ff2a5fa6999b6fa10b3f50)//vk.Q3
-            mstore(add(mload(add(vk, 0xe0)), 0x20), 0x1ae1f317d148427cc1395683872f21c8f99c88a78907393b3326c1b2a60cf660)
-            mstore(mload(add(vk, 0x100)), 0x178f280713b7ccd86df7f7d3d7829233c6ebd5dadd739f9d0504524ba5c10625)//vk.Q4
-            mstore(add(mload(add(vk, 0x100)), 0x20), 0x1c22c6db7455c1bf8c22e943e4e7194fb76917b7b1ee36814508f3c075c46135)
-            mstore(mload(add(vk, 0x120)), 0x178f280713b7ccd86df7f7d3d7829233c6ebd5dadd739f9d0504524ba5c10625)//vk.Q5
-            mstore(add(mload(add(vk, 0x120)), 0x20), 0x1c22c6db7455c1bf8c22e943e4e7194fb76917b7b1ee36814508f3c075c46135)
-            mstore(mload(add(vk, 0x140)), 0x0f08a224b88b7fd46917d68f3ee9b47bf2f1c2e6ada35c8b5bd58239ede86bba)//vk.QM
-            mstore(add(mload(add(vk, 0x140)), 0x20), 0x09aafe0d9a9f55ec7b32375196c4af0286639c582d139212b36a26d6a1b9e085)
-            mstore(mload(add(vk, 0x160)), 0x178f280713b7ccd86df7f7d3d7829233c6ebd5dadd739f9d0504524ba5c10625)//vk.QC
-            mstore(add(mload(add(vk, 0x160)), 0x20), 0x1c22c6db7455c1bf8c22e943e4e7194fb76917b7b1ee36814508f3c075c46135)
-            mstore(mload(add(vk, 0x180)), 0x2f759c106d16d7472a96acd24775da347943356f2e6fb0d22f15fcdce2834fac)//vk.QARITH
-            mstore(add(mload(add(vk, 0x180)), 0x20), 0x0941d0b5b1cdd718193144fe1ed04e91aa52d1384bc7b4ac83358610dccb8de3)
-            mstore(mload(add(vk, 0x1a0)), 0x178f280713b7ccd86df7f7d3d7829233c6ebd5dadd739f9d0504524ba5c10625)//vk.QECC
-            mstore(add(mload(add(vk, 0x1a0)), 0x20), 0x1c22c6db7455c1bf8c22e943e4e7194fb76917b7b1ee36814508f3c075c46135)
-            mstore(mload(add(vk, 0x1c0)), 0x303f0bac9b6ef19440f70ae7202294123c61630458467e791c19fb0c2520ba20)//vk.QRANGE
-            mstore(add(mload(add(vk, 0x1c0)), 0x20), 0x0ad28ccec7cb9daaeb13709479db9383df6c4df429fbca7b5dd34bbea6a86cda)
-            mstore(mload(add(vk, 0x1e0)), 0x178f280713b7ccd86df7f7d3d7829233c6ebd5dadd739f9d0504524ba5c10625)//vk.QLOGIC
-            mstore(add(mload(add(vk, 0x1e0)), 0x20), 0x1c22c6db7455c1bf8c22e943e4e7194fb76917b7b1ee36814508f3c075c46135)
-            mstore(mload(add(vk, 0x200)), 0x0924463a99889be4bee170a43801e9bc655331039d7110fcc890ca0931b92f53)//vk.SIGMA1
-            mstore(add(mload(add(vk, 0x200)), 0x20), 0x00a94485668f21de672872857ca1bfb224e4471fd9bbee1fd121ed3d928380e4)
-            mstore(mload(add(vk, 0x220)), 0x2a6eef1b15191607860781048cfaf11bdc7349e4dd02cd24529e81246ae23675)//vk.SIGMA2
-            mstore(add(mload(add(vk, 0x220)), 0x20), 0x06b27b069392b3d4a77857b7297680da47ca162c03f4ff17f028132c89462386)
-            mstore(mload(add(vk, 0x240)), 0x19d42062f4721d6e47ea940426d2bd9416b4f2efc6a814001d79966b4b5baa29)//vk.SIGMA3
-            mstore(add(mload(add(vk, 0x240)), 0x20), 0x01ae48371f4a9ad448bd7300a879a50021154ff98fcf622bc2a94b74dcaca9ac)
-            mstore(mload(add(vk, 0x260)), 0x0462883b953e7718cdecb882356b5a129b9201b0e417f58748a0e1eb632f27d2)//vk.SIGMA4
-            mstore(add(mload(add(vk, 0x260)), 0x20), 0x0e21e92dbe4b86a6219af6777e740a5504a455502687ceefb9bd1b5a9d27bf80)
+            mstore(add(vk, 0x00), 16) // vk.circuit_size
+            mstore(add(vk, 0x20), 1) // vk.num_inputs
+            mstore(
+                add(vk, 0x40),
+                0x21082ca216cbbf4e1c6e4f4594dd508c996dfbe1174efb98b11509c6e306460b
+            ) // vk.work_root
+            mstore(
+                add(vk, 0x60),
+                0x2d5e098bb31e86271ccb415b196942d755b0a9c3f21dd9882fa3d63ab1000001
+            ) // vk.domain_inverse
+            mstore(
+                add(vk, 0x80),
+                0x02e40daf409556c02bfc85eb303402b774954d30aeb0337eb85a71e6373428de
+            ) // vk.work_root_inverse
+            mstore(
+                mload(add(vk, 0xa0)),
+                0x0078134b2c1fcc0d04717529ecb3ddd24b384202347c2e68a54f16995421d9be
+            ) //vk.Q1
+            mstore(
+                add(mload(add(vk, 0xa0)), 0x20),
+                0x2007c919d478f3da743e50ccc7a5e0588284035c5204d53468586c4990ef16ee
+            )
+            mstore(
+                mload(add(vk, 0xc0)),
+                0x217d6d4ff4a765326fa1ceb0bad64445bdb8b9c06379269b407d8f41049ce1d4
+            ) //vk.Q2
+            mstore(
+                add(mload(add(vk, 0xc0)), 0x20),
+                0x2e2b0cb1e072d25e95e0bafd2ee947f80c4c6f958a0a36421d172206ea1770b2
+            )
+            mstore(
+                mload(add(vk, 0xe0)),
+                0x2618abe7e3877f7df354d615487020bdb2c548f9a0833f6fd2033d4344472358
+            ) //vk.Q3
+            mstore(
+                add(mload(add(vk, 0xe0)), 0x20),
+                0x0e9ed39ef792eb3208c2cd4bfd73f00073e6a13979402fcc7629451392bf0c7c
+            )
+            mstore(
+                mload(add(vk, 0x100)),
+                0x2950076760523510abcfe90fa550b964e84b338f73af5222cdbbaefdacd4484e
+            ) //vk.Q4
+            mstore(
+                add(mload(add(vk, 0x100)), 0x20),
+                0x2e4e3e272c7b78ad894559812d7766e05615a8f7050a43d7ed1367adf30a9319
+            )
+            mstore(
+                mload(add(vk, 0x120)),
+                0x2950076760523510abcfe90fa550b964e84b338f73af5222cdbbaefdacd4484e
+            ) //vk.Q5
+            mstore(
+                add(mload(add(vk, 0x120)), 0x20),
+                0x2e4e3e272c7b78ad894559812d7766e05615a8f7050a43d7ed1367adf30a9319
+            )
+            mstore(
+                mload(add(vk, 0x140)),
+                0x0efe5ad29f99fce939416b6638dff26c845044cca9a2d9dbf94039a11d999aaa
+            ) //vk.QM
+            mstore(
+                add(mload(add(vk, 0x140)), 0x20),
+                0x0a44bf49517a4b66ae6b51eee6ac68587f768022c11ac8e37cd9dce243d01ef2
+            )
+            mstore(
+                mload(add(vk, 0x160)),
+                0x001cf4fbd27f1d93535c5fbcc892576c67c253ff0f01b07d154cad398584f8dc
+            ) //vk.QC
+            mstore(
+                add(mload(add(vk, 0x160)), 0x20),
+                0x1442f3ed7beb24cd24138b14407237e675f4d9877ac8f42a2b30a96e04beedbf
+            )
+            mstore(
+                mload(add(vk, 0x180)),
+                0x2b1a3a73b9aed8610a3401992b1a06ef3f4a8d811006ec1b5d92c8048e601ed0
+            ) //vk.QARITH
+            mstore(
+                add(mload(add(vk, 0x180)), 0x20),
+                0x0a71df8d5dab7da96f0362d55c0018f15a859bcb6314fdbc975f150a12d3a66c
+            )
+            mstore(
+                mload(add(vk, 0x1a0)),
+                0x2950076760523510abcfe90fa550b964e84b338f73af5222cdbbaefdacd4484e
+            ) //vk.QECC
+            mstore(
+                add(mload(add(vk, 0x1a0)), 0x20),
+                0x2e4e3e272c7b78ad894559812d7766e05615a8f7050a43d7ed1367adf30a9319
+            )
+            mstore(
+                mload(add(vk, 0x1c0)),
+                0x2950076760523510abcfe90fa550b964e84b338f73af5222cdbbaefdacd4484e
+            ) //vk.QRANGE
+            mstore(
+                add(mload(add(vk, 0x1c0)), 0x20),
+                0x2e4e3e272c7b78ad894559812d7766e05615a8f7050a43d7ed1367adf30a9319
+            )
+            mstore(
+                mload(add(vk, 0x1e0)),
+                0x2950076760523510abcfe90fa550b964e84b338f73af5222cdbbaefdacd4484e
+            ) //vk.QLOGIC
+            mstore(
+                add(mload(add(vk, 0x1e0)), 0x20),
+                0x2e4e3e272c7b78ad894559812d7766e05615a8f7050a43d7ed1367adf30a9319
+            )
+            mstore(
+                mload(add(vk, 0x200)),
+                0x161031d05f386fcd1402b74150c072eb1c7654d278499b8b0554dbb1fcbc3fdd
+            ) //vk.SIGMA1
+            mstore(
+                add(mload(add(vk, 0x200)), 0x20),
+                0x084e2f9e234c806519ab19e5b6841b35c0f4fb82d82e38176356fa5b92dd85e8
+            )
+            mstore(
+                mload(add(vk, 0x220)),
+                0x06f0e066b03f3dd3852a38f7a5cc377f9d4f67d52a50dcfabb665542e98ed3a3
+            ) //vk.SIGMA2
+            mstore(
+                add(mload(add(vk, 0x220)), 0x20),
+                0x1381459b75a6ce64256bbe708588fa314f3a10bfd3d1b1272309126f826ba3df
+            )
+            mstore(
+                mload(add(vk, 0x240)),
+                0x2313a194c0b55e41d2f3c3509e6e85bdba8433ca55e12e35230f067eda4e27ed
+            ) //vk.SIGMA3
+            mstore(
+                add(mload(add(vk, 0x240)), 0x20),
+                0x1e847839b8d6b4edfba261b89b0697b6bcbf6416c8410775496cb19ef050f195
+            )
+            mstore(
+                mload(add(vk, 0x260)),
+                0x18569b0d49bb1eed835a633a18565d72c2f943a81e880b598341eeb459fd7310
+            ) //vk.SIGMA4
+            mstore(
+                add(mload(add(vk, 0x260)), 0x20),
+                0x19e0db9a254eb1fecddbd114723ef005d118083ce7d8f9ad3e2fbc6055f22e3e
+            )
             mstore(add(vk, 0x280), 0x00) // vk.contains_recursive_proof
             mstore(add(vk, 0x2a0), 0) // vk.recursive_proof_public_input_indices
-            mstore(mload(add(vk, 0x2c0)), 0x260e01b251f6f1c7e7ff4e580791dee8ea51d87a358e038b4efe30fac09383c1) // vk.g2_x.X.c1
-            mstore(add(mload(add(vk, 0x2c0)), 0x20), 0x0118c4d5b837bcc2bc89b5b398b5974e9f5944073b32078b7e231fec938883b0) // vk.g2_x.X.c0
-            mstore(add(mload(add(vk, 0x2c0)), 0x40), 0x04fc6369f7110fe3d25156c1bb9a72859cf2a04641f99ba4ee413c80da6a5fe4) // vk.g2_x.Y.c1
-            mstore(add(mload(add(vk, 0x2c0)), 0x60), 0x22febda3c0c0632a56475b4214e5615e11e6dd3f96e6cea2854a87d4dacc5e55) // vk.g2_x.Y.c0
+            mstore(
+                mload(add(vk, 0x2c0)),
+                0x260e01b251f6f1c7e7ff4e580791dee8ea51d87a358e038b4efe30fac09383c1
+            ) // vk.g2_x.X.c1
+            mstore(
+                add(mload(add(vk, 0x2c0)), 0x20),
+                0x0118c4d5b837bcc2bc89b5b398b5974e9f5944073b32078b7e231fec938883b0
+            ) // vk.g2_x.X.c0
+            mstore(
+                add(mload(add(vk, 0x2c0)), 0x40),
+                0x04fc6369f7110fe3d25156c1bb9a72859cf2a04641f99ba4ee413c80da6a5fe4
+            ) // vk.g2_x.Y.c1
+            mstore(
+                add(mload(add(vk, 0x2c0)), 0x60),
+                0x22febda3c0c0632a56475b4214e5615e11e6dd3f96e6cea2854a87d4dacc5e55
+            ) // vk.g2_x.Y.c0
         }
         return vk;
     }
-
 
     /**
      * @dev Compute partial state of the verifier, specifically: public input delta evaluation, zero polynomial
@@ -401,7 +507,7 @@ contract HelloVerifier {
             // If the proof itself contains an accumulated proof,
             // we will have extracted two G1 elements `recursive_P1`, `recursive_p2` from the public inputs
 
-            // We need to evaluate that e(recursive_P1, [x]_2) == e(recursive_P2, [1]_2) to finish verifying the inner proof
+            // We need to evaluate that e(recursive_P1, [x]_2) == e(recursive_P2, [1]_2) to finish public inputs are greater than circuit moduluing the inner proof
             // We do this by creating a random linear combination between (lhs, recursive_P1) and (rhs, recursivee_P2)
             // That way we still only need to evaluate one pairing product
 
@@ -699,10 +805,6 @@ contract HelloVerifier {
     }
 }
 
-
-
-
-
 /**
  * @title Bn254Crypto library used for the fr, g1 and g2 point types
  * @dev Used to manipulate fr, g1, g2 types, perform modular arithmetic on them and call
@@ -829,11 +931,6 @@ library Types {
     }
 }
 
-
-    
-    
-
-
 /**
  * @title Bn254 elliptic curve crypto
  * @dev Provides some basic methods to compute bilinear pairings, construct group elements and misc numerical methods
@@ -891,11 +988,10 @@ library Bn254Crypto {
         return output;
     }
 
-    function new_g1(uint256 x, uint256 y)
-        internal
-        pure
-        returns (Types.G1Point memory)
-    {
+    function new_g1(
+        uint256 x,
+        uint256 y
+    ) internal pure returns (Types.G1Point memory) {
         uint256 xValue;
         uint256 yValue;
         assembly {
@@ -989,9 +1085,6 @@ library Bn254Crypto {
     }
 }
 
-    
-
-
 /**
  * @title Turbo Plonk polynomial evaluation
  * @dev Implementation of Turbo Plonk's polynomial evaluation algorithms
@@ -1067,21 +1160,26 @@ library PolynomialEval {
 
         accumulator = Bn254Crypto.invert(accumulator);
         assembly {
-            let intermediate := mulmod(accumulator, mload(add(mPtr, 0xe0)), p)
-            accumulator := mulmod(accumulator, mload(add(mPtr, 0x60)), p)
-            mstore(add(mPtr, 0x60), intermediate)
-
-            intermediate := mulmod(accumulator, mload(add(mPtr, 0xc0)), p)
-            accumulator := mulmod(accumulator, mload(add(mPtr, 0x40)), p)
-            mstore(add(mPtr, 0x40), intermediate)
-
-            intermediate := mulmod(accumulator, mload(add(mPtr, 0xa0)), p)
-            accumulator := mulmod(accumulator, mload(add(mPtr, 0x20)), p)
-            mstore(add(mPtr, 0x20), intermediate)
-
-            intermediate := mulmod(accumulator, mload(add(mPtr, 0x80)), p)
-            accumulator := mulmod(accumulator, mload(mPtr), p)
-            mstore(mPtr, intermediate)
+            {
+                let t0 := mulmod(accumulator, mload(add(mPtr, 0xe0)), p)
+                accumulator := mulmod(accumulator, mload(add(mPtr, 0x60)), p)
+                mstore(add(mPtr, 0x60), t0)
+            }
+            {
+                let t1 := mulmod(accumulator, mload(add(mPtr, 0xc0)), p)
+                accumulator := mulmod(accumulator, mload(add(mPtr, 0x40)), p)
+                mstore(add(mPtr, 0x40), t1)
+            }
+            {
+                let t2 := mulmod(accumulator, mload(add(mPtr, 0xa0)), p)
+                accumulator := mulmod(accumulator, mload(add(mPtr, 0x20)), p)
+                mstore(add(mPtr, 0x20), t2)
+            }
+            {
+                let t3 := mulmod(accumulator, mload(add(mPtr, 0x80)), p)
+                accumulator := mulmod(accumulator, mload(mPtr), p)
+                mstore(mPtr, t3)
+            }
 
             public_input_delta := mulmod(
                 public_input_delta_numerator,
@@ -1193,17 +1291,7 @@ library PolynomialEval {
     function compute_lagrange_and_vanishing_fractions(
         Types.VerificationKey memory vk,
         uint256 zeta
-    )
-        internal
-        pure
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256
-        )
-    {
+    ) internal pure returns (uint256, uint256, uint256, uint256, uint256) {
         uint256 p = Bn254Crypto.r_mod;
         uint256 vanishing_numerator = Bn254Crypto.pow_small(
             zeta,
@@ -3180,11 +3268,6 @@ library PolynomialEval {
     }
 }
 
-
-    
-    
-    
-
 /**
  * @title Transcript library
  * @dev Generates Plonk random challenges
@@ -3441,7 +3524,3 @@ library Transcript {
         self.current_challenge = challenge;
     }
 }
-
-    
-    
-    

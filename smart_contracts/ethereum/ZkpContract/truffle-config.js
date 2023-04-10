@@ -1,9 +1,11 @@
-const ganache = require('ganache-cli');
+const ganache = require('ganache');
 
 module.exports = {
     networks: {
         development: {
-            provider: ganache.provider(),
+            provider: ganache.provider({
+                quiet: true,
+            }),
             host: "localhost",
             port: 8545,
             network_id: "*"

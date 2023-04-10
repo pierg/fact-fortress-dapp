@@ -1,23 +1,39 @@
 const ZkpContract = artifacts.require('ZkpContract');
 const ZkpToken = artifacts.require('ZkpToken');
+const ZkpVerifier = artifacts.require("ZkpVerifier");
+
 const chai = require('chai').use(require('chai-as-promised'))
 const expect = chai.expect;
+const { resolve } = require('path');
 
+const { setup_generic_prover_and_verifier, create_proof } = require('@noir-lang/barretenberg/dest/client_proofs');
+const { compile } = require('@noir-lang/noir_wasm');
 
-contract('ZkpContract', function (accounts) {
+contract('ZkpContract', function(accounts) {
+    // contracts
+    let zkpTokenInstance; // NFTs
+    let zkpContractInstance; // Noir verifier
+
+    // accounts
     const hospitalA = accounts[0];
     const hospitalB = accounts[1];
 
-    let zkpTokenInstance;
-    let zkpContractInstance;
+    // ZKP verifier part
+    let compiledProgram, acir, prover, verifier;
 
-    beforeEach(async () => {
+    before(async() => {
+        compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
+        acir = compiledProgram.circuit;
+        [prover, verifier] = await setup_generic_prover_and_verifier(acir);
+    })
+
+    beforeEach(async() => {
         zkpTokenInstance = await ZkpToken.new();
-        zkpContractInstance = await ZkpContract.new(zkpTokenInstance.address);
+        zkpVerifierInstance = await ZkpVerifier.new();
+        zkpContractInstance = await ZkpContract.new(zkpTokenInstance.address, zkpVerifierInstance.address);
     });
 
-
-    it("should allow an authorized hospital with a valid ZKP token to add their public key", async () => {
+    it("should allow an authorized hospital with a valid ZKP token to add their public key", async() => {
         // Mint a new ZKP token for hospitalA
         await zkpTokenInstance.mint(hospitalA);
         const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -32,7 +48,7 @@ contract('ZkpContract', function (accounts) {
         assert.equal(retrievedPublicKey, publicKey, "Public key was not set correctly");
     });
 
-    it("should allow an authorized hospital with a valid ZKP token to add new public keys", async () => {
+    it("should allow an authorized hospital with a valid ZKP token to add new public keys", async() => {
         // Mint a new ZKP token for hospitalA
         await zkpTokenInstance.mint(hospitalA);
         const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -73,7 +89,7 @@ contract('ZkpContract', function (accounts) {
         assert.equal(retrievedLatestPublicKey, publicKey4, "Latest public key was not set correctly");
     });
 
-    it("should allow an hospital to update their own public key", async () => {
+    it("should allow an hospital to update their own public key", async() => {
         // Mint a new ZKP token for hospitalA
         await zkpTokenInstance.mint(hospitalA);
         const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -93,7 +109,7 @@ contract('ZkpContract', function (accounts) {
         assert.equal(retrievedPublicKey, updatedPublicKey, "Public key was not updated correctly");
     });
 
-    it("should not allow an unauthorized hospital/user to set a public key", async () => {
+    it("should not allow an unauthorized hospital/user to set a public key", async() => {
         // Mint a new ZKP token for hospitalA
         await zkpTokenInstance.mint(hospitalA);
         const hospitalATokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -108,7 +124,7 @@ contract('ZkpContract', function (accounts) {
             .to.be.rejectedWith("VM Exception while processing transaction: revert Public key does not exist for this token ID and name");
     });
 
-    it("should not allow setting a public key with an empty string", async () => {
+    it("should not allow setting a public key with an empty string", async() => {
         // Mint a new ZKP token for hospitalA
         await zkpTokenInstance.mint(hospitalA);
         const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -123,7 +139,7 @@ contract('ZkpContract', function (accounts) {
             .to.be.rejectedWith("VM Exception while processing transaction: revert Public key does not exist for this token ID and name");
     });
 
-    it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async () => {
+    it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async() => {
         // Mint new ZKP tokens for hospitalA and hospitalB
         await zkpTokenInstance.mint(hospitalA);
         await zkpTokenInstance.mint(hospitalB);
@@ -149,7 +165,7 @@ contract('ZkpContract', function (accounts) {
         }
     });
 
-    it("should allow an authorized hospital to transfer their token and the new address to update their public key", async () => {
+    it("should allow an authorized hospital to transfer their token and the new address to update their public key", async() => {
         const hospitalANewAddress = accounts[2];
 
         // Mint a new ZKP token for hospitalA
@@ -171,5 +187,27 @@ contract('ZkpContract', function (accounts) {
         // Verify that hospitalA's new public key was set correctly
         const retrievedNewPublicKey = await zkpContractInstance.getLatestPublicKey(tokenId, name);
         assert.equal(retrievedNewPublicKey, newPublicKey, "Public key was not set correctly");
+    });
+
+    it("should verify a proof — valid proof", async() => {
+        // valid proof: x != y
+        const proof = await create_proof(prover, acir, {
+            x: 1,
+            y: 2
+        });
+
+        const smartContractResult = await zkpContractInstance.verify(proof);
+        expect(smartContractResult).eq(true);
+    });
+
+    it("should verify a proof — invalid proof", async() => {
+        // invalid proof: x == y
+        const proof = await create_proof(prover, acir, {
+            x: 1,
+            y: 1
+        });
+
+        await expect(zkpContractInstance.verify(proof))
+            .to.be.rejectedWith("VM Exception while processing transaction: revert Proof failed");
     });
 });
