@@ -6,6 +6,7 @@ Contract: `smart_contracts/Ethereum/ZkpContract/contracts/zkpContract.sol`
 
 * [install pnpm](https://pnpm.io/installation)
 * Install the dependencies (from `./smart_contracts/Ethereum/ZkpContract/`): `pnpm i`
+* Node 18 (`nvm use 18`)
 
 ## Circuit 
 
