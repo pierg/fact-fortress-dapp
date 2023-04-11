@@ -237,3 +237,7 @@ fabric.properties
 **/node_modules
 **/*.bin
 **/zkpProofVerifier.sol
+
+# Noir generated files
+**/*.proof
+**/plonk_vk.sol
