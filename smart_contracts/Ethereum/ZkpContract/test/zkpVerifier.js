@@ -8,6 +8,8 @@ const { resolve } = require('path');
 const chai = require('chai').use(require('chai-as-promised'))
 const expect = chai.expect;
 
+const fs = require('fs');
+
 contract("ZkpVerifier", (accounts) => {
     let zkpVerifierInstance;
     let compiledProgram;
@@ -17,6 +19,10 @@ contract("ZkpVerifier", (accounts) => {
         compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
         acir = compiledProgram.circuit;
         [prover, verifier] = await setup_generic_prover_and_verifier(acir);
+
+        // // (enable to generate the smart contract)
+        // const sc = await verifier.SmartContract();  
+        // fs.writeFileSync(resolve(__dirname, "../contracts/zkpVerifier.sol"), sc);
     })
 
     beforeEach(async() => {
@@ -41,8 +47,6 @@ contract("ZkpVerifier", (accounts) => {
 
         expect(verified).eq(true);
 
-        // ERROR: the smart contract cannot verify the proof:
-        // `CallError: VM Exception while processing transaction: revert Proof failed`
         const smartContractResult = await zkpVerifierInstance.verify(proof);
         expect(smartContractResult).eq(true);
     });
