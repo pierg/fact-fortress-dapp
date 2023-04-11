@@ -1,6 +1,29 @@
 import json
 import os
 from pathlib import Path
+import toml
+
+
+def save_dict_to_toml(data: dict, file_path: Path, order: bool = False) -> Path:
+    """
+    Save a dictionary to a TOML file with optional sorting by key.
+
+    Args:
+        data (dict): The dictionary to be saved.
+        file_path (Path): The path to the TOML file.
+        order (bool, optional): Whether to sort the dictionary by key in ascending order. Defaults to False.
+    """
+    if order:
+        data = dict(sorted(data.items()))
+
+    if not os.path.exists(os.path.dirname(file_path)):
+        os.makedirs(os.path.dirname(file_path))
+
+    with open(str(file_path), "w") as f:
+        toml.dump(data, f)
+
+    print(f"File saved: {file_path}")
+    return file_path
 
 
 def save_dict_to_json(data: dict, file_path: Path, order: bool = False) -> Path:

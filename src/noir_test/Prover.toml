@@ -1,0 +1,11 @@
+[public]
+name = "Bob_________"
+year = 1992
+
+[person.authority_1]
+id = "_23_and_me_"
+records = [1, 2]
+
+[person.authority_2]
+id = "_kaiser____"
+records = [3, 5]
