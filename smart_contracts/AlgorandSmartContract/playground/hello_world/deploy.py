@@ -1,11 +1,11 @@
 # Demonstrate the sample contract in this directory by building, deploying and calling the contract
 import algokit_utils
 
-import helloworld
+import ProofStorageContract
 from build import build
 
 
-def demo() -> None:
+def deploy() -> None:
     # build the app and get back the Path to app spec file
     app_spec_path = build()
     # Get LocalNet algod client
@@ -29,9 +29,10 @@ def demo() -> None:
     )
 
     # Call the `hello` method
-    call_response = app_client.call(helloworld.hello, name="Beaker")
-    print(call_response.return_value)  # "Hello, Beaker"
+    # call_response = app_client.call(helloworld.hello, name="Beaker")
+    call_response = app_client.call(ProofStorageContract.add, a=1, b=2)
+    print(call_response.return_value)  
 
 
 if __name__ == "__main__":
-    demo()
+    deploy()

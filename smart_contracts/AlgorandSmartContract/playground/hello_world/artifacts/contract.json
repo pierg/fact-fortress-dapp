@@ -1,16 +1,20 @@
 {
-    "name": "HelloWorldApp",
+    "name": "ProofStorageContract",
     "methods": [
         {
-            "name": "hello",
+            "name": "add",
             "args": [
                 {
-                    "type": "string",
-                    "name": "name"
+                    "type": "uint64",
+                    "name": "a"
+                },
+                {
+                    "type": "uint64",
+                    "name": "b"
                 }
             ],
             "returns": {
-                "type": "string"
+                "type": "uint64"
             }
         }
     ],

@@ -2,11 +2,11 @@
 from pathlib import Path
 
 import helloworld
-
+import ProofStorageContract
 
 def build() -> Path:
     """Build the beaker app, export it to disk, and return the Path to the app spec file"""
-    app_spec = helloworld.app.build()
+    app_spec = ProofStorageContract.app.build()
     output_dir = Path(__file__).parent / "artifacts"
     print(f"Dumping {app_spec.contract.name} to {output_dir}")
     app_spec.export(output_dir)
