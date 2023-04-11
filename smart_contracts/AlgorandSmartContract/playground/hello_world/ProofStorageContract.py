@@ -1,6 +1,5 @@
 import beaker as bk
 import pyteal as pt
-from beaker.lib.storage import BoxList, BoxMapping
 
 class MyState:
     result = bk.GlobalStateValue(pt.TealType.uint64)
