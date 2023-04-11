@@ -1,0 +1,10 @@
+[package]
+name = "verify"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+hex = "0.4.3"
+secp256k1 = "0.18.0"
+serde = { version = "1.0.130", features = ["derive"] }
+toml = "0.5.9"
