@@ -58,7 +58,7 @@ def insert_proof(axfer: pt.abi.AssetTransferTransaction) -> pt.Expr:
  
 @Subroutine(pt.Tealtype.none) #Private method
 def pay(receiver: pt.Expr, amount: pt.Expr) -> pt.Expr:
-    return pt.InnerTxBuilder.Execute(
+    return pt.InnerTxnBuilder.Execute(
         {
             pt.TxnField.type_enum: pt.TxnType.Payment,
             pt.TxnField.receiver: receiver,
@@ -67,6 +67,24 @@ def pay(receiver: pt.Expr, amount: pt.Expr) -> pt.Expr:
         }
     )
 
+# @app.external
+# def claim_back_proof() -> pt.Expr:
+#     return pt.Seq(
+#         pass
+#     )
+
+#closing out the remiang balance and delete the contract
+@app.delete
+def delete(bare=True) -> pt.Expr:
+    return pt.InnerTxnBuilder.Execute(
+        {
+            pt.TxnField.type_enum: pt.TxnType.Payment,
+            pt.TxnField.fee: pt.Int(0),
+            pt.TxnField.receiver: bk.Global.creator_address(),
+            pt.TxnField.close_remainder_to: bk.Global.creator_address(),
+            pt.TxnField.amount: pt.Int(0),
+        }
+    )
 
 @app.external#(authorize=beaker.Authorize.only_creator())
 def add(a: pt.abi.Uint64, b: pt.abi.Uint64, *, output: pt.abi.Uint64) -> pt.Expr:
