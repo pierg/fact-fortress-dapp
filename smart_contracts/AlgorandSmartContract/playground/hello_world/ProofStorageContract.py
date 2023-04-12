@@ -11,13 +11,13 @@ class MyState:
     #     max_keys=32,
     #     descr="A reserved app state variable, with 32 possible keys",
     # )
-    asa_amt = Final[bk.GlobalStateValue] = bk.GlobalStateValue(
-        stack_type=pt.TealType.Uint64,
+    asa_amt: Final[bk.GlobalStateValue] = bk.GlobalStateValue(
+        stack_type=pt.TealType.uint64,
         default=pt.Int(0),
         descr="Total amount of the ASA",
     )
-    asa = Final[bk.GlobalStateValue] = bk.GlobalStateValue(
-        stack_type=pt.TealType.Uint64,
+    asa: Final[bk.GlobalStateValue] = bk.GlobalStateValue(
+        stack_type=pt.TealType.uint64,
         default=pt.Int(0),
         descr="ID of the ASA",
     )
@@ -31,7 +31,7 @@ def create() -> pt.Expr:
     return app.initialize_global_state()
 
 #Opt the CONTRACT ADDRESS into the asset
-@app.external(authorize=bk.Authorize.only(bk.Global.creator_address())) #only the creator can call this method to allow the contract address to optin to the contract
+@app.external(authorize=bk.Authorize.only(pt.Global.creator_address())) #only the creator can call this method to allow the contract address to optin to the contract
 def opt_into_asset(asset: pt.abi.Asset) -> pt.Expr:
     return pt.Seq(
         pt.Assert(app.state.asa==pt.Int(0)), #verify not already opted in and check that the asset opted in is only one
@@ -40,7 +40,7 @@ def opt_into_asset(asset: pt.abi.Asset) -> pt.Expr:
             {
                 pt.TxnField.type_enum: pt.TxnType.AssetTransfer,
                 pt.TxnField.fee: pt.Int(0),
-                pt.TxnField.asset_receiver: bk.Global.current_application_address(),
+                pt.TxnField.asset_receiver: pt.Global.current_application_address(),
                 pt.TxnField.xfer_asset: asset.asset_id(),
                 pt.TxnField.amount: pt.Int(0),
             }
@@ -48,10 +48,10 @@ def opt_into_asset(asset: pt.abi.Asset) -> pt.Expr:
 
     )   
 
-@app.external(authorize=bk.Authorize.only(bk.Global.creator_address()))
+@app.external(authorize=bk.Authorize.only(pt.Global.creator_address()))
 def insert_proof(axfer: pt.abi.AssetTransferTransaction) -> pt.Expr:
     return pt.Seq(
-        pt.Assert(axfer.get().asset_receiver() == bk.Global.current_application_address()),
+        pt.Assert(axfer.get().asset_receiver() == pt.Global.current_application_address()),
         pt.Assert(axfer.get().xfer_asset() == app.state.asa()),
         app.state.asa_amt.set(axfer.get().asset_amount()),
     )
@@ -80,8 +80,8 @@ def delete(bare=True) -> pt.Expr:
         {
             pt.TxnField.type_enum: pt.TxnType.Payment,
             pt.TxnField.fee: pt.Int(0),
-            pt.TxnField.receiver: bk.Global.creator_address(),
-            pt.TxnField.close_remainder_to: bk.Global.creator_address(),
+            pt.TxnField.receiver: pt.Global.creator_address(),
+            pt.TxnField.close_remainder_to: pt.Global.creator_address(),
             pt.TxnField.amount: pt.Int(0),
         }
     )
