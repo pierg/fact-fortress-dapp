@@ -5,7 +5,7 @@ from shared.paths import data_file_path, signature_data_file_path, input_file, d
 from utils.encoder import encode
 
 # # Generate random genomic data
-# generate_genomic_data(5, data_file_path)
+generate_genomic_data(5, data_file_path)
 # # # Trusted party signs data authenticity
 # sign_data(data_file_path, signature_data_file_path)
 # # Verify data

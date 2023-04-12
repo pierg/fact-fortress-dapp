@@ -12,12 +12,13 @@ with open(current_folder / "signature.toml", "r") as f:
 message = bytes(data["message"])
 signature = bytes(data["signature"])
 
-message_hash = sl.sha256(message.encode())
+message_hash = sl.sha256(message)
 
 # pubkey_bytes = bytes.fromhex(public_key)
 # pubkey_bytes = sl.bytes_from_int(public_key_x)
 
-pub_key_bytes = bytes(data["pub_key_x"])
+# pub_key_bytes = bytes(data["pub_key_x"][2:])
+pub_key_bytes = bytes.fromhex(data["pub_key_x"][2:])
 sig_bytes = bytes.fromhex(signature.hex())
 result = sl.schnorr_verify(message_hash, pub_key_bytes, sig_bytes)
 
