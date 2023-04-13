@@ -88,7 +88,22 @@ contract ZkpContract {
 
     // ZKP PROOF VERIFICATION
 
-    function verify(bytes memory proof) external view returns (bool result) {
+    function verifyPublicKey(
+        bytes calldata pubKey_X,
+        bytes calldata pubKey_Y,
+        bytes calldata proof
+    ) public view returns (bool) {
+        // extract public key from proof
+        bytes calldata pubKeyProof_X = proof[0:32];
+        bytes calldata pubKeyProof_Y = proof[32:64];
+
+        return keccak256(abi.encodePacked(pubKey_X)) == keccak256(abi.encodePacked(pubKeyProof_X)) 
+            && keccak256(abi.encodePacked(pubKey_Y)) == keccak256(abi.encodePacked(pubKeyProof_Y));
+    }
+
+    function verifyProof(
+        bytes calldata proof
+    ) external view returns (bool result) {
         return zkpVerifier.verify(proof);
     }
 }
