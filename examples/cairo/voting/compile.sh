@@ -1,1 +1,0 @@
-cairo-compile voting.cairo --output voting_compiled.json

@@ -1,0 +1,53 @@
+[public_keys]
+company_a = "0x50421a7f32bda9098c8b8a7852ad6568cb0f75e11a63996bd48404651c6c7a77"
+company_b = "0xe4ca798c31f02d23615e9f428a73922bb1bbe14c8658a77470f63c042675fabe"
+
+[private_data.auth_a]
+authority = "company_a"
+r = "0x50421a7f32bda9098c8b8a7852ad6568cb0f75e11a63996bd48404651c6c7a77"
+s = "0xd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+
+[private_data.auth_b]
+authority = "company_b"
+r = "0xe4ca798c31f02d23615e9f428a73922bb1bbe14c8658a77470f63c042675fabe"
+s = "0xd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+
+[private_data.auth_a.data.patient_id_0]
+name = "Bob"
+
+[private_data.auth_a.data.patient_id_1]
+name = "Frank"
+
+[private_data.auth_b.data.patient_id_0]
+name = "Charlie"
+
+[private_data.auth_b.data.patient_id_1]
+name = "Alice"
+
+[private_data.auth_a.data.patient_id_0.genetic_data]
+rs10757274 = "GG"
+rs562556 = "GG"
+rs429358 = "CT"
+rs7412 = "CC"
+rs1801133 = "TT"
+
+[private_data.auth_a.data.patient_id_1.genetic_data]
+rs10757274 = "GG"
+rs562556 = "GG"
+rs429358 = "TT"
+rs7412 = "TT"
+rs1801133 = "TT"
+
+[private_data.auth_b.data.patient_id_0.genetic_data]
+rs10757274 = "AA"
+rs562556 = "AA"
+rs429358 = "TT"
+rs7412 = "TT"
+rs1801133 = "TT"
+
+[private_data.auth_b.data.patient_id_1.genetic_data]
+rs10757274 = "GG"
+rs562556 = "AG"
+rs429358 = "TT"
+rs7412 = "CT"
+rs1801133 = "TT"

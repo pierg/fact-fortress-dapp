@@ -1,1 +1,0 @@
-cairo-compile genetic.cairo --output data_compiled.json

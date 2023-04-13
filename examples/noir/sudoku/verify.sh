@@ -1,1 +1,0 @@
-nargo verify p
