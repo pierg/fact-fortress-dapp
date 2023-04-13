@@ -12,10 +12,10 @@ const { setup_generic_prover_and_verifier, create_proof, verify_proof } = requir
 const { compile } = require('@noir-lang/noir_wasm');
 const { Schnorr } = require('@noir-lang/barretenberg/dest/crypto/schnorr');
 const { BarretenbergWasm } = require('@noir-lang/barretenberg/dest/wasm');
-const { randomBytes } = require('crypto');
+const { createHash, randomBytes } = require('crypto');
 
-contract('ZkpContract', function (accounts) {
-    const message = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+contract('ZkpContract', function(accounts) {
+    const message = "Hello, World";
 
     // contracts
     let zkpContractInstance; // Main contract
@@ -30,8 +30,15 @@ contract('ZkpContract', function (accounts) {
     let compiledProgram, acir, prover, verifier;
     let barretenberg, schnorr;
 
-    before(async () => {
-        compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
+    before(async() => {
+        let compiledProgram;
+        try {
+            compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
+        } catch (e) {
+            console.log(e);
+            process.exit(1);
+        }
+
         acir = compiledProgram.circuit;
         [prover, verifier] = await setup_generic_prover_and_verifier(acir);
 
@@ -40,16 +47,16 @@ contract('ZkpContract', function (accounts) {
         schnorr = new Schnorr(barretenberg);
     })
 
-    beforeEach(async () => {
+    beforeEach(async() => {
         zkpTokenInstance = await ZkpToken.new();
         zkpVerifierInstance = await ZkpVerifier.new();
         zkpContractInstance = await ZkpContract.new(zkpTokenInstance.address, zkpVerifierInstance.address);
     });
 
     // PUBLIC KEYS MANAGEMENT
-    describe("Public keys management with NFTs", async () => {
+    describe("Public keys management with NFTs", async() => {
 
-        it("should allow an authorized hospital with a valid ZKP token to add their public key", async () => {
+        it("should allow an authorized hospital with a valid ZKP token to add their public key", async() => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
             const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -64,7 +71,7 @@ contract('ZkpContract', function (accounts) {
             assert.equal(retrievedPublicKey, publicKey, "Public key was not set correctly");
         });
 
-        it("should allow an authorized hospital with a valid ZKP token to add new public keys", async () => {
+        it("should allow an authorized hospital with a valid ZKP token to add new public keys", async() => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
             const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -105,7 +112,7 @@ contract('ZkpContract', function (accounts) {
             assert.equal(retrievedLatestPublicKey, publicKey4, "Latest public key was not set correctly");
         });
 
-        it("should allow an hospital to update their own public key", async () => {
+        it("should allow an hospital to update their own public key", async() => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
             const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -125,7 +132,7 @@ contract('ZkpContract', function (accounts) {
             assert.equal(retrievedPublicKey, updatedPublicKey, "Public key was not updated correctly");
         });
 
-        it("should not allow an unauthorized hospital/user to set a public key", async () => {
+        it("should not allow an unauthorized hospital/user to set a public key", async() => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
             const hospitalATokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -140,7 +147,7 @@ contract('ZkpContract', function (accounts) {
                 .to.be.rejectedWith("VM Exception while processing transaction: revert Public key does not exist for this token ID and name");
         });
 
-        it("should not allow setting a public key with an empty string", async () => {
+        it("should not allow setting a public key with an empty string", async() => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
             const tokenId = await zkpTokenInstance.userToToken(hospitalA);
@@ -155,7 +162,7 @@ contract('ZkpContract', function (accounts) {
                 .to.be.rejectedWith("VM Exception while processing transaction: revert Public key does not exist for this token ID and name");
         });
 
-        it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async () => {
+        it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async() => {
             // Mint new ZKP tokens for hospitalA and hospitalB
             await zkpTokenInstance.mint(hospitalA);
             await zkpTokenInstance.mint(hospitalB);
@@ -182,7 +189,7 @@ contract('ZkpContract', function (accounts) {
         });
     });
 
-    it("should allow an authorized hospital to transfer their token and the new address to update their public key", async () => {
+    it("should allow an authorized hospital to transfer their token and the new address to update their public key", async() => {
         const hospitalANewAddress = accounts[2];
 
         // Mint a new ZKP token for hospitalA
@@ -208,10 +215,12 @@ contract('ZkpContract', function (accounts) {
 
     // PROOFS VERIFICATION
 
-    describe("Verification of proofs", async () => {
-        it("should verify a proof — valid proof", async () => {
+    describe("Verification of proofs", async() => {
+        it("should verify a proof — valid proof", async() => {
             const privateKey = randomBytes(32);
-            const abi = generateAbi(schnorr, privateKey, message);
+            const hash = createHash('sha256').update(message).digest('hex');
+
+            const abi = generateAbi(schnorr, privateKey, hash);
 
             console.log("Valid ABI:");
             console.log(abi);
@@ -225,9 +234,11 @@ contract('ZkpContract', function (accounts) {
             expect(smartContractResult).eq(true);
         });
 
-        it("should verify a proof — invalid proof", async () => {
+        it("should verify a proof — invalid proof", async() => {
             const privateKey = randomBytes(32);
-            const abi = generateAbi(schnorr, privateKey, message);
+            const hash = createHash('sha256').update(message).digest('hex');
+
+            const abi = generateAbi(schnorr, privateKey, hash);
 
             // falsify the signature to make it invalid and fail the proof
             abi.signature[0] = (abi.signature[0] + 1) % 256;
