@@ -161,14 +161,14 @@ contract ZkpVerifier {
             mstore(add(mload(add(vk, 0x1c0)), 0x20), 0x2e5039f82fcf6242614acfc31ae5c5b6be015788381687d992071f9d21365712)
             mstore(mload(add(vk, 0x1e0)), 0x020dae9d40494ba257ee31e42dc69b57893cb130e21d7f68f4d035e71b77e00f)//vk.QLOGIC
             mstore(add(mload(add(vk, 0x1e0)), 0x20), 0x0b3d0d335f4d54261c4579878f005c6ff7c93317eb2ee8b94c21fe03a14d3731)
-            mstore(mload(add(vk, 0x200)), 0x09b638fa557800890cad6077962b3402f6875ba54aaae174300362adaf1db700)//vk.SIGMA1
-            mstore(add(mload(add(vk, 0x200)), 0x20), 0x1403d6483c387f5d5ab8fa319fee952ce167e2b61f1b59bf6281c2c1f089e112)
-            mstore(mload(add(vk, 0x220)), 0x24bd49cbb534e938b974dfd25ae78cb0eb4e4165eb0ef150db630544ee2f5e0e)//vk.SIGMA2
-            mstore(add(mload(add(vk, 0x220)), 0x20), 0x062cb4b65773779d5b23b87bb20d145ed867633fc9653954fa6b262413bf3368)
+            mstore(mload(add(vk, 0x200)), 0x07c6ea2ec6ad8b463863b1da9a704495f43f6289819d00ea71e2224968ca00a3)//vk.SIGMA1
+            mstore(add(mload(add(vk, 0x200)), 0x20), 0x0142b66fc86ca432d3c36962b3b0afb53f4b934db462956aa7889fdc824b4389)
+            mstore(mload(add(vk, 0x220)), 0x1c43427de73b590e547910b06fe51a89513a7b173f042ecb113849bc865743b3)//vk.SIGMA2
+            mstore(add(mload(add(vk, 0x220)), 0x20), 0x23d3c23449bcd4f6d43c2899a9b83d316b750733ca2f0ce28830cc7550549b1d)
             mstore(mload(add(vk, 0x240)), 0x23fd7cecad5b55ad8e84bab4b26ae166ab72085a3e782d9b70df39bcd2fff897)//vk.SIGMA3
             mstore(add(mload(add(vk, 0x240)), 0x20), 0x2b0b3ad72854c2d6ca21286fce4e5f39f3ee97586abdb63d95b9440a43353cd1)
-            mstore(mload(add(vk, 0x260)), 0x16146f4c774767ab552f8e555b7c059495665c7b02d0d628383559717ae6d7bd)//vk.SIGMA4
-            mstore(add(mload(add(vk, 0x260)), 0x20), 0x0bc971c684aba0d2ca4694fd8afb23e4f1d3549de0708457ebd32d853d9b579b)
+            mstore(mload(add(vk, 0x260)), 0x2f22421ad2b1b06ca96d50fbd368032b5fa1dffb671f42a377b241bea38d04c9)//vk.SIGMA4
+            mstore(add(mload(add(vk, 0x260)), 0x20), 0x2dd0c8da2231b8dddf250541571e5640de25f3e065f10aa95a3c5f6e8acd1838)
             mstore(add(vk, 0x280), 0x00) // vk.contains_recursive_proof
             mstore(add(vk, 0x2a0), 0) // vk.recursive_proof_public_input_indices
             mstore(mload(add(vk, 0x2c0)), 0x260e01b251f6f1c7e7ff4e580791dee8ea51d87a358e038b4efe30fac09383c1) // vk.g2_x.X.c1
@@ -1067,30 +1067,30 @@ library PolynomialEval {
 
         accumulator = Bn254Crypto.invert(accumulator);
         assembly {
-            
-            {
-                let t0 := mulmod(accumulator, mload(add(mPtr, 0xe0)), p)
-                accumulator := mulmod(accumulator, mload(add(mPtr, 0x60)), p)
-                mstore(add(mPtr, 0x60), t0)
-            }
+		{
+            let intermediate_0 := mulmod(accumulator, mload(add(mPtr, 0xe0)), p)
+            accumulator := mulmod(accumulator, mload(add(mPtr, 0x60)), p)
+            mstore(add(mPtr, 0x60), intermediate_0)
+		}
 
-            {
-                let t1 := mulmod(accumulator, mload(add(mPtr, 0xc0)), p)
-                accumulator := mulmod(accumulator, mload(add(mPtr, 0x40)), p)
-                mstore(add(mPtr, 0x40), t1)
-            }
-            
-            {
-                let t2 := mulmod(accumulator, mload(add(mPtr, 0xa0)), p)
-                accumulator := mulmod(accumulator, mload(add(mPtr, 0x20)), p)
-                mstore(add(mPtr, 0x20), t2)
-            }
+		{
+            let intermediate_1 := mulmod(accumulator, mload(add(mPtr, 0xc0)), p)
+            accumulator := mulmod(accumulator, mload(add(mPtr, 0x40)), p)
+            mstore(add(mPtr, 0x40), intermediate_1)
+		}
 
-            {
-                let t3 := mulmod(accumulator, mload(add(mPtr, 0x80)), p)
-                accumulator := mulmod(accumulator, mload(mPtr), p)
-                mstore(mPtr, t3)
-            }
+		{
+            let intermediate_2 := mulmod(accumulator, mload(add(mPtr, 0xa0)), p)
+            accumulator := mulmod(accumulator, mload(add(mPtr, 0x20)), p)
+            mstore(add(mPtr, 0x20), intermediate_2)
+		}
+
+		{
+            let intermediate_3 := mulmod(accumulator, mload(add(mPtr, 0x80)), p)
+            accumulator := mulmod(accumulator, mload(mPtr), p)
+            mstore(mPtr, intermediate_3)
+		}
+
             public_input_delta := mulmod(
                 public_input_delta_numerator,
                 mload(mPtr),

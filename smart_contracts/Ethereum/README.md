@@ -12,7 +12,7 @@ Contract: `smart_contracts/Ethereum/ZkpContract/contracts/zkpContract.sol`
 
 The Noir-generated circuit is defined in `./smart_contracts/Ethereum/ZkpContract/circuits/src/main.nr`
 
-If updated, the tests will fail until the third parameter of every call to `create_proof` is updated accordingly.
+When running the tests, the verifier contract is automatically compiled. 
 
 ## Test the contract
 

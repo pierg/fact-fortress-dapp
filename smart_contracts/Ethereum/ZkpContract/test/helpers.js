@@ -8,10 +8,10 @@ function generateAbi(schnorr, privateKey, message) {
     );
 
     return {
-        message,
         pub_key_x: '0x' + publicKey.x().toString('hex'),
         pub_key_y: '0x' + publicKey.y().toString('hex'),
-        signature
+        signature,
+        message
     }
 }
 
