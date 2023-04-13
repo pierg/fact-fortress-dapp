@@ -2,7 +2,7 @@ const ZkpContract = artifacts.require('ZkpContract');
 const ZkpToken = artifacts.require('ZkpToken');
 const ZkpVerifier = artifacts.require("ZkpVerifier");
 
-const { BarretenbergHelper } = require('./helpers');
+const { BarretenbergHelper, hashHealthData } = require('./helpers');
 
 const chai = require('chai').use(require('chai-as-promised'))
 const expect = chai.expect;
@@ -11,12 +11,33 @@ const { resolve } = require('path');
 const { setup_generic_prover_and_verifier, create_proof, verify_proof } = require('@noir-lang/barretenberg/dest/client_proofs');
 const { compile } = require('@noir-lang/noir_wasm');
 const { BarretenbergWasm } = require('@noir-lang/barretenberg/dest/wasm');
-const { createHash, randomBytes } = require('crypto');
+const { randomBytes } = require('crypto');
 
 const fs = require('fs');
 
 contract('ZkpContract', function(accounts) {
-    const message = "Hello, World";
+    const healthData = {
+        "patient_id_0": {
+            "genetic_data": {
+                "rs10757274": "AA",
+                "rs562556": "AA",
+                "rs429358": "TT",
+                "rs7412": "TT",
+                "rs1801133": "TT"
+            },
+            "name": "Charlie"
+        },
+        "patient_id_1": {
+            "genetic_data": {
+                "rs10757274": "GG",
+                "rs562556": "AG",
+                "rs429358": "TT",
+                "rs7412": "CT",
+                "rs1801133": "TT"
+            },
+            "name": "Alice"
+        }
+    }
 
     // contracts
     let zkpContractInstance; // Main contract
@@ -64,6 +85,7 @@ contract('ZkpContract', function(accounts) {
     });
 
     // PUBLIC KEYS MANAGEMENT
+
     describe("Public keys management with NFTs", async() => {
 
         it("should allow an authorized hospital with a valid ZKP token to add their public key", async() => {
@@ -227,14 +249,18 @@ contract('ZkpContract', function(accounts) {
     // PROOFS VERIFICATION
 
     describe("Verification of proofs", async() => {
+        let hash;
+
+        before(async() => {
+            // the hospital hashes the health data
+            hash = hashHealthData(healthData);
+        })
+
         it("should verify a proof — valid proof", async() => {
             const privateKey = randomBytes(32);
-            const hash = createHash('sha256').update(message).digest('hex');
+            validAbi = helper.generateAbi(privateKey, hash);
 
-            const abi = helper.generateAbi(privateKey, hash);
-            validAbi = abi;
-
-            const proof = await create_proof(prover, acir, abi);
+            const proof = await create_proof(prover, acir, validAbi);
             const verified = await verify_proof(verifier, proof);
 
             expect(verified).eq(true);
@@ -245,8 +271,6 @@ contract('ZkpContract', function(accounts) {
 
         it("should verify a proof — invalid proof", async() => {
             const privateKey = randomBytes(32);
-            const hash = createHash('sha256').update(message).digest('hex');
-
             const abi = helper.generateAbi(privateKey, hash);
 
             // falsify the signature to make it invalid and fail the proof

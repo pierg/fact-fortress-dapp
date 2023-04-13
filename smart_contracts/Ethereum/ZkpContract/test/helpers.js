@@ -1,6 +1,6 @@
 const { GrumpkinAddress } = require('@noir-lang/barretenberg/dest/address');
 const { Schnorr } = require('@noir-lang/barretenberg/dest/crypto/schnorr');
-const { randomBytes } = require('crypto');
+const { createHash, randomBytes } = require('crypto');
 
 class BarretenbergHelper {
     constructor(barretenberg) {
@@ -30,8 +30,6 @@ class BarretenbergHelper {
     }
 }
 
-
-
 function hexToBytes(hex) {
     let bytes = [];
     for (let c = 0; c < hex.length; c += 2)
@@ -39,4 +37,10 @@ function hexToBytes(hex) {
     return bytes;
 }
 
-module.exports = { BarretenbergHelper }
+function hashHealthData(healthData) {
+    return createHash('sha256')
+        .update(JSON.stringify(healthData))
+        .digest('hex');
+}
+
+module.exports = { BarretenbergHelper, hashHealthData }
