@@ -55,8 +55,8 @@ contract('ZkpContract', function(accounts) {
     after(async() => {
         // save valid ABI in `Prover.toml`
         if (validAbi !== null) {
-            let prover = `pub_key_x = ${JSON.stringify(validAbi.pub_key_x)}}\n`;
-            prover += `pub_key_y = ${JSON.stringify(validAbi.pub_key_y)}}\n`;
+            let prover = `pub_key_x = ${JSON.stringify(validAbi.pub_key_x)}\n`;
+            prover += `pub_key_y = ${JSON.stringify(validAbi.pub_key_y)}\n`;
             prover += `signature = ${JSON.stringify(validAbi.signature)}\n`;
             prover += `hash = ${JSON.stringify(validAbi.hash)}\n`;
             fs.writeFileSync(resolve(__dirname, '../circuits/Prover.toml'), prover);
