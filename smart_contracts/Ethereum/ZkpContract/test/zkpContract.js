@@ -2,7 +2,7 @@ const ZkpContract = artifacts.require('ZkpContract');
 const ZkpToken = artifacts.require('ZkpToken');
 const ZkpVerifier = artifacts.require("ZkpVerifier");
 
-const { generateAbi } = require('./helpers');
+const { BarretenbergHelper } = require('./helpers');
 
 const chai = require('chai').use(require('chai-as-promised'))
 const expect = chai.expect;
@@ -10,9 +10,10 @@ const { resolve } = require('path');
 
 const { setup_generic_prover_and_verifier, create_proof, verify_proof } = require('@noir-lang/barretenberg/dest/client_proofs');
 const { compile } = require('@noir-lang/noir_wasm');
-const { Schnorr } = require('@noir-lang/barretenberg/dest/crypto/schnorr');
 const { BarretenbergWasm } = require('@noir-lang/barretenberg/dest/wasm');
 const { createHash, randomBytes } = require('crypto');
+
+const fs = require('fs');
 
 contract('ZkpContract', function(accounts) {
     const message = "Hello, World";
@@ -27,11 +28,9 @@ contract('ZkpContract', function(accounts) {
     const hospitalB = accounts[1];
 
     // ZKP verifier part
-    let compiledProgram, acir, prover, verifier;
-    let barretenberg, schnorr;
+    let compiledProgram, acir, prover, verifier, validAbi;
 
     before(async() => {
-        let compiledProgram;
         try {
             compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
         } catch (e) {
@@ -44,13 +43,24 @@ contract('ZkpContract', function(accounts) {
 
         // instantiate Barretenberg WASM to use Grumpkin curve
         barretenberg = await BarretenbergWasm.new();
-        schnorr = new Schnorr(barretenberg);
+        helper = new BarretenbergHelper(barretenberg);
     })
 
     beforeEach(async() => {
         zkpTokenInstance = await ZkpToken.new();
         zkpVerifierInstance = await ZkpVerifier.new();
         zkpContractInstance = await ZkpContract.new(zkpTokenInstance.address, zkpVerifierInstance.address);
+    });
+
+    after(async() => {
+        // save valid ABI in `Prover.toml`
+        if (validAbi !== null) {
+            let prover = `pub_key_x = ${JSON.stringify(validAbi.pub_key_x)}}\n`;
+            prover += `pub_key_y = ${JSON.stringify(validAbi.pub_key_y)}}\n`;
+            prover += `signature = ${JSON.stringify(validAbi.signature)}\n`;
+            prover += `hash = ${JSON.stringify(validAbi.hash)}\n`;
+            fs.writeFileSync(resolve(__dirname, '../circuits/Prover.toml'), prover);
+        }
     });
 
     // PUBLIC KEYS MANAGEMENT
@@ -63,7 +73,8 @@ contract('ZkpContract', function(accounts) {
 
             // Set hospitalA's public key
             const name = "Hospital A";
-            const publicKey = "0xabc123";
+            const publicKey = helper.getRandomGrumpkinPublicKey();
+
             await zkpContractInstance.setPublicKey(tokenId, name, publicKey, { from: hospitalA })
 
             // Verify that hospitalA's public key was set correctly
@@ -77,10 +88,10 @@ contract('ZkpContract', function(accounts) {
             const tokenId = await zkpTokenInstance.userToToken(hospitalA);
 
             const name = "Hospital A";
-            const publicKey1 = "0xaaaaaa";
-            const publicKey2 = "0xbbbbbb";
-            const publicKey3 = "0xcccccc";
-            const publicKey4 = "0xdddddd";
+            const publicKey1 = helper.getRandomGrumpkinPublicKey();
+            const publicKey2 = helper.getRandomGrumpkinPublicKey();
+            const publicKey3 = helper.getRandomGrumpkinPublicKey();
+            const publicKey4 = helper.getRandomGrumpkinPublicKey();
 
             // Set hospitalA's first public key
             await zkpContractInstance.setPublicKey(tokenId, name, publicKey1, { from: hospitalA })
@@ -119,12 +130,12 @@ contract('ZkpContract', function(accounts) {
 
             // Set hospitalA's initial public key
             const initialName = "Hospital A";
-            const initialPublicKey = "0xabc123";
+            const initialPublicKey = helper.getRandomGrumpkinPublicKey();
             await zkpContractInstance.setPublicKey(tokenId, initialName, initialPublicKey, { from: hospitalA });
 
             // Update hospitalA's public key
             const updatedName = "Hospital A";
-            const updatedPublicKey = "0xdef456";
+            const updatedPublicKey = helper.getRandomGrumpkinPublicKey();
             await zkpContractInstance.setPublicKey(tokenId, updatedName, updatedPublicKey, { from: hospitalA });
 
             // Verify that hospitalA's public key was updated correctly
@@ -139,7 +150,7 @@ contract('ZkpContract', function(accounts) {
             const name = "Hospital A";
 
             // Try to set a public key for the third account using the second account's ZKP token
-            await expect(zkpContractInstance.setPublicKey(hospitalATokenId, name, "0xabc123", { from: hospitalB }))
+            await expect(zkpContractInstance.setPublicKey(hospitalATokenId, name, helper.getRandomGrumpkinPublicKey(), { from: hospitalB }))
                 .to.be.rejectedWith("VM Exception while processing transaction: revert Caller is not approved or the owner of the corresponding ZKP token");
 
             // Verify that the public key was not set
@@ -172,11 +183,11 @@ contract('ZkpContract', function(accounts) {
             const hospitalBTokenId = await zkpTokenInstance.userToToken(hospitalB);
 
             // set public key for Hospital A's token and name "hospital A"
-            await zkpContractInstance.setPublicKey(hospitalATokenId, name, "0x123");
+            await zkpContractInstance.setPublicKey(hospitalATokenId, name, helper.getRandomGrumpkinPublicKey());
 
             // set public key for Hospital A's token and name "hospital A" by hospitalB
             try {
-                await zkpContractInstance.setPublicKey(hospitalBTokenId, name, "0x456", {
+                await zkpContractInstance.setPublicKey(hospitalBTokenId, name, helper.getRandomGrumpkinPublicKey(), {
                     from: hospitalB,
                 });
             } catch (error) {
@@ -198,14 +209,14 @@ contract('ZkpContract', function(accounts) {
 
         // Set hospitalA's public key
         const name = "Hospital A";
-        const publicKey = "0xabc123";
+        const publicKey = helper.getRandomGrumpkinPublicKey();
         await zkpContractInstance.setPublicKey(tokenId, name, publicKey, { from: hospitalA });
 
         // Transfer the token to the new address
         await zkpTokenInstance.transferFrom(hospitalA, hospitalANewAddress, tokenId, { from: hospitalA });
 
         // Set hospitalA's new public key with the new address
-        const newPublicKey = "0xdef456";
+        const newPublicKey = helper.getRandomGrumpkinPublicKey();
         await zkpContractInstance.setPublicKey(tokenId, name, newPublicKey, { from: hospitalANewAddress });
 
         // Verify that hospitalA's new public key was set correctly
@@ -220,10 +231,8 @@ contract('ZkpContract', function(accounts) {
             const privateKey = randomBytes(32);
             const hash = createHash('sha256').update(message).digest('hex');
 
-            const abi = generateAbi(schnorr, privateKey, hash);
-
-            console.log("Valid ABI:");
-            console.log(abi);
+            const abi = helper.generateAbi(privateKey, hash);
+            validAbi = abi;
 
             const proof = await create_proof(prover, acir, abi);
             const verified = await verify_proof(verifier, proof);
@@ -238,13 +247,10 @@ contract('ZkpContract', function(accounts) {
             const privateKey = randomBytes(32);
             const hash = createHash('sha256').update(message).digest('hex');
 
-            const abi = generateAbi(schnorr, privateKey, hash);
+            const abi = helper.generateAbi(privateKey, hash);
 
             // falsify the signature to make it invalid and fail the proof
             abi.signature[0] = (abi.signature[0] + 1) % 256;
-
-            console.log("Invalid ABI:");
-            console.log(abi);
 
             const proof = await create_proof(prover, acir, abi);
             const verified = await verify_proof(verifier, proof);

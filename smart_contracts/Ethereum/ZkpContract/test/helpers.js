@@ -1,20 +1,36 @@
 const { GrumpkinAddress } = require('@noir-lang/barretenberg/dest/address');
+const { Schnorr } = require('@noir-lang/barretenberg/dest/crypto/schnorr');
+const { randomBytes } = require('crypto');
 
-function generateAbi(schnorr, privateKey, hashHex) {
-    const pubKey = schnorr.computePublicKey(privateKey);
-    const publicKey = new GrumpkinAddress(pubKey);
-    const hash = hexToBytes(hashHex);
-    const signature = Array.from(
-        schnorr.constructSignature(hash, privateKey).toBuffer()
-    );
+class BarretenbergHelper {
+    constructor(barretenberg) {
+        this.schnorr = new Schnorr(barretenberg);
+    }
 
-    return {
-        pub_key_x: '0x' + publicKey.x().toString('hex'),
-        pub_key_y: '0x' + publicKey.y().toString('hex'),
-        signature,
-        hash
+    generateAbi(privateKey, hashHex) {
+        const pubKey = this.schnorr.computePublicKey(privateKey);
+        const publicKey = new GrumpkinAddress(pubKey);
+        const hash = hexToBytes(hashHex);
+        const signature = Array.from(
+            this.schnorr.constructSignature(hash, privateKey).toBuffer()
+        );
+
+        return {
+            pub_key_x: '0x' + publicKey.x().toString('hex'),
+            pub_key_y: '0x' + publicKey.y().toString('hex'),
+            signature,
+            hash
+        }
+    }
+
+    getRandomGrumpkinPublicKey() {
+        const pubKey = this.schnorr.computePublicKey(randomBytes(32));
+        const publicKey = new GrumpkinAddress(pubKey);
+        return publicKey.toShortString();
     }
 }
+
+
 
 function hexToBytes(hex) {
     let bytes = [];
@@ -23,4 +39,4 @@ function hexToBytes(hex) {
     return bytes;
 }
 
-module.exports = { generateAbi }
+module.exports = { BarretenbergHelper }
