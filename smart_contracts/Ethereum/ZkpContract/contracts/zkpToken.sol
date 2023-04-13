@@ -29,14 +29,14 @@ contract ZkpToken is ERC721 {
     }
 
     function isApprovedOrOwner(
-        address spender,
+        address user,
         uint256 tokenId
     ) public view returns (bool) {
         require(_exists(tokenId), "nonexistent ZKP token");
         address owner = ownerOf(tokenId);
-        return (spender == owner ||
-            getApproved(tokenId) == spender ||
-            isApprovedForAll(owner, spender));
+        return (user == owner ||
+            getApproved(tokenId) == user ||
+            isApprovedForAll(owner, user));
     }
 
     function tokenIdExists(uint256 tokenId) public view returns (bool) {

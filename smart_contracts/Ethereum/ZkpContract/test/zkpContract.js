@@ -47,6 +47,7 @@ contract('ZkpContract', function(accounts) {
     // accounts
     const hospitalA = accounts[0];
     const hospitalB = accounts[1];
+    const hospitalC = accounts[2];
 
     // ZKP verifier part
     let compiledProgram, acir, prover, verifier, validAbi;
@@ -256,9 +257,12 @@ contract('ZkpContract', function(accounts) {
             hash = hashHealthData(healthData);
         })
 
-        it("should verify a proof — valid proof", async() => {
+        it("should verify a proof — simplified flow — valid proof ", async() => {
             const privateKey = randomBytes(32);
-            validAbi = helper.generateAbi(privateKey, hash);
+            const signature = helper.signHash(privateKey, hash);
+            const publicKey = helper.getGrumpkinPublicKey(privateKey);
+
+            validAbi = helper.generateAbi(publicKey, hash, signature);
 
             const proof = await create_proof(prover, acir, validAbi);
             const verified = await verify_proof(verifier, proof);
@@ -269,9 +273,12 @@ contract('ZkpContract', function(accounts) {
             expect(smartContractResult).eq(true);
         });
 
-        it("should verify a proof — invalid proof", async() => {
+        it("should verify a proof — simplified flow — invalid proof", async() => {
             const privateKey = randomBytes(32);
-            const abi = helper.generateAbi(privateKey, hash);
+            const signature = helper.signHash(privateKey, hash);
+            const publicKey = helper.getGrumpkinPublicKey(privateKey);
+
+            const abi = helper.generateAbi(publicKey, hash, signature);
 
             // falsify the signature to make it invalid and fail the proof
             abi.signature[0] = (abi.signature[0] + 1) % 256;
@@ -283,6 +290,96 @@ contract('ZkpContract', function(accounts) {
 
             await expect(zkpContractInstance.verify(proof))
                 .to.be.rejectedWith("VM Exception while processing transaction: revert Proof failed");
+        });
+
+        it("should verify a proof — full flow — valid proof", async() => {
+            // [HOSPITAL] ////////////////////////////////////////////////
+
+            // Step 1. The hospital uploads its public key
+            const name = "Hospital C";
+
+            // a) Mint a new ZKP token for the hospital
+            await zkpTokenInstance.mint(hospitalC);
+            const tokenId = await zkpTokenInstance.userToToken(hospitalC);
+
+            // b) Upload hospital's public key
+            const privateKey = randomBytes(32);
+            const publicKey = helper.getGrumpkinPublicKey(privateKey);
+            await zkpContractInstance.setPublicKey(tokenId, name, publicKey, { from: hospitalC })
+
+
+            // Step 2. Make the hospital sign the data
+            const signature = helper.signHash(privateKey, hash);
+
+
+            // [RESEARCHER] //////////////////////////////////////////////
+
+            // Step 3. Researcher gets the hospital's public key
+
+            // a) Data shared with the researcher
+            const hospitalTokenIdP = tokenId; // communicated by the hospital
+            const hospitalNameP = name; // communicated by the hospital
+            const publicKeyVersionP = 0; // communicated by the hospital
+
+            // b) Data fetched by the researcher on-chain
+            const hospitalPublicKeyP = await zkpContractInstance.getPublicKey(
+                hospitalTokenIdP, hospitalNameP, publicKeyVersionP
+            );
+
+            // Step 4. Researcher generates the proof off-chain
+
+            // a) Data shared with the researcher
+            const hospitalHashP = hash; // communicated by the hospital
+            const hospitalSignatureP = signature; // communicated by the hospital
+
+            // b) Generation of the proof
+            const abi = helper.generateAbi(hospitalPublicKeyP, hospitalHashP, hospitalSignatureP);
+            const proof = await create_proof(prover, acir, abi);
+
+            // c) (sanity check) The researcher verifies off-chain that the proof is valid
+            const verified = await verify_proof(verifier, proof);
+            expect(verified).eq(true);
+
+
+            // [VERIFIER] ////////////////////////////////////////////////
+
+            // Step 5. Verifier gets the proof and verify the public key
+
+            // a) Data shared with the verifier
+            const hospitalTokenIdV = tokenId; // communicated by the hospital
+            const hospitalNameV = name; // communicated by the hospital
+            const publicKeyVersionV = 0; // communicated by the hospital
+            const proofV = proof; // communicated by the researcher
+
+            // b) Data fetched by the verifier on the blockchain
+            const hospitalPublicKeyV = await zkpContractInstance.getPublicKey(
+                hospitalTokenIdV, hospitalNameV, publicKeyVersionV
+            );
+
+            // c) Data reconstructed by the verifier using `@noir-lang`
+            //    (get `x` and `y` from a public key)
+            const publicKeyXY = helper.extractXYFromGrumpkinPublicKey(hospitalPublicKeyV);
+            const hospitalPublicKeyX = publicKeyXY.x;
+            const hospitalPublicKeyY = publicKeyXY.y;
+
+            // c) (Verification A — off-chain) 
+            // The verifier ensures that the public key is the expected one
+
+            // The public key, a public input, is embedded in the proof
+            // therefore, the verifier can extract as arrays of bytes:
+            // - `x`, at positions [0, 32)
+            // - `y`, at positions [32, 64)
+            const publicKeyFromProofX = proofV.slice(0, 32);
+            const publicKeyFromProofY = proofV.slice(32, 64);
+
+            // The public key's `x`s and `y`s should perfectly match
+            expect(Buffer.compare(hospitalPublicKeyX, publicKeyFromProofX)).eq(0);
+            expect(Buffer.compare(hospitalPublicKeyY, publicKeyFromProofY)).eq(0);
+
+            // d) (Verification B — on-chain) 
+            // The verifier formally verifies the proof
+            const smartContractResult = await zkpContractInstance.verify(proof);
+            expect(smartContractResult).eq(true);
         });
     });
 });
