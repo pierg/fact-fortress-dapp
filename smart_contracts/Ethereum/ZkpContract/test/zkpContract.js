@@ -361,6 +361,7 @@ contract('ZkpContract', function(accounts) {
 
                 // d) (Verification A) 
                 // The verifier ensures that the public key is the expected one
+                // (Note: this step can also be done off-chain if needed)
                 const publicKeyMatch = await zkpContractInstance.verifyPublicKey(
                     hostpitalPublicKeyXY.x,
                     hostpitalPublicKeyXY.y,
