@@ -1,10 +1,10 @@
-const fs = require('fs');
-
 const AccountsIds = {
     Owner: 0,
-    Hospital: 1,
-    Researcher: 2,
-    Verifier: 3
+    HospitalA: 1,
+    HospitalB: 2,
+    HospitalC: 3,
+    Researcher: 4,
+    Verifier: 5
 }
 
 // Note: the ad hoc mnemonic has to be enabled when launching the Ganache server
@@ -24,6 +24,14 @@ const Accounts = {
     3: {
         "address": "0xa8B7285dAF6873c2b361722cC1253622ca4c036a",
         "private_key": "0x772b419408f183239782970166382c79e2a4289a11eb189a266e86e5ad87ea0a"
+    },
+    4: {
+        "address": "0xac46159C08f103f7fF87ED138CFf7e389aac0550",
+        "private_key": "0x21c136d432cf0611d6b9d5dafdcb9a86231403e5efab85fba1bac87d86849269"
+    },
+    5: {
+        "address": "0x5455280E6c20A01de3e846d683562AdeA6891026",
+        "private_key": "0x8c0d02417be0e9d5757e1aca722ede60b245ada295593cb0161d4138c291dea9"
     },
 }
 

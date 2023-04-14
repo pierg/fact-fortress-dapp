@@ -31,7 +31,7 @@ contract ZkpContract {
     ) external view returns (string memory) {
         require(
             version < publicKeys[tokenId][name].length,
-            "Public key does not exist (invalid version)"
+            "Public key does not exist"
         );
         return publicKeys[tokenId][name][version];
     }
