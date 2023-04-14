@@ -1,5 +1,5 @@
 const { getAddress } = require('./accounts.js');
-const { mint } = require('./actions/mint.js');
+const { mint, getTokenId } = require('./actions/tokens.js');
 const { contracts } = require('./contracts/contracts.js');
 
 const express = require('express');
@@ -31,7 +31,6 @@ app.get('/mint', async(req, res) => {
             error: "no recipient has been provided",
             expected_url: "/mint?recipient={address}"
         })
-        return;
     }
 
     const from = getFrom(req);
@@ -43,6 +42,27 @@ app.get('/mint', async(req, res) => {
     }
 
     const result = await mint(from, recipient);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+});
+
+// Get TokenID endpoint
+app.get('/tokenid', async(req, res) => {
+    const address = req.query.address;
+    if (!address) {
+        return res.status(500).json({
+            error: "no address has been provided",
+            expected_url: "/tokenid?address={address}"
+        })
+    }
+
+    const result = await getTokenId(address);
 
     if (result.error) {
         res.status(500).json({

@@ -19,4 +19,23 @@ async function mint(from, recipient) {
     }
 }
 
-module.exports = { mint };
+async function getTokenId(address) {
+    const sc = contracts.getContract("ZkpToken");
+
+    try {
+        const tokenId = await sc.methods.userToToken(address).call();
+        console.log(`Address ${address} has ${tokenId}`);
+        return {
+            address,
+            token_id: tokenId,
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            error: "Address does not have a token",
+        };
+    }
+
+}
+
+module.exports = { mint, getTokenId };

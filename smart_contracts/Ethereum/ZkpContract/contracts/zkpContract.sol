@@ -50,7 +50,7 @@ contract ZkpContract {
         uint256 tokenId,
         string memory name,
         string memory publicKey
-    ) public returns (uint) {
+    ) external returns (uint) {
         require(bytes(publicKey).length != 0, "Public key cannot be empty");
         require(zkpToken.tokenIdExists(tokenId), "Token ID does not exist");
         require(
@@ -92,7 +92,7 @@ contract ZkpContract {
         bytes calldata pubKey_X,
         bytes calldata pubKey_Y,
         bytes calldata proof
-    ) public view returns (bool) {
+    ) external view returns (bool) {
         // extract public key from proof
         bytes calldata pubKeyProof_X = proof[0:32];
         bytes calldata pubKeyProof_Y = proof[32:64];

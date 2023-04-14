@@ -16,9 +16,9 @@ contract ZkpToken is ERC721 {
         _owner = msg.sender;
     }
 
-    function mint(address user) public returns (uint256) {
+    function mint(address user) external returns (uint256) {
         // only the owner of the contract should be able to mint
-        require(msg.sender == _owner, "caller is not the owner");
+        require(msg.sender == _owner, "Caller is not the owner");
 
         _tokenIds.increment();
 
@@ -30,14 +30,15 @@ contract ZkpToken is ERC721 {
         return newItemId;
     }
 
-    function userToToken(address user) public view returns (uint256) {
+    function userToToken(address user) external view returns (uint256) {
+        require(_userToToken[user] > 0, "Address does not have a token");
         return _userToToken[user];
     }
 
     function isApprovedOrOwner(
         address user,
         uint256 tokenId
-    ) public view returns (bool) {
+    ) external view returns (bool) {
         require(_exists(tokenId), "Nonexistent ZKP token");
         address owner = ownerOf(tokenId);
         return (user == owner ||
@@ -45,11 +46,11 @@ contract ZkpToken is ERC721 {
             isApprovedForAll(owner, user));
     }
 
-    function tokenIdExists(uint256 tokenId) public view returns (bool) {
+    function tokenIdExists(uint256 tokenId) external view returns (bool) {
         return _exists(tokenId);
     }
 
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() external view returns (uint256) {
         return _tokenIds.current();
     }
 }
