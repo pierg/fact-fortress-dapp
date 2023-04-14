@@ -1,7 +1,7 @@
+const { AccountsIds, getAddress, getPrivateKey } = require('./../accounts.js');
+const web3 = require('./../web3.js');
 
-const { AccountsIds, getAddress, getPrivateKey } = require('./accounts.js');
-
-async function deploy(web3, contract, arguments) {
+async function deploy(contract, arguments) {
     const owner = AccountsIds.Owner;
     const account = await getAddress(owner);
 
@@ -19,8 +19,7 @@ async function deploy(web3, contract, arguments) {
 
     const deployTx = sc.deploy(deployOpts);
 
-    const createTransaction = await web3.eth.accounts.signTransaction(
-        {
+    const createTransaction = await web3.eth.accounts.signTransaction({
             data: deployTx.encodeABI(),
             gas: await deployTx.estimateGas() * 2,
         },
@@ -28,8 +27,7 @@ async function deploy(web3, contract, arguments) {
     );
 
     const createReceipt = await web3.eth.sendSignedTransaction(createTransaction.rawTransaction);
-    console.log(`Contract deployed at address: ${createReceipt.contractAddress}`);
     return createReceipt.contractAddress;
 }
 
-module.exports = deploy;
+module.exports = { deploy };
