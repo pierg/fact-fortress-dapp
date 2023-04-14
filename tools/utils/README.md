@@ -5,7 +5,7 @@
 
 ## System requirements
 
-[poetry](https://python-poetry.org/docs/#installing-with-the-official-installer)
+[pdm](https://pdm.fming.dev/latest/)
 
 [python 3.11](https://www.python.org)
 
