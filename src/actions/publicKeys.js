@@ -4,17 +4,20 @@ async function setPublicKey(from, tokenId, name, publicKey) {
     const sc = contracts.getContract("ZkpContract");
 
     try {
-        await sc.methods.setPublicKey(
+        const receipt = await sc.methods.setPublicKey(
             tokenId,
             name,
             publicKey
         ).send({ from, gas: '1000000' });
 
-        // console.log(`Public key set: v${publicKeyVersion}`);
+        const publicKeyVersion = receipt.events.PublicKeyVersion.returnValues[0];
+
+        console.log(`Public key set: v${publicKeyVersion}`);
+
         return {
             name,
-            publicKey,
-            // TODO: return version
+            "public_key": publicKey,
+            "public_key_version": publicKeyVersion
         };
     } catch (e) {
         console.error(e);

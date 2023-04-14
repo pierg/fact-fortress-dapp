@@ -241,3 +241,6 @@ fabric.properties
 # Noir generated files
 **/*.proof
 **/plonk_vk.sol
+artifacts/
+cache/
+.pdm-python

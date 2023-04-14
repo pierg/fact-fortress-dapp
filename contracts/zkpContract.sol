@@ -7,6 +7,8 @@ import "./zkpToken.sol";
 import "./zkpVerifier.sol";
 
 contract ZkpContract {
+    event PublicKeyVersion(uint);
+
     // tokenId => public key name => public key
     mapping(uint256 => mapping(string => string[])) public publicKeys;
 
@@ -79,7 +81,9 @@ contract ZkpContract {
             publicKeys[tokenId][name].push(publicKey);
         }
 
-        return publicKeys[tokenId][name].length - 1;
+        uint version = publicKeys[tokenId][name].length - 1;
+        emit PublicKeyVersion(version);
+        return version;
     }
 
     function isUserAuthorized(uint256 tokenId) external view returns (bool) {
