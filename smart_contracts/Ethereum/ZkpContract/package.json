@@ -2,11 +2,12 @@
     "name": "zkpcontract",
     "version": "1.0.0",
     "description": "",
-    "main": "truffle-config.js",
+    "main": "node src/index.js",
     "directories": {
         "test": "test"
     },
     "scripts": {
+        "serve": "node src/index.js",
         "generate-verifier": "node tools/generateVerifierSol.js",
         "test": "pnpm generate-verifier && truffle test"
     },
@@ -16,14 +17,16 @@
         "@aztec/barretenberg": "^2.1.94",
         "@noir-lang/barretenberg": "^2.19.0",
         "@noir-lang/noir_wasm": "^0.10.0",
-        "@openzeppelin/contracts": "^4.8.2",
+        "@openzeppelin/contracts": "^4.8.3",
         "bigint-buffer": "^1.1.5",
         "chai": "^4.3.7",
         "chai-as-promised": "^7.1.1",
+        "express": "^4.18.2",
         "ganache": "^7.8.0",
         "schnorr": "link:@noir-lang/barretenberg/dest/crypto/schnorr",
         "solc": "^0.8.19",
-        "truffle": "^5.8.2"
+        "truffle": "^5.8.2",
+        "web3": "^1.9.0"
     },
     "engines": {
         "pnpm": ">=8.1.0",
