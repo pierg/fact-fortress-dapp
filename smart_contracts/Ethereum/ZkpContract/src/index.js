@@ -1,4 +1,5 @@
 const { getAddress } = require('./accounts.js');
+const { setPublicKey, getPublicKey } = require('./actions/publicKeys.js');
 const { mint, getTokenId } = require('./actions/tokens.js');
 const { contracts } = require('./contracts/contracts.js');
 
@@ -63,6 +64,93 @@ app.get('/tokenid', async(req, res) => {
     }
 
     const result = await getTokenId(address);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+});
+
+// Get public key endpoint
+app.get('/publickey', async(req, res) => {
+    expected_url = "/publickey?name={name}&version={version}";
+
+    const tokenId = req.query.token_id;
+    if (!tokenId) {
+        return res.status(500).json({
+            error: "no token ID has been provided",
+            expected_url
+        })
+    }
+
+    const name = req.query.name;
+    if (!name) {
+        return res.status(500).json({
+            error: "no name for the public key has been provided",
+            expected_url
+        })
+    }
+
+    const version = req.query.version;
+    if (!version) {
+        return res.status(500).json({
+            error: "no version has been provided",
+            expected_url
+        })
+    }
+
+    const result = await getPublicKey(tokenId, name, version);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+});
+
+
+// Set public key endpoint
+app.put('/publickey', async(req, res) => {
+    expected_url = "/publickey?token_id={token_id}&name={name}&public_key={public_key}";
+
+    const from = getFrom(req);
+    if (typeof from === undefined || !from) {
+        return res.status(500).json({
+            error: "`from` header is not properly set",
+            expected_header: '{ "from": "owner|hospital|researcher|any" }'
+        })
+    }
+
+    const tokenId = req.query.token_id;
+    if (!tokenId) {
+        return res.status(500).json({
+            error: "no token ID has been provided",
+            expected_url
+        })
+    }
+
+    const name = req.query.name;
+    if (!name) {
+        return res.status(500).json({
+            error: "no name for the public key has been provided",
+            expected_url
+        })
+    }
+
+    const publicKey = req.query.public_key;
+    if (!publicKey) {
+        return res.status(500).json({
+            error: "no public key has been provided",
+            expected_url
+        })
+    }
+
+    const result = await setPublicKey(from, tokenId, name, publicKey);
 
     if (result.error) {
         res.status(500).json({

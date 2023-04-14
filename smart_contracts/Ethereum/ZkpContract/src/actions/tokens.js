@@ -24,7 +24,7 @@ async function getTokenId(address) {
 
     try {
         const tokenId = await sc.methods.userToToken(address).call();
-        console.log(`Address ${address} has ${tokenId}`);
+        console.log(`Address ${address} has token #${tokenId}`);
         return {
             address,
             token_id: tokenId,
