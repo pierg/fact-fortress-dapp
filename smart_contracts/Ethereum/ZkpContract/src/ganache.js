@@ -11,7 +11,7 @@ const server = ganache.server({
 
 // Start the server
 server.listen(8545, () => {
-    console.log('Ganache server started on port 8545');
+    console.log('Ganache launched');
 });
 
 // Export the server object as a module

@@ -1,14 +1,22 @@
-const { AccountsIds, getAddress } = require('./accounts.js');
-const { Contracts } = require('./contracts/contracts.js');
+const { getAddress } = require('./accounts.js');
+const { mint } = require('./actions/mint.js');
+const { contracts } = require('./contracts/contracts.js');
+
 const express = require('express');
 const app = express();
-
-let contracts = new Contracts;
 
 // server port
 const port = 3000;
 
 app.set('json spaces', 4);
+
+function getFrom(req) {
+    if (!req.headers['from']) {
+        return;
+    }
+
+    return getAddress(req.headers['from']);
+}
 
 // Health endpoint
 app.get('/health', (req, res) => {
@@ -19,27 +27,29 @@ app.get('/health', (req, res) => {
 app.get('/mint', async(req, res) => {
     const recipient = req.query.recipient;
     if (!recipient) {
-        res.status(500).json({
-            error: "no recipient has been provided ()",
+        return res.status(500).json({
+            error: "no recipient has been provided",
             expected_url: "/mint?recipient={address}"
         })
         return;
     }
 
-    const sender = getAddress(AccountsIds.Owner);
-    const sc = contracts.getContract("ZkpToken");
+    const from = getFrom(req);
+    if (typeof from === undefined || !from) {
+        return res.status(500).json({
+            error: "`from` header is not properly set",
+            expected_header: '{ "from": "owner|hospital|researcher|any" }'
+        })
+    }
 
-    try {
-        const receipt = await sc.methods.mint(recipient).send({ from: sender, gas: '1000000' });
-        console.log(`token minted: ${receipt.transactionHash}`);
-        res.status(200).json({
-            receipt
-        })
-    } catch (e) {
-        console.error(e.reason);
+    const result = await mint(from, recipient);
+
+    if (result.error) {
         res.status(500).json({
-            error: e
-        })
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
     }
 });
 

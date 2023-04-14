@@ -8,12 +8,18 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract ZkpToken is ERC721 {
     using Counters for Counters.Counter;
+    address private _owner;
     Counters.Counter private _tokenIds;
     mapping(address => uint256) private _userToToken;
 
-    constructor() ERC721("ZKP Token", "ZKP") {}
+    constructor() ERC721("ZKP Token", "ZKP") {
+        _owner = msg.sender;
+    }
 
     function mint(address user) public returns (uint256) {
+        // only the owner of the contract should be able to mint
+        require(msg.sender == _owner, "caller is not the owner");
+
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
@@ -32,7 +38,7 @@ contract ZkpToken is ERC721 {
         address user,
         uint256 tokenId
     ) public view returns (bool) {
-        require(_exists(tokenId), "nonexistent ZKP token");
+        require(_exists(tokenId), "Nonexistent ZKP token");
         address owner = ownerOf(tokenId);
         return (user == owner ||
             getApproved(tokenId) == user ||

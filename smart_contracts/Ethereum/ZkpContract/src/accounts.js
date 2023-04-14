@@ -27,9 +27,34 @@ const Accounts = {
     },
 }
 
+function getValueByKey(key) {
+    key = key.toLowerCase().trim();
+
+    const keys = Object.keys(AccountsIds);
+
+    for (const k of keys) {
+        if (k.toLowerCase() === key) {
+            return AccountsIds[k];
+        }
+    }
+
+    return -1;
+}
 
 function getAddress(accountId) {
-    return Accounts[accountId]["address"];
+    let id;
+
+    if (typeof accountId === 'string' || accountId instanceof String) {
+        id = getValueByKey(accountId);
+
+        if (typeof id == undefined || id == -1) {
+            return;
+        }
+    } else {
+        id = accountId;
+    }
+
+    return Accounts[id]["address"];
 }
 
 function getPrivateKey(accountId) {

@@ -48,4 +48,6 @@ class Contracts {
     }
 }
 
-module.exports = { Contracts }
+let contracts = new Contracts;
+
+module.exports = { contracts }
