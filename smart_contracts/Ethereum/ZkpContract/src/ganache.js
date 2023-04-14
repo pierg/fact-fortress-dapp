@@ -1,12 +1,13 @@
 const ganache = require('ganache');
 
 // Create a new Ganache server
-const server = ganache.server(
-    {
-        quiet: true,
-        // mnemonic is required to make it deterministic
-        mnemonic: "hard degree special clarify patch shield loyal purse away neglect lens mouse",
-    });
+const server = ganache.server({
+    verbose: false,
+    debug: false,
+    quiet: true,
+    // mnemonic is required to make it deterministic
+    mnemonic: "hard degree special clarify patch shield loyal purse away neglect lens mouse",
+});
 
 // Start the server
 server.listen(8545, () => {

@@ -1,5 +1,6 @@
 const { compile } = require('./compile.js');
 const { deploy } = require('./deploy.js');
+const web3 = require('./../web3.js');
 
 class Contracts {
     constructor() {
@@ -15,6 +16,7 @@ class Contracts {
         this.contracts[name] = {
             "address": address,
             "abi": sc.abi,
+            "contract": new web3.eth.Contract(sc.abi, address)
         }
     }
 
@@ -37,6 +39,12 @@ class Contracts {
         if (!this.ensureContract(name)) return;
 
         return this.contracts[name]["address"];
+    }
+
+    getContract(name) {
+        if (!this.ensureContract(name)) return;
+
+        return this.contracts[name]["contract"];
     }
 }
 
