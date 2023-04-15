@@ -38,6 +38,8 @@ curl --location 'http://localhost:3000/key_pair'
 }
 ```
 
+- - -
+
 #### 2 | Authorize the hospital to upload its public key *(On-Chain)*
 
 ```
@@ -66,6 +68,8 @@ curl --location 'http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f
     "token_id": "1"
 }
 ```
+
+- - -
 
 #### 3 | Upload the public key *(On-Chain)*
 
@@ -101,6 +105,8 @@ curl --location --request PUT 'http://localhost:3000/publickey?token_id=1&name=h
 }
 ```
 
+- - -
+
 #### 4 | Hash and Sign Health Data
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Hospitals are expected to hash and sign the health data themselves. |
@@ -119,7 +125,6 @@ POST http://localhost:3000/sign
 
 
 https://user-images.githubusercontent.com/66550865/232200525-d5610ff1-f8b9-4973-b1d5-5a7c43e00dbe.mov
-
 
 *Example*
 
@@ -164,6 +169,8 @@ curl --location 'http://localhost:3000/sign' \
     ]
 }
 ```
+
+- - -
 
 #### 5 | Generate the Proof
 
@@ -213,6 +220,8 @@ curl --location 'http://localhost:3000/generate_proof?public_key=0x0dd7811f6af9d
 ]
 ```
 
+- - -
+
 #### 6 | [ZKP] Verify the Public Inputs *(On-Chain)*
 
 ```
@@ -227,7 +236,6 @@ POST http://localhost:3000/verify_public_inputs
 
 
 https://user-images.githubusercontent.com/66550865/232200505-c275c6c5-93e0-416f-9864-a13f3c897858.mov
-
 
 *Example*
 
@@ -248,6 +256,8 @@ curl --location 'http://localhost:3000/verify_public_inputs?public_key=0x0dd7811
 }
 ```
 
+- - -
+
 #### 7 | [ZKP] Verify the Proof of Provenance *(On-Chain)*
 
 ```
@@ -259,9 +269,7 @@ POST http://localhost:3000/verify_public_inputs
 * **Output**
     * `valid_proof_of_provenance`: `true` (valid proof) or `false` (invalid proof)
 
-
 https://user-images.githubusercontent.com/66550865/232200501-9d28d465-f139-4631-8f56-581f9bfb42cb.mov
-
 
 *Example*
 
