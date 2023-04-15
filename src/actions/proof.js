@@ -1,56 +1,58 @@
-const { setup_generic_prover_and_verifier, create_proof, verify_proof } = require('@noir-lang/barretenberg/dest/client_proofs');
-const { compile } = require('@noir-lang/noir_wasm');
-const { resolve } = require('path');
-const { BarretenbergWasm } = require('@noir-lang/barretenberg/dest/wasm');
-const { BarretenbergHelper } = require('./../../test/helpers.js');
-const fs = require('fs');
+const { GrumpkinAddress } = require('@noir-lang/barretenberg/dest/address');
+const { contracts } = require('../contracts/contracts.js');
 
-let barretenbergHelper, proofHelper;
+async function verifyPublicInputs(publicKey, proof) {
+    const sc = contracts.getContract("ZkpContract");
 
-const circuitFilepath = resolve(__dirname, '../../circuits/src/main.nr');
+    const GrumpkinPublicKey = new GrumpkinAddress(Buffer.from(publicKey.replace(/^0x/i, ''), 'hex'));
 
-class ProofHelper {
-    constructor() {
-        if (!fs.existsSync(circuitFilepath)) {
-            console.error(`circuit ${circuitFilepath} does not exist`)
-            process.exit(1);
+    try {
+        const publicKeyMatch = await sc.methods.verifyPublicKey(
+            GrumpkinPublicKey.x(),
+            GrumpkinPublicKey.y(),
+            proof,
+        ).call();
+
+        if (publicKeyMatch) {
+            console.log(`Proof ${proof} uses ${publicKey} as public input`)
+        } else {
+            console.log(`Proof ${proof} does NOT use ${publicKey} as public input`)
         }
 
-        try {
-            this.compiledProgram = compile(circuitFilepath);
-        } catch (e) {
-            console.log(e);
-            process.exit(1);
-        }
-    }
-
-    async setup() {
-        this.acir = this.compiledProgram.circuit;
-        let [prover, verifier] = await setup_generic_prover_and_verifier(this.acir);
-
-        this.prover = prover;
-        this.verifier = verifier;
-    }
-
-    async create_proof(abi) {
-        return create_proof(this.prover, this.acir, abi)
+        return {
+            public_input_match: publicKeyMatch
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            error: e,
+        };
     }
 }
 
-async function computeProof(publicKey, hash, signature) {
-    if (typeof barretenbergHelper === undefined || !barretenbergHelper) {
-        const barretenbergWasm = await BarretenbergWasm.new();
-        barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
-    }
+async function verifyProof(proof) {
+    const sc = contracts.getContract("ZkpContract");
 
-    if (typeof proofHelper === undefined || !proofHelper) {
-        proofHelper = new ProofHelper();
-        await proofHelper.setup();
-    }
+    try {
+        const proofStatus = await sc.methods.verifyProof(
+            proof,
+        ).call();
 
-    const abi = barretenbergHelper.generateAbi(publicKey, hash, signature);
-    proof = await proofHelper.create_proof(abi);
-    return [...proof];
+        if (proofStatus) {
+            console.log(`Proof ${proof} is valid`)
+        } else {
+            console.log(`Proof ${proof} is invalid`)
+        }
+
+        return {
+            valid_proof_of_provenance: proofStatus
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            error: e,
+        };
+    }
 }
 
-module.exports = { computeProof }
+module.exports = { verifyPublicInputs, verifyProof }

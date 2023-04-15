@@ -35,7 +35,6 @@ async function getTokenId(address) {
             error: "Address does not have a token",
         };
     }
-
 }
 
 module.exports = { mint, getTokenId };

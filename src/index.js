@@ -1,8 +1,13 @@
 const { getAddress } = require('./accounts.js');
-const { generateKeyPair, setPublicKey, getPublicKey, signMessage } = require('./actions/keypair.js');
+const { setPublicKey, getPublicKey } = require('./actions/keypair.js');
 const { mint, getTokenId } = require('./actions/tokens.js');
 const { contracts } = require('./contracts/contracts.js');
-const { computeProof } = require('./actions/proof.js');
+const { verifyPublicInputs, verifyProof } = require('./actions/proof.js');
+
+// frontend helpers (would not be used in Production)
+const { generateKeyPair, signMessage } = require('./frontend_helpers/keypair.js');
+const { computeProof } = require('./frontend_helpers/proof.js');
+
 
 const express = require('express');
 const app = express();
@@ -124,7 +129,7 @@ app.put('/publickey', async(req, res) => {
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospital|researcher|any" }'
+            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }'
         })
     }
 
@@ -240,6 +245,54 @@ app.post('/sign', async(req, res) => {
     }
 
     const result = await signMessage(privateKey, message);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+});
+
+// Verify public inputs endpoint
+app.post('/verify_public_inputs', async(req, res) => {
+    const publicKey = req.query.public_key;
+    if (!publicKey) {
+        return res.status(500).json({
+            error: "no public key has been provided",
+            expected_url: "/verify_public_inputs?public_key={public_key}"
+        })
+    }
+
+    const proof = req.body;
+    if (!proof) {
+        return res.status(500).json({
+            error: "no proof has been provided in the body of the request",
+        })
+    }
+
+    const result = await verifyPublicInputs(publicKey, proof);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+});
+
+// Verify proof endpoint
+app.post('/verify_proof', async(req, res) => {
+    const proof = req.body;
+    if (!proof) {
+        return res.status(500).json({
+            error: "no proof has been provided in the body of the request",
+        })
+    }
+
+    const result = await verifyProof(proof);
 
     if (result.error) {
         res.status(500).json({
