@@ -89,7 +89,8 @@ PUT http://localhost:3000/publickey
     * `public_key_version` Version of the public key
 
 
-(video)
+https://user-images.githubusercontent.com/66550865/232227093-1b747ec1-f287-450d-b50a-a4c6d20ee952.mov
+
 
 *Example*
 
@@ -120,7 +121,8 @@ GET http://localhost:3000/publickey
     * `public_key` Grumpkin-based public key
 
 
-(video)
+https://user-images.githubusercontent.com/66550865/232227105-e7224e43-92b5-4dbc-ad4a-a8edcb2745cf.mov
+
 
 *Example*
 
