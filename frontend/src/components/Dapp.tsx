@@ -4,10 +4,13 @@ import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
 import { useSendTransaction, usePrepareSendTransaction } from 'wagmi';
 
 import { parseEther } from 'ethers/lib/utils.js';
+import { Card, Col, Row, Space, Divider, Button } from 'antd';
+import axios from 'axios';
 
 export default function Dapp() {
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [transferAmount, setTransferAmout] = useState<string>("0");
+  const [publicKey, setPublicKey] = useState<string>("");
   const addRecentTransaction = useAddRecentTransaction();
 
 
@@ -32,66 +35,76 @@ export default function Dapp() {
     sendTransaction?.();
   }
 
-  useEffect(() => {
-    if (isSuccess) {
-      addRecentTransaction({
-        hash: data?.hash || "",
-        description: "Send Transaction",
+  const handleGetKeyPair = async () => {
+    const apiCall = () => {return axios.get('http://localhost:3000/key_pair');}
+
+    apiCall()
+      .then(response => {
+        console.log(response.data);
+        setPublicKey(response.data['public_key'])
+      })
+      .catch(error => {
+        console.log(error);
       });
-    }
-  }, [data, isSuccess])
+  }
+
+  useEffect(() => {
+  })
+
+  console.log(publicKey)
 
   return (
-    <div className='bg-slate-900 h-screen flex justify-center items-center'>
-      <div className='bg-slate-800 w-3/6 h-min py-12 px-24 rounded-2xl flex flex-col'>
-        <h2 className='text-white font-bold text-4xl text-center mb-8'>
-          Transfer Example
-        </h2>
-        <form> 
-          <label
-            htmlFor='receiver'
-            className="text-neutral-300 font-light text-md block mb-2 text-sm font-medium"
-          >
-            First name
-          </label>
-          <input
-            id='receiver'
-            type='text'
-            placeholder='Receiver address'
-            className='bg-slate-800 px-2 py-1 w-full text-lg outline-0 border-b mb-4 border-slate-600 text-neutral-200 appearance-none'
-            onChange={onRecipientAddressChange}
-            value={receiverAddress}
-          />
-          <label
-            htmlFor='transferAmount'
-            className="text-neutral-300 font-light text-md block mb-2 text-sm font-medium"
-          >
-            Transfer Amount
-          </label>
-          <input
-            id='transferAmount'
-            type="number"
-            step="0.1"
-            placeholder='0'
-            className='bg-slate-800 text-neutral-200 px-2 py-1 w-full text-lg outline-0 border-b mb-4 border-slate-600 appearance-none'
-            onChange={onTransferAmountChange}
-            value={transferAmount}
-          />
-        </form>
-        { error && (
-          <div className='text-red-600'>
-            An error occurred preparing the transaction: {error.message}
-          </div>
-        )}
-
-        <button
-          className='font-bold text-white bg-indigo-600 mt-4 self-center px-8 py-4 rounded-full disabled:opacity-75'
-          disabled={!sendTransaction || isLoading}
-          onClick={handleSendTransaction}
-        >
-          Confirm Transfer
-        </button>
-      </div>
+<div style={{display: 'flex', 'flex-direction': 'column', backgroundColor: 'rgb(15 23 42)', height: '100vh'}}>
+      {/* <Card bodyStyle={{background: '#C5C5C5'}} bordered={false}> */}
+      <Divider/>
+      <Row gutter={[4, 4]}>
+        <Col span={11} offset={1}>
+          <Card style={{margin: 5, height: '85vh', overflow: 'scroll'}} headStyle={{backgroundColor: 'rgb(100 116 139)', color: 'white', textAlign: 'center'}} title="Researchers" bordered={true}>
+            <Space 
+              direction="vertical"
+              style={{
+                display: 'flex',
+              }}
+            >
+            <Card type='inner' bodyStyle={{height: '30vh'}} title='Token Distribution'>
+              <Button
+                  className='font-bold text-white bg-indigo-600 mt-4 self-center rounded-full disabled:opacity-75'
+                  onClick={handleGetKeyPair}
+                >
+                Get Public Key
+              </Button>
+            </Card>
+            <Card type='inner' bodyStyle={{height: '10vh'}} title='Signed Data Secures Storage'>
+              stuff
+            </Card>
+            <Card type='inner' bodyStyle={{height: '10vh'}} title='Select Function'>
+              stuff
+            </Card>
+            <Card type='inner' bodyStyle={{height: '10vh'}} title='Proof'>
+              stuff
+            </Card>
+            </Space>
+          </Card>
+        </Col>
+        <Col span={11}>
+          <Card style={{margin: 5, height: '85vh', overflow: 'scroll'}}  headStyle={{backgroundColor: 'rgb(100 116 139)', color: 'white', textAlign: 'center'}} title="Verifiers" bordered={true}>
+          <Space 
+              direction="vertical"
+              style={{
+                display: 'flex',
+              }}
+            >
+            <Card type='inner' bodyStyle={{height: '30vh'}} title='Upload QR Code'>
+              stuff
+            </Card>
+            <Card type='inner' bodyStyle={{height: '30vh'}} title='Verify Proof'>
+              stuff
+            </Card>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+      {/* </Card> */}
     </div>
   )
 }
