@@ -13,7 +13,7 @@ pnpm run serve
 #### 1 | Generate the public/private keys pair
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Hospitals are expected to generate the keys themselves. |
-| --- |
+| ------------------------------------------------------------------------------------------------------------------------------------------ |
 
 ```
 GET http://localhost:3000/key_pair
@@ -81,7 +81,6 @@ PUT http://localhost:3000/publickey
     * Hospital
 * **Input**
     * (Header) `from: owner` Only the hospital owner of an NFT can upload its public key
-    * (Parameter) `token_id` NFT token ID owned by the hospital
     * (Parameter) `name` Name associated with the public key
     * (Parameter) `public_key` Grumpkin-based public key
 * **Output**
@@ -90,13 +89,12 @@ PUT http://localhost:3000/publickey
     * `public_key_version` Version of the public key
 
 
-https://user-images.githubusercontent.com/66550865/232198904-37360afb-5515-46ee-a195-e53f2dfa456e.mov
-
+(video)
 
 *Example*
 
 ```
-curl --location --request PUT 'http://localhost:3000/publickey?token_id=1&name=hospitaA&public_key=0x0dd7811f6af9d473c41376affb8660aba00e255c49844b31182f54bc0ab3e2ae1b23bd0e9afdb8275f880934b115057ed86f075048d4d8bd9fa8d92670dc6892' \
+curl --location --request PUT 'http://localhost:3000/publickey?name=hospitaA&public_key=0x0dd7811f6af9d473c41376affb8660aba00e255c49844b31182f54bc0ab3e2ae1b23bd0e9afdb8275f880934b115057ed86f075048d4d8bd9fa8d92670dc6892' \
 --header 'from: hospitalA'
 {
     "name": "hospitaA",
@@ -107,10 +105,38 @@ curl --location --request PUT 'http://localhost:3000/publickey?token_id=1&name=h
 
 - - -
 
+#### 3b (optional) | Get the public key *(On-Chain)*
+
+```
+GET http://localhost:3000/publickey
+```
+
+* **Caller**
+    * Anyone
+* **Input**
+    * (Parameter) `name` Name associated with the public key
+    * (Parameter) `version` Version of the public key
+* **Output**
+    * `public_key` Grumpkin-based public key
+
+
+(video)
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/publickey?name=hospitalA&version=0'
+{
+    "public_key": "0x0dd7811f6af9d473c41376affb8660aba00e255c49844b31182f54bc0ab3e2ae1b23bd0e9afdb8275f880934b115057ed86f075048d4d8bd9fa8d92670dc6892"
+}
+```
+
+- - -
+
 #### 4 | Hash and Sign Health Data
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Hospitals are expected to hash and sign the health data themselves. |
-| --- |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 
 ```
 POST http://localhost:3000/sign
@@ -175,7 +201,7 @@ curl --location 'http://localhost:3000/sign' \
 #### 5 | Generate the Proof
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Researchers are expected to generate the proofs themselves. |
-| --- |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
 POST http://localhost:3000/generate_proof

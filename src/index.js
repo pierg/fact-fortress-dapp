@@ -83,15 +83,7 @@ app.get('/tokenid', async(req, res) => {
 
 // Get public key endpoint
 app.get('/publickey', async(req, res) => {
-    expected_url = "/publickey?token_id={token_id}&name={name}&version={version}";
-
-    const tokenId = req.query.token_id;
-    if (!tokenId) {
-        return res.status(500).json({
-            error: "no token ID has been provided",
-            expected_url
-        })
-    }
+    expected_url = "/publickey?name={name}&version={version}";
 
     const name = req.query.name;
     if (!name) {
@@ -109,7 +101,7 @@ app.get('/publickey', async(req, res) => {
         })
     }
 
-    const result = await getPublicKey(tokenId, name, version);
+    const result = await getPublicKey(name, version);
 
     if (result.error) {
         res.status(500).json({
@@ -123,21 +115,13 @@ app.get('/publickey', async(req, res) => {
 
 // Set public key endpoint
 app.put('/publickey', async(req, res) => {
-    expected_url = "/publickey?token_id={token_id}&name={name}&public_key={public_key}";
+    expected_url = "/publickey?name={name}&public_key={public_key}";
 
     const from = getFrom(req);
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
             expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }'
-        })
-    }
-
-    const tokenId = req.query.token_id;
-    if (!tokenId) {
-        return res.status(500).json({
-            error: "no token ID has been provided",
-            expected_url
         })
     }
 
@@ -157,7 +141,7 @@ app.put('/publickey', async(req, res) => {
         })
     }
 
-    const result = await setPublicKey(from, tokenId, name, publicKey);
+    const result = await setPublicKey(from, name, publicKey);
 
     if (result.error) {
         res.status(500).json({

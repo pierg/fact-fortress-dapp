@@ -30,20 +30,24 @@ contract ZkpToken is ERC721 {
         return newItemId;
     }
 
-    function userToToken(address user) external view returns (uint256) {
-        require(_userToToken[user] > 0, "Address does not have a token");
-        return _userToToken[user];
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: caller is not token owner or approved"
+        );
+
+        _transfer(from, to, tokenId);
+
+        // update map associating the tokens with their owners
+        _userToToken[to] = tokenId;
     }
 
-    function isApprovedOrOwner(
-        address user,
-        uint256 tokenId
-    ) external view returns (bool) {
-        require(_exists(tokenId), "Nonexistent ZKP token");
-        address owner = ownerOf(tokenId);
-        return (user == owner ||
-            getApproved(tokenId) == user ||
-            isApprovedForAll(owner, user));
+    function userToToken(address user) external view returns (uint256) {
+        return _userToToken[user];
     }
 
     function tokenIdExists(uint256 tokenId) external view returns (bool) {

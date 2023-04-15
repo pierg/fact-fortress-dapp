@@ -1,11 +1,10 @@
 const { contracts } = require('../contracts/contracts.js');
 
-async function setPublicKey(from, tokenId, name, publicKey) {
+async function setPublicKey(from, name, publicKey) {
     const sc = contracts.getContract("ZkpContract");
 
     try {
         const receipt = await sc.methods.setPublicKey(
-            tokenId,
             name,
             publicKey
         ).send({ from, gas: '1000000' });
@@ -27,12 +26,11 @@ async function setPublicKey(from, tokenId, name, publicKey) {
     }
 }
 
-async function getPublicKey(tokenId, name, version) {
+async function getPublicKey(name, version) {
     const sc = contracts.getContract("ZkpContract");
 
     try {
         const publicKey = await sc.methods.getPublicKey(
-            tokenId,
             name,
             version
         ).call();

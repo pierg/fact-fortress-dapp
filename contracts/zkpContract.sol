@@ -9,8 +9,11 @@ import "./zkpVerifier.sol";
 contract ZkpContract {
     event PublicKeyVersion(uint);
 
-    // tokenId => public key name => public key
-    mapping(uint256 => mapping(string => string[])) public publicKeys;
+    // public key name => public key
+    mapping(string => string[]) public publicKeys;
+
+    // public key name => token ID
+    mapping(string => uint256) private tokenIds;
 
     address private owner;
     ZkpToken private zkpToken;
@@ -25,70 +28,50 @@ contract ZkpContract {
     // PUBLIC KEYS MANAGEMENT
 
     function getPublicKey(
-        uint256 tokenId,
         string memory name,
         uint version
     ) external view returns (string memory) {
-        require(
-            version < publicKeys[tokenId][name].length,
-            "Public key does not exist"
-        );
-        return publicKeys[tokenId][name][version];
+        require(version < publicKeys[name].length, "Public key does not exist");
+        return publicKeys[name][version];
     }
 
     function getLatestPublicKey(
-        uint256 tokenId,
         string memory name
     ) external view returns (string memory) {
         require(
-            publicKeys[tokenId][name].length > 0,
+            publicKeys[name].length > 0,
             "Public key does not exist for this token ID and name"
         );
-        uint lastIndex = publicKeys[tokenId][name].length - 1;
-        return publicKeys[tokenId][name][lastIndex];
+        uint lastIndex = publicKeys[name].length - 1;
+        return publicKeys[name][lastIndex];
     }
 
     function setPublicKey(
-        uint256 tokenId,
         string memory name,
         string memory publicKey
     ) external returns (uint) {
         require(bytes(publicKey).length != 0, "Public key cannot be empty");
-        require(zkpToken.tokenIdExists(tokenId), "Token ID does not exist");
-        require(
-            zkpToken.isApprovedOrOwner(msg.sender, tokenId),
-            "Caller is not approved or the owner of the corresponding ZKP token"
-        );
+        uint256 tokenId = zkpToken.userToToken(msg.sender);
+        require(tokenId > 0, "Caller does not have a token");
 
-        // check if name is already defined for this token id
-        if (publicKeys[tokenId][name].length > 0) {
-            // if sender is not the owner of the token, revert
+        // check if name is already used
+        if (publicKeys[name].length > 0) {
             require(
-                zkpToken.isApprovedOrOwner(msg.sender, tokenId),
-                "Caller is not the owner of the token"
+                tokenId == tokenIds[name],
+                "Caller is not authorized to update the public key"
             );
-            // add a new public key for this token id and this name
-            publicKeys[tokenId][name].push(publicKey);
         } else {
-            // ensure that the name is unique
-            for (uint i = 0; i < zkpToken.totalSupply(); i++) {
-                require(
-                    publicKeys[tokenId][name].length == 0,
-                    "Name is already taken"
-                );
-            }
-            // set the new value
-            publicKeys[tokenId][name].push(publicKey);
+            // associate the name with the token ID
+            tokenIds[name] = tokenId;
         }
 
-        uint version = publicKeys[tokenId][name].length - 1;
+        publicKeys[name].push(publicKey);
+
+        uint version = publicKeys[name].length - 1;
         emit PublicKeyVersion(version);
         return version;
     }
 
-    function isUserAuthorized(uint256 tokenId) external view returns (bool) {
-        return zkpToken.isApprovedOrOwner(msg.sender, tokenId);
-    }
 
     // ZKP PROOF VERIFICATION
 
@@ -101,8 +84,11 @@ contract ZkpContract {
         bytes calldata pubKeyProof_X = proof[0:32];
         bytes calldata pubKeyProof_Y = proof[32:64];
 
-        return keccak256(abi.encodePacked(pubKey_X)) == keccak256(abi.encodePacked(pubKeyProof_X)) 
-            && keccak256(abi.encodePacked(pubKey_Y)) == keccak256(abi.encodePacked(pubKeyProof_Y));
+        return
+            keccak256(abi.encodePacked(pubKey_X)) ==
+            keccak256(abi.encodePacked(pubKeyProof_X)) &&
+            keccak256(abi.encodePacked(pubKey_Y)) ==
+            keccak256(abi.encodePacked(pubKeyProof_Y));
     }
 
     function verifyProof(
