@@ -85,7 +85,9 @@ PUT http://localhost:3000/publickey
     * `public_key` Grumpkin-based public key
     * `public_key_version` Version of the public key
 
-(video)
+
+https://user-images.githubusercontent.com/66550865/232198904-37360afb-5515-46ee-a195-e53f2dfa456e.mov
+
 
 *Example*
 
