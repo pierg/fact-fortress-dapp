@@ -117,7 +117,9 @@ POST http://localhost:3000/sign
     * `hash` SHA-256 hash of the data (hex)
     * `signature` Signature of the hash (bytes)
 
-(video)
+
+https://user-images.githubusercontent.com/66550865/232200525-d5610ff1-f8b9-4973-b1d5-5a7c43e00dbe.mov
+
 
 *Example*
 
@@ -179,7 +181,9 @@ POST http://localhost:3000/generate_proof
 * **Output**
     * Proof (bytes)
 
-(video)
+
+https://user-images.githubusercontent.com/66550865/232200514-b9a3cee7-d667-42e9-9ac2-ae6aea97361c.mov
+
 
 *Example*
 
@@ -221,7 +225,9 @@ POST http://localhost:3000/verify_public_inputs
 * **Output**
     * `public_input_match`: `true` (public inputs match) or `false` (public inputs do not match)
 
-(video)
+
+https://user-images.githubusercontent.com/66550865/232200505-c275c6c5-93e0-416f-9864-a13f3c897858.mov
+
 
 *Example*
 
@@ -253,7 +259,9 @@ POST http://localhost:3000/verify_public_inputs
 * **Output**
     * `valid_proof_of_provenance`: `true` (valid proof) or `false` (invalid proof)
 
-(video)
+
+https://user-images.githubusercontent.com/66550865/232200501-9d28d465-f139-4631-8f56-581f9bfb42cb.mov
+
 
 *Example*
 
