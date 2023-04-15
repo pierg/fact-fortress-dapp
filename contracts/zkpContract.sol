@@ -7,17 +7,18 @@ import "./zkpToken.sol";
 import "./zkpVerifier.sol";
 
 contract ZkpContract {
-    event PublicKeyVersion(uint);
-
-    // public key name => public key
-    mapping(string => string[]) public publicKeys;
-
-    // public key name => token ID
-    mapping(string => uint256) private tokenIds;
-
     address private owner;
     ZkpToken private zkpToken;
     ZkpVerifier private zkpVerifier;
+
+    // Public keys
+    event PublicKeyVersion(uint);
+
+    mapping(string => string[]) public publicKeys;
+    mapping(string => uint256) private tokenIds;
+
+    // Signatures: hash(signature) => hash(public key)
+    mapping(bytes32 => bytes32) private signatures;
 
     constructor(address zkpTokenAddress, address zkpVerifierAddress) {
         owner = msg.sender;
@@ -52,7 +53,7 @@ contract ZkpContract {
     ) external returns (uint) {
         require(bytes(publicKey).length != 0, "Public key cannot be empty");
         uint256 tokenId = zkpToken.userToToken(msg.sender);
-        require(tokenId > 0, "Caller does not have a token");
+        require(tokenId > 0, "Caller is not authorized to set a public key");
 
         // check if name is already used
         if (publicKeys[name].length > 0) {
@@ -72,23 +73,77 @@ contract ZkpContract {
         return version;
     }
 
-
     // ZKP PROOF VERIFICATION
 
-    function verifyPublicKey(
-        bytes calldata pubKey_X,
-        bytes calldata pubKey_Y,
+    struct PublicInputs {
+        bytes publicKey_x;
+        bytes publicKey_y;
+        bytes signature;
+    }
+
+    // extract the public inputs embedded in the proof
+    function extractPublicInputs(
+        bytes calldata proof
+    ) internal pure returns (PublicInputs memory) {
+        bytes memory signature = new bytes(64);
+        uint filteredIndex = 0;
+        for (uint i = 95; i < 2112; i += 32) {
+            signature[filteredIndex] = proof[i];
+            filteredIndex++;
+        }
+
+        // Public key x is at position [0:32)
+        // Public key y is at position [32:64)
+        // Signature is at position [95:2112) mod 32 (see above)
+        return PublicInputs(proof[0:32], proof[32:64], signature);
+    }
+
+    // store a signature as a hash
+    function storeSignature(
+        bytes calldata publicKey_x,
+        bytes calldata publicKey_y,
+        bytes calldata signature
+    ) external {
+        require(
+            zkpToken.userToToken(msg.sender) > 0,
+            "Caller is not authorized to store a signature"
+        );
+
+        signatures[keccak256(signature)] = keccak256(
+            abi.encodePacked(publicKey_x, publicKey_y)
+        );
+    }
+
+    // check whether a signature has been stored or not
+    function checkSignature(
+        bytes calldata publicKey_x,
+        bytes calldata publicKey_y,
+        bytes calldata signature
+    ) external view returns (bool) {
+        return
+            signatures[keccak256(signature)] ==
+            keccak256(abi.encodePacked(publicKey_x, publicKey_y));
+    }
+
+    function verifyPublicInputs(
+        bytes calldata publicKey_x,
+        bytes calldata publicKey_y,
         bytes calldata proof
     ) external view returns (bool) {
         // extract public key from proof
-        bytes calldata pubKeyProof_X = proof[0:32];
-        bytes calldata pubKeyProof_Y = proof[32:64];
+        PublicInputs memory publicInputs = extractPublicInputs(proof);
 
+        // verify that:
+        // 1) public key x extracted from the proof corresponds to the expected one
+        // 2) public key y extracted from the proof corresponds to the expected one
+        // 3) the signature has been stored and corresponds to the expected public key
         return
-            keccak256(abi.encodePacked(pubKey_X)) ==
-            keccak256(abi.encodePacked(pubKeyProof_X)) &&
-            keccak256(abi.encodePacked(pubKey_Y)) ==
-            keccak256(abi.encodePacked(pubKeyProof_Y));
+            keccak256(abi.encodePacked(publicKey_x)) ==
+            keccak256(abi.encodePacked(publicInputs.publicKey_x)) &&
+            keccak256(abi.encodePacked(publicKey_y)) ==
+            keccak256(abi.encodePacked(publicInputs.publicKey_y)) &&
+            signatures[keccak256(publicInputs.signature)] ==
+            keccak256(abi.encodePacked(publicKey_x, publicKey_y));
     }
 
     function verifyProof(

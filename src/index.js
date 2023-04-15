@@ -1,5 +1,5 @@
 const { getAddress } = require('./accounts.js');
-const { setPublicKey, getPublicKey } = require('./actions/keypair.js');
+const { setPublicKey, getPublicKey, storeSignature } = require('./actions/publicInputs.js');
 const { mint, getTokenId } = require('./actions/tokens.js');
 const { contracts } = require('./contracts/contracts.js');
 const { verifyPublicInputs, verifyProof } = require('./actions/proof.js');
@@ -32,7 +32,7 @@ app.get('/health', (req, res) => {
 });
 
 // Mint endpoint
-app.get('/mint', async(req, res) => {
+app.get('/mint', async (req, res) => {
     const recipient = req.query.recipient;
     if (!recipient) {
         return res.status(500).json({
@@ -61,7 +61,7 @@ app.get('/mint', async(req, res) => {
 });
 
 // Get TokenID endpoint
-app.get('/tokenid', async(req, res) => {
+app.get('/tokenid', async (req, res) => {
     const address = req.query.address;
     if (!address) {
         return res.status(500).json({
@@ -82,7 +82,7 @@ app.get('/tokenid', async(req, res) => {
 });
 
 // Get public key endpoint
-app.get('/publickey', async(req, res) => {
+app.get('/publickey', async (req, res) => {
     expected_url = "/publickey?name={name}&version={version}";
 
     const name = req.query.name;
@@ -114,7 +114,7 @@ app.get('/publickey', async(req, res) => {
 
 
 // Set public key endpoint
-app.put('/publickey', async(req, res) => {
+app.put('/publickey', async (req, res) => {
     expected_url = "/publickey?name={name}&public_key={public_key}";
 
     const from = getFrom(req);
@@ -152,20 +152,56 @@ app.put('/publickey', async(req, res) => {
     }
 });
 
+// Store signature endpoint
+app.post('/signature', async (req, res) => {
+    const from = getFrom(req);
+    if (typeof from === undefined || !from) {
+        return res.status(500).json({
+            error: "`from` header is not properly set",
+            expected_header: '{ "from": "hospitalA|hospitalB|hospitalC" }'
+        })
+    }
+
+    const publicKey = req.query.public_key;
+    if (!publicKey) {
+        return res.status(500).json({
+            error: "no public key has been provided",
+            expected_url: "/signature?public_key={public_key}"
+        })
+    }
+
+    const signature = req.body['signature'];
+    if (!signature) {
+        return res.status(500).json({
+            error: "no signature has been provided in the body of the request",
+        })
+    }
+
+    const result = await storeSignature(from, publicKey, signature);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+});
+
 async function deploy() {
     await contracts.add("zkpToken.sol", "ZkpToken");
     await contracts.add("zkpVerifier.sol", "ZkpVerifier");
     await contracts.add(
         "zkpContract.sol",
         "ZkpContract", [
-            contracts.getAddress("ZkpToken"),
-            contracts.getAddress("ZkpVerifier"),
-        ]
+        contracts.getAddress("ZkpToken"),
+        contracts.getAddress("ZkpVerifier"),
+    ]
     );
 }
 
 // Generate keypair endpoint
-app.get('/key_pair', async(req, res) => {
+app.get('/key_pair', async (req, res) => {
     const result = await generateKeyPair();
 
     if (result.error) {
@@ -178,7 +214,7 @@ app.get('/key_pair', async(req, res) => {
 });
 
 // Generate proof endpoint
-app.post('/generate_proof', async(req, res) => {
+app.post('/generate_proof', async (req, res) => {
     const publicKey = req.query.public_key;
     if (!publicKey) {
         return res.status(500).json({
@@ -213,7 +249,7 @@ app.post('/generate_proof', async(req, res) => {
 });
 
 // Sign message endpoint
-app.post('/sign', async(req, res) => {
+app.post('/sign', async (req, res) => {
     const privateKey = req.body['private_key'];
     if (!privateKey) {
         return res.status(500).json({
@@ -240,7 +276,7 @@ app.post('/sign', async(req, res) => {
 });
 
 // Verify public inputs endpoint
-app.post('/verify_public_inputs', async(req, res) => {
+app.post('/verify_public_inputs', async (req, res) => {
     const publicKey = req.query.public_key;
     if (!publicKey) {
         return res.status(500).json({
@@ -268,7 +304,7 @@ app.post('/verify_public_inputs', async(req, res) => {
 });
 
 // Verify proof endpoint
-app.post('/verify_proof', async(req, res) => {
+app.post('/verify_proof', async (req, res) => {
     const proof = req.body;
     if (!proof) {
         return res.status(500).json({
@@ -293,9 +329,9 @@ async function deploy() {
     await contracts.add(
         "zkpContract.sol",
         "ZkpContract", [
-            contracts.getAddress("ZkpToken"),
-            contracts.getAddress("ZkpVerifier"),
-        ]
+        contracts.getAddress("ZkpToken"),
+        contracts.getAddress("ZkpVerifier"),
+    ]
     );
 }
 
