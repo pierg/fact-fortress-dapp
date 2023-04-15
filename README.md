@@ -25,8 +25,8 @@ GET http://localhost:3000/key_pair
     * `public_key` Public key based on the Grumpkin curve, used by Noir
     * `private_key` Random private key
 
+https://user-images.githubusercontent.com/66550865/232197455-d07dbda7-45aa-470e-86fa-e5cfa62a14a6.mov
 
-https://user-images.githubusercontent.com/66550865/232196169-50dce909-cc9d-437b-8524-1669e3e20ac2.mov
 
 *Example*
 
@@ -53,7 +53,8 @@ GET http://localhost:3000/mint
     * `recipient` Address of the hospital having received the NFT
     * `token_id` NFT token ID
 
-(video)
+https://user-images.githubusercontent.com/66550865/232197466-fc5ce95b-7f7b-4915-b0f3-3c334716a538.mov
+
 
 *Example*
 
