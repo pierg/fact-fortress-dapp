@@ -20,5 +20,4 @@ GET http://localhost:3000/key_pair
 | --- |
 
 
-https://user-images.githubusercontent.com/66550865/232195938-b7d5f76d-27c0-4848-8d21-9c8c5cc75f21.mov
-
+https://user-images.githubusercontent.com/66550865/232196169-50dce909-cc9d-437b-8524-1669e3e20ac2.mov
