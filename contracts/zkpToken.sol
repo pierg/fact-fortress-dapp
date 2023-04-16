@@ -6,16 +6,23 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+// This contract manages ERC721 tokens (non-fungible tokens) to allow
+// hospitals to manage their public keys on-chain
 contract ZkpToken is ERC721 {
-    using Counters for Counters.Counter;
     address private _owner;
+
+    using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+
+    // address => token ID
+    // (0 if the address has not token)
     mapping(address => uint256) private _userToToken;
 
     constructor() ERC721("ZKP Token", "ZKP") {
         _owner = msg.sender;
     }
 
+    // mint (create) a new token for and send it to an hospital
     function mint(address user) external returns (uint256) {
         // only the owner of the contract should be able to mint
         require(msg.sender == _owner, "Caller is not the owner");
@@ -30,6 +37,8 @@ contract ZkpToken is ERC721 {
         return newItemId;
     }
 
+    // allows an hospital to transfer its token to another address
+    // (e.g. a new wallet)
     function transferFrom(
         address from,
         address to,

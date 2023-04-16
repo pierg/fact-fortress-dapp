@@ -2,7 +2,7 @@ const { getAddress } = require('./accounts.js');
 const { setPublicKey, getPublicKey, storeSignature } = require('./actions/publicInputs.js');
 const { mint, getTokenId } = require('./actions/tokens.js');
 const { contracts } = require('./contracts/contracts.js');
-const { verifyPublicInputs, verifyProof } = require('./actions/proof.js');
+const { verifyPublicInputsPoP, verifyProofPoP } = require('./actions/proof.js');
 
 // frontend helpers (would not be used in Production)
 const { generateKeyPair, signMessage } = require('./frontend_helpers/keypair.js');
@@ -299,7 +299,7 @@ app.post('/verify_public_inputs', async (req, res) => {
         })
     }
 
-    const result = await verifyPublicInputs(publicKey, proof);
+    const result = await verifyPublicInputsPoP(publicKey, proof);
 
     if (result.error) {
         res.status(500).json({
@@ -319,7 +319,7 @@ app.post('/verify_proof', async (req, res) => {
         })
     }
 
-    const result = await verifyProof(proof);
+    const result = await verifyProofPoP(proof);
 
     if (result.error) {
         res.status(500).json({

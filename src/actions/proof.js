@@ -1,10 +1,10 @@
 const { contracts } = require('../contracts/contracts.js');
 
-async function verifyPublicInputs(publicKey, proof) {
+async function verifyPublicInputsPoP(publicKey, proof) {
     const sc = contracts.getContract("ZkpContract");
 
     try {
-        const publicInputsMatch = await sc.methods.verifyPublicInputs(
+        const publicInputsMatch = await sc.methods.verifyPublicInputsPoP(
             publicKey,
             proof,
         ).call();
@@ -21,16 +21,17 @@ async function verifyPublicInputs(publicKey, proof) {
     } catch (e) {
         console.error(e);
         return {
+            public_input_match: false,
             error: e,
         };
     }
 }
 
-async function verifyProof(proof) {
+async function verifyProofPoP(proof) {
     const sc = contracts.getContract("ZkpContract");
 
     try {
-        const proofStatus = await sc.methods.verifyProof(
+        const proofStatus = await sc.methods.verifyProofPoP(
             proof,
         ).call();
 
@@ -46,9 +47,10 @@ async function verifyProof(proof) {
     } catch (e) {
         console.error(e);
         return {
+            valid_proof_of_provenance: false,
             error: e,
         };
     }
 }
 
-module.exports = { verifyPublicInputs, verifyProof }
+module.exports = { verifyPublicInputsPoP, verifyProofPoP }

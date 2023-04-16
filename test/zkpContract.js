@@ -327,13 +327,13 @@ contract('ZkpContract', function (accounts) {
                 expect(verified).eq(true);
 
                 const publicKeyResult = await zkpContractInstance
-                    .verifyPublicInputs(
+                    .verifyPublicInputsPoP(
                         publicKey,
                         proof
                     );
                 expect(publicKeyResult).eq(true);
 
-                const smartContractResult = await zkpContractInstance.verifyProof(proof);
+                const smartContractResult = await zkpContractInstance.verifyProofPoP(proof);
                 expect(smartContractResult).eq(true);
             });
 
@@ -352,7 +352,7 @@ contract('ZkpContract', function (accounts) {
 
                 expect(verified).eq(false);
 
-                await expect(zkpContractInstance.verifyProof(proof))
+                await expect(zkpContractInstance.verifyProofPoP(proof))
                     .to.be.rejectedWith("VM Exception while processing transaction: revert Proof failed");
             });
         });
@@ -428,7 +428,7 @@ contract('ZkpContract', function (accounts) {
                 // The verifier ensures that the public key is the expected one
                 // as well as the signature
                 // (Note: this step can also be done off-chain if needed)
-                const publicKeyMatch = await zkpContractInstance.verifyPublicInputs(
+                const publicKeyMatch = await zkpContractInstance.verifyPublicInputsPoP(
                     hospitalPublicKeyV,
                     proofV,
                 );
@@ -436,7 +436,7 @@ contract('ZkpContract', function (accounts) {
 
                 // e) (Verification B) 
                 // The verifier verifies the proof of provenance
-                const proofVerified = await zkpContractInstance.verifyProof(proofV);
+                const proofVerified = await zkpContractInstance.verifyProofPoP(proofV);
                 expect(proofVerified).eq(true);
             });
         });
