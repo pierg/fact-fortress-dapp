@@ -16,12 +16,14 @@ class BarretenbergHelper {
         return signature;
     }
 
-    generateAbi(pubKey, hashHex, signature) {
-        const publicKeyXY = this.extractXYFromGrumpkinPublicKey(pubKey);
+    generateAbi(publicKey, hashHex, signature) {
+        const publicKeyXY = Buffer.from(publicKey.replace(/^0x/i, ''), 'hex')
+        const publicKey_x = publicKeyXY.subarray(0, 32)
+        const publicKey_y = publicKeyXY.subarray(32, 64)
 
         return {
-            pub_key_x: '0x' + publicKeyXY.x.toString('hex'),
-            pub_key_y: '0x' + publicKeyXY.y.toString('hex'),
+            pub_key_x: '0x' + publicKey_x.toString('hex'),
+            pub_key_y: '0x' + publicKey_y.toString('hex'),
             signature,
             hash: hexToBytes(hashHex)
         }
@@ -37,15 +39,6 @@ class BarretenbergHelper {
         const pubKey = this.schnorr.computePublicKey(privateKey);
         const publicKey = new GrumpkinAddress(pubKey);
         return publicKey.toString();
-    }
-
-    extractXYFromGrumpkinPublicKey(pubKey) {
-        const publicKey = new GrumpkinAddress(Buffer.from(pubKey.replace(/^0x/i, ''), 'hex'));
-
-        return {
-            x: publicKey.x(),
-            y: publicKey.y(),
-        }
     }
 }
 
