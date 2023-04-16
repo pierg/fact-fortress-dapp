@@ -11,6 +11,7 @@ const { computeProof } = require('./frontend_helpers/proof.js');
 
 const express = require('express');
 const app = express();
+app.use(express.json());
 
 // server port
 const port = 3000;
@@ -255,13 +256,14 @@ app.post('/generate_proof', async (req, res) => {
 
 // Sign message endpoint
 app.post('/sign', async(req, res) => {
-    const privateKey = req.query['private_key'];
+    const privateKey = req.body['private_key'];
     if (!privateKey) {
         return res.status(500).json({
             error: "no private key has been provided in the body of the request",
         })
     }
-    // what is message?
+
+    // message to hash and sign (i.e., health data)
     const message = req.body['message'];
     if (!message) {
         return res.status(500).json({
