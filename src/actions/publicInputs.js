@@ -1,4 +1,5 @@
 const { contracts } = require('../contracts/contracts.js');
+const { GrumpkinAddress } = require('@noir-lang/barretenberg/dest/address');
 
 async function setPublicKey(from, name, publicKey) {
     const sc = contracts.getContract("ZkpContract");
@@ -46,4 +47,26 @@ async function getPublicKey(name, version) {
     }
 }
 
-module.exports = { getPublicKey, setPublicKey };
+async function storeSignature(from, publicKey, signature) {
+    const sc = contracts.getContract("ZkpContract");
+    const GrumpkinPublicKey = new GrumpkinAddress(Buffer.from(publicKey.replace(/^0x/i, ''), 'hex'));
+
+    try {
+        await sc.methods.storeSignature(
+            GrumpkinPublicKey.x(),
+            GrumpkinPublicKey.y(),
+            signature
+        ).send({ from, gas: '1000000' });
+
+        return {
+            stored: true,
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            error: e
+        };
+    }
+}
+
+module.exports = { getPublicKey, setPublicKey, storeSignature };

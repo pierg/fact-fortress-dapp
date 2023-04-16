@@ -8,6 +8,20 @@
 pnpm run serve
 ```
 
+
+ ### Run front-end
+```
+cd frontend
+```
+
+```
+pnpm install
+```
+
+```
+pnpm dev
+```
+
 ### End-to-End Flow
 
 #### 1 | Generate the public/private keys pair

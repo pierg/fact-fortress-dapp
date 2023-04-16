@@ -7,20 +7,20 @@ async function verifyPublicInputs(publicKey, proof) {
     const GrumpkinPublicKey = new GrumpkinAddress(Buffer.from(publicKey.replace(/^0x/i, ''), 'hex'));
 
     try {
-        const publicKeyMatch = await sc.methods.verifyPublicKey(
+        const publicInputsMatch = await sc.methods.verifyPublicInputs(
             GrumpkinPublicKey.x(),
             GrumpkinPublicKey.y(),
             proof,
         ).call();
 
-        if (publicKeyMatch) {
-            console.log(`Proof ${proof} uses ${publicKey} as public input`)
+        if (publicInputsMatch) {
+            console.log(`Proof uses ${publicKey} as public input`)
         } else {
-            console.log(`Proof ${proof} does NOT use ${publicKey} as public input`)
+            console.log(`Proof does NOT use ${publicKey} as public input`)
         }
 
         return {
-            public_input_match: publicKeyMatch
+            public_input_match: publicInputsMatch
         };
     } catch (e) {
         console.error(e);
@@ -39,9 +39,9 @@ async function verifyProof(proof) {
         ).call();
 
         if (proofStatus) {
-            console.log(`Proof ${proof} is valid`)
+            console.log(`Proof is valid`)
         } else {
-            console.log(`Proof ${proof} is invalid`)
+            console.log(`Proof is invalid`)
         }
 
         return {

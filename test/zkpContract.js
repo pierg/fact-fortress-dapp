@@ -15,7 +15,7 @@ const { randomBytes } = require('crypto');
 
 const fs = require('fs');
 
-contract('ZkpContract', function(accounts) {
+contract('ZkpContract', function (accounts) {
     const healthData = {
         "patient_id_0": {
             "genetic_data": {
@@ -48,11 +48,12 @@ contract('ZkpContract', function(accounts) {
     const hospitalA = accounts[0];
     const hospitalB = accounts[1];
     const hospitalC = accounts[2];
+    const anyone = accounts[3];
 
     // ZKP verifier part
     let compiledProgram, acir, prover, verifier, validAbi;
 
-    before(async() => {
+    before(async () => {
         try {
             compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
         } catch (e) {
@@ -68,13 +69,13 @@ contract('ZkpContract', function(accounts) {
         helper = new BarretenbergHelper(barretenberg);
     })
 
-    beforeEach(async() => {
+    beforeEach(async () => {
         zkpTokenInstance = await ZkpToken.new();
         zkpVerifierInstance = await ZkpVerifier.new();
         zkpContractInstance = await ZkpContract.new(zkpTokenInstance.address, zkpVerifierInstance.address);
     });
 
-    after(async() => {
+    after(async () => {
         // save valid ABI in `Prover.toml`
         if (validAbi !== null) {
             let prover = `pub_key_x = ${JSON.stringify(validAbi.pub_key_x)}\n`;
@@ -87,12 +88,11 @@ contract('ZkpContract', function(accounts) {
 
     // PUBLIC KEYS MANAGEMENT
 
-    describe("Public keys management with NFTs", async() => {
+    describe("Public keys management with NFTs", async () => {
 
-        it("should allow an authorized hospital with a valid ZKP token to add their public key", async() => {
+        it("should allow an authorized hospital with a valid ZKP token to add their public key", async () => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
-            const tokenId = await zkpTokenInstance.userToToken(hospitalA);
 
             // Set hospitalA's public key
             const name = "Hospital A";
@@ -105,10 +105,9 @@ contract('ZkpContract', function(accounts) {
             assert.equal(retrievedPublicKey, publicKey, "Public key was not set correctly");
         });
 
-        it("should allow an authorized hospital with a valid ZKP token to add new public keys", async() => {
+        it("should allow an authorized hospital with a valid ZKP token to add new public keys", async () => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
-            const tokenId = await zkpTokenInstance.userToToken(hospitalA);
 
             const name = "Hospital A";
             const publicKey1 = helper.getRandomGrumpkinPublicKey();
@@ -146,10 +145,9 @@ contract('ZkpContract', function(accounts) {
             assert.equal(retrievedLatestPublicKey, publicKey4, "Latest public key was not set correctly");
         });
 
-        it("should allow an hospital to update their own public key", async() => {
+        it("should allow an hospital to update their own public key", async () => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
-            const tokenId = await zkpTokenInstance.userToToken(hospitalA);
 
             // Set hospitalA's initial public key
             const initialName = "Hospital A";
@@ -166,25 +164,23 @@ contract('ZkpContract', function(accounts) {
             assert.equal(retrievedPublicKey, updatedPublicKey, "Public key was not updated correctly");
         });
 
-        it("should not allow an unauthorized hospital/user to set a public key", async() => {
+        it("should not allow an unauthorized hospital/user to set a public key", async () => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
-            const hospitalATokenId = await zkpTokenInstance.userToToken(hospitalA);
             const name = "Hospital A";
 
             // Try to set a public key for the third account using the second account's ZKP token
             await expect(zkpContractInstance.setPublicKey(name, helper.getRandomGrumpkinPublicKey(), { from: hospitalB }))
-                .to.be.rejectedWith("VM Exception while processing transaction: revert Caller does not have a token -- Reason given: Caller does not have a token.");
+                .to.be.rejectedWith("VM Exception while processing transaction: revert Caller is not authorized to set a public key -- Reason given: Caller is not authorized to set a public key.");
 
             // Verify that the public key was not set
             await expect(zkpContractInstance.getLatestPublicKey(name))
                 .to.be.rejectedWith("VM Exception while processing transaction: revert Public key does not exist for this token ID and name");
         });
 
-        it("should not allow setting a public key with an empty string", async() => {
+        it("should not allow setting a public key with an empty string", async () => {
             // Mint a new ZKP token for hospitalA
             await zkpTokenInstance.mint(hospitalA);
-            const tokenId = await zkpTokenInstance.userToToken(hospitalA);
 
             // Try to set an empty public key for hospitalA
             const name = "Hospital A";
@@ -196,7 +192,7 @@ contract('ZkpContract', function(accounts) {
                 .to.be.rejectedWith("VM Exception while processing transaction: revert Public key does not exist for this token ID and name");
         });
 
-        it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async() => {
+        it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async () => {
             // Mint new ZKP tokens for hospitalA and hospitalB
             await zkpTokenInstance.mint(hospitalA);
             await zkpTokenInstance.mint(hospitalB);
@@ -223,7 +219,7 @@ contract('ZkpContract', function(accounts) {
         });
     });
 
-    it("should allow an authorized hospital to transfer their token and the new address to update their public key", async() => {
+    it("should allow an authorized hospital to transfer their token and the new address to update their public key", async () => {
         const hospitalANewAddress = accounts[2];
 
         // Mint a new ZKP token for hospitalA
@@ -249,12 +245,12 @@ contract('ZkpContract', function(accounts) {
 
     // PROOFS VERIFICATION
 
-    describe("Verification of proofs", async() => {
+    describe("Verification of proofs", async () => {
         const hash = hashHealthData(healthData);
 
-        describe("simplified flow", async() => {
+        describe("simplified flow", async () => {
 
-            it("valid proof", async() => {
+            it("signature stored", async () => {
                 const privateKey = randomBytes(32);
                 const signature = helper.signHash(privateKey, hash);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
@@ -266,11 +262,96 @@ contract('ZkpContract', function(accounts) {
 
                 expect(verified).eq(true);
 
+                // store the signature and assert it has been stored
+
+                // prerequisite: the hospital that stores its signature is authorized
+                // to do so thanks to its NFT
+                await zkpTokenInstance.mint(hospitalA);
+
+                const hostpitalPublicKeyXY = helper
+                    .extractXYFromGrumpkinPublicKey(publicKey);
+
+                await zkpContractInstance.storeSignature(
+                    hostpitalPublicKeyXY.x,
+                    hostpitalPublicKeyXY.y,
+                    signature,
+                    { from: hospitalA }
+                );
+
+                const signatureStored = await zkpContractInstance
+                    .checkSignature(
+                        hostpitalPublicKeyXY.x,
+                        hostpitalPublicKeyXY.y,
+                        signature,
+                    );
+
+                expect(signatureStored).eq(true);
+            });
+
+            it("signature not stored", async () => {
+                const privateKey = randomBytes(32);
+                const signature = helper.signHash(privateKey, hash);
+                const publicKey = helper.getGrumpkinPublicKey(privateKey);
+
+                validAbi = helper.generateAbi(publicKey, hash, signature);
+
+                const proof = await create_proof(prover, acir, validAbi);
+                const verified = await verify_proof(verifier, proof);
+
+                expect(verified).eq(true);
+
+                // assert the the signature has not been stored
+                const hostpitalPublicKeyXY = helper
+                    .extractXYFromGrumpkinPublicKey(publicKey);
+
+                const signatureStored = await zkpContractInstance
+                    .checkSignature(
+                        hostpitalPublicKeyXY.x,
+                        hostpitalPublicKeyXY.y,
+                        signature,
+                    );
+
+                expect(signatureStored).eq(false);
+            });
+
+
+            it("valid proof of provenance", async () => {
+                const privateKey = randomBytes(32);
+                const signature = helper.signHash(privateKey, hash);
+                const publicKey = helper.getGrumpkinPublicKey(privateKey);
+
+                await zkpTokenInstance.mint(hospitalA);
+
+                const hostpitalPublicKeyXY = helper
+                    .extractXYFromGrumpkinPublicKey(publicKey);
+
+                await zkpContractInstance.storeSignature(
+                    hostpitalPublicKeyXY.x,
+                    hostpitalPublicKeyXY.y,
+                    signature,
+                    { from: hospitalA }
+                );
+
+                validAbi = helper.generateAbi(publicKey, hash, signature);
+
+                const proof = await create_proof(prover, acir, validAbi);
+                const verified = await verify_proof(verifier, proof);
+
+                expect(verified).eq(true);
+
+                const publicKeyResult = await zkpContractInstance
+                    .verifyPublicInputs(
+                        hostpitalPublicKeyXY.x,
+                        hostpitalPublicKeyXY.y,
+                        proof
+                    );
+                expect(publicKeyResult).eq(true);
+
                 const smartContractResult = await zkpContractInstance.verifyProof(proof);
                 expect(smartContractResult).eq(true);
             });
 
-            it("invalid proof", async() => {
+            it("invalid proof of provenance", async () => {
                 const privateKey = randomBytes(32);
                 const signature = helper.signHash(privateKey, hash);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
@@ -290,8 +371,8 @@ contract('ZkpContract', function(accounts) {
             });
         });
 
-        describe("complete flow", async() => {
-            it("valid proof", async() => {
+        describe("complete flow", async () => {
+            it("valid proof", async () => {
                 // [HOSPITAL] ////////////////////////////////////////////////
 
                 // Step 1. The hospital uploads its public key
@@ -299,21 +380,28 @@ contract('ZkpContract', function(accounts) {
 
                 // a) Mint a new ZKP token for the hospital
                 await zkpTokenInstance.mint(hospitalC);
-                const tokenId = await zkpTokenInstance.userToToken(hospitalC);
 
                 // b) Upload hospital's public key
                 const privateKey = randomBytes(32);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
                 await zkpContractInstance.setPublicKey(name, publicKey, { from: hospitalC })
 
-
                 // Step 2. Make the hospital sign the data
                 const signature = helper.signHash(privateKey, hash);
 
+                // Step 3. The hospital stores the signature on-chain
+                const hostpitalPublicKeyXY = helper
+                    .extractXYFromGrumpkinPublicKey(publicKey);
+                await zkpContractInstance.storeSignature(
+                    hostpitalPublicKeyXY.x,
+                    hostpitalPublicKeyXY.y,
+                    signature,
+                    { from: hospitalC }
+                );
 
                 // [RESEARCHER] //////////////////////////////////////////////
 
-                // Step 3. Researcher gets the hospital's public key
+                // Step 4. Researcher gets the hospital's public key
 
                 // a) Data shared with the researcher
                 const hospitalNameP = name; // communicated by the hospital
@@ -324,7 +412,7 @@ contract('ZkpContract', function(accounts) {
                     hospitalNameP, publicKeyVersionP
                 );
 
-                // Step 4. Researcher generates the proof off-chain
+                // Step 5. Researcher generates the proof off-chain
 
                 // a) Data shared with the researcher
                 const hospitalHashP = hash; // communicated by the hospital
@@ -341,7 +429,7 @@ contract('ZkpContract', function(accounts) {
 
                 // [VERIFIER] ////////////////////////////////////////////////
 
-                // Step 5. Verifier gets the proof and verifies the public key
+                // Step 6. Verifier gets the proof and verifies the public key
 
                 // a) Data shared with the verifier
                 const hospitalNameV = name; // communicated by the hospital
@@ -355,14 +443,16 @@ contract('ZkpContract', function(accounts) {
 
                 // c) Data reconstructed by the verifier using `@noir-lang`
                 //    (get `x` and `y` from a public key)
-                const hostpitalPublicKeyXY = helper.extractXYFromGrumpkinPublicKey(hospitalPublicKeyV);
+                const hostpitalPublicKeyXYV = helper
+                    .extractXYFromGrumpkinPublicKey(hospitalPublicKeyV);
 
                 // d) (Verification A) 
                 // The verifier ensures that the public key is the expected one
+                // as well as the signature
                 // (Note: this step can also be done off-chain if needed)
-                const publicKeyMatch = await zkpContractInstance.verifyPublicKey(
-                    hostpitalPublicKeyXY.x,
-                    hostpitalPublicKeyXY.y,
+                const publicKeyMatch = await zkpContractInstance.verifyPublicInputs(
+                    hostpitalPublicKeyXYV.x,
+                    hostpitalPublicKeyXYV.y,
                     proofV,
                 );
                 expect(publicKeyMatch).eq(true);
