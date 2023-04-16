@@ -19,7 +19,7 @@ app.set('json spaces', 4);
 // app.use(express.json())
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.header("Access-Control-Allow-Headers", "*");
     next();
   });
 
@@ -38,6 +38,8 @@ app.get('/health', (req, res) => {
 
 // Mint endpoint
 app.get('/mint', async(req, res) => {
+    console.log("MMMMMMM")
+    console.log(req)
     const recipient = req.query.recipient;
     if (!recipient) {
         return res.status(500).json({
@@ -219,13 +221,13 @@ app.post('/generate_proof', async(req, res) => {
 
 // Sign message endpoint
 app.post('/sign', async(req, res) => {
-    const privateKey = req.body['private_key'];
+    const privateKey = req.query['private_key'];
     if (!privateKey) {
         return res.status(500).json({
             error: "no private key has been provided in the body of the request",
         })
     }
-
+    // what is message?
     const message = req.body['message'];
     if (!message) {
         return res.status(500).json({
