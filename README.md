@@ -241,7 +241,7 @@ GET http://localhost:3000/signature
     * `stored` Status: `true` if the signature has been stored, `false` otherwise
 
 
-(video)
+https://user-images.githubusercontent.com/66550865/232287544-1b4dcc01-1fde-41b2-8f1e-3f36bc10a1cc.mov
 
 *Example*
 
