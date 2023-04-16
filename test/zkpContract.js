@@ -268,20 +268,15 @@ contract('ZkpContract', function (accounts) {
                 // to do so thanks to its NFT
                 await zkpTokenInstance.mint(hospitalA);
 
-                const hostpitalPublicKeyXY = helper
-                    .extractXYFromGrumpkinPublicKey(publicKey);
-
                 await zkpContractInstance.storeSignature(
-                    hostpitalPublicKeyXY.x,
-                    hostpitalPublicKeyXY.y,
+                    publicKey,
                     signature,
                     { from: hospitalA }
                 );
 
                 const signatureStored = await zkpContractInstance
                     .checkSignature(
-                        hostpitalPublicKeyXY.x,
-                        hostpitalPublicKeyXY.y,
+                        publicKey,
                         signature,
                     );
 
@@ -301,14 +296,10 @@ contract('ZkpContract', function (accounts) {
                 expect(verified).eq(true);
 
                 // assert the the signature has not been stored
-                const hostpitalPublicKeyXY = helper
-                    .extractXYFromGrumpkinPublicKey(publicKey);
-
                 const signatureStored = await zkpContractInstance
                     .checkSignature(
-                        hostpitalPublicKeyXY.x,
-                        hostpitalPublicKeyXY.y,
-                        signature,
+                        publicKey,
+                        signature
                     );
 
                 expect(signatureStored).eq(false);
@@ -322,12 +313,8 @@ contract('ZkpContract', function (accounts) {
 
                 await zkpTokenInstance.mint(hospitalA);
 
-                const hostpitalPublicKeyXY = helper
-                    .extractXYFromGrumpkinPublicKey(publicKey);
-
                 await zkpContractInstance.storeSignature(
-                    hostpitalPublicKeyXY.x,
-                    hostpitalPublicKeyXY.y,
+                    publicKey,
                     signature,
                     { from: hospitalA }
                 );
@@ -341,8 +328,7 @@ contract('ZkpContract', function (accounts) {
 
                 const publicKeyResult = await zkpContractInstance
                     .verifyPublicInputs(
-                        hostpitalPublicKeyXY.x,
-                        hostpitalPublicKeyXY.y,
+                        publicKey,
                         proof
                     );
                 expect(publicKeyResult).eq(true);
@@ -390,11 +376,8 @@ contract('ZkpContract', function (accounts) {
                 const signature = helper.signHash(privateKey, hash);
 
                 // Step 3. The hospital stores the signature on-chain
-                const hostpitalPublicKeyXY = helper
-                    .extractXYFromGrumpkinPublicKey(publicKey);
                 await zkpContractInstance.storeSignature(
-                    hostpitalPublicKeyXY.x,
-                    hostpitalPublicKeyXY.y,
+                    publicKey,
                     signature,
                     { from: hospitalC }
                 );
@@ -441,18 +424,12 @@ contract('ZkpContract', function (accounts) {
                     hospitalNameV, publicKeyVersionV
                 );
 
-                // c) Data reconstructed by the verifier using `@noir-lang`
-                //    (get `x` and `y` from a public key)
-                const hostpitalPublicKeyXYV = helper
-                    .extractXYFromGrumpkinPublicKey(hospitalPublicKeyV);
-
                 // d) (Verification A) 
                 // The verifier ensures that the public key is the expected one
                 // as well as the signature
                 // (Note: this step can also be done off-chain if needed)
                 const publicKeyMatch = await zkpContractInstance.verifyPublicInputs(
-                    hostpitalPublicKeyXYV.x,
-                    hostpitalPublicKeyXYV.y,
+                    hospitalPublicKeyV,
                     proofV,
                 );
                 expect(publicKeyMatch).eq(true);

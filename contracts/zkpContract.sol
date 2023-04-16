@@ -75,9 +75,13 @@ contract ZkpContract {
 
     // ZKP PROOF VERIFICATION
 
+    struct PublicKeyPoints {
+        bytes x;
+        bytes y;
+    }
+
     struct PublicInputs {
-        bytes publicKey_x;
-        bytes publicKey_y;
+        PublicKeyPoints publicKeyPoints;
         bytes signature;
     }
 
@@ -95,13 +99,25 @@ contract ZkpContract {
         // Public key x is at position [0:32)
         // Public key y is at position [32:64)
         // Signature is at position [95:2112) mod 32 (see above)
-        return PublicInputs(proof[0:32], proof[32:64], signature);
+        return
+            PublicInputs(PublicKeyPoints(proof[0:32], proof[32:64]), signature);
+    }
+
+    // extract the public key points `x` and `y` from the public key
+    function getPublicKeyPoints(
+        bytes calldata publicKey
+    ) internal pure returns (PublicKeyPoints memory) {
+        // `x` is at position [O, 32) in the public key
+        bytes calldata publicKey_x = publicKey[0:32];
+        // `y` is at position [32, 64) in the public key
+        bytes calldata publicKey_y = publicKey[32:64];
+
+        return PublicKeyPoints(publicKey_x, publicKey_y);
     }
 
     // store a signature as a hash
     function storeSignature(
-        bytes calldata publicKey_x,
-        bytes calldata publicKey_y,
+        bytes calldata publicKey,
         bytes calldata signature
     ) external {
         require(
@@ -109,41 +125,44 @@ contract ZkpContract {
             "Caller is not authorized to store a signature"
         );
 
+        PublicKeyPoints memory points = getPublicKeyPoints(publicKey);
+
         signatures[keccak256(signature)] = keccak256(
-            abi.encodePacked(publicKey_x, publicKey_y)
+            abi.encodePacked(points.x, points.y)
         );
     }
 
     // check whether a signature has been stored or not
     function checkSignature(
-        bytes calldata publicKey_x,
-        bytes calldata publicKey_y,
+        bytes calldata publicKey,
         bytes calldata signature
     ) external view returns (bool) {
+        PublicKeyPoints memory points = getPublicKeyPoints(publicKey);
+
         return
             signatures[keccak256(signature)] ==
-            keccak256(abi.encodePacked(publicKey_x, publicKey_y));
+            keccak256(abi.encodePacked(points.x, points.y));
     }
 
     function verifyPublicInputs(
-        bytes calldata publicKey_x,
-        bytes calldata publicKey_y,
+        bytes calldata publicKey,
         bytes calldata proof
     ) external view returns (bool) {
         // extract public key from proof
         PublicInputs memory publicInputs = extractPublicInputs(proof);
+        PublicKeyPoints memory points = getPublicKeyPoints(publicKey);
 
         // verify that:
         // 1) public key x extracted from the proof corresponds to the expected one
         // 2) public key y extracted from the proof corresponds to the expected one
         // 3) the signature has been stored and corresponds to the expected public key
         return
-            keccak256(abi.encodePacked(publicKey_x)) ==
-            keccak256(abi.encodePacked(publicInputs.publicKey_x)) &&
-            keccak256(abi.encodePacked(publicKey_y)) ==
-            keccak256(abi.encodePacked(publicInputs.publicKey_y)) &&
+            keccak256(abi.encodePacked(points.x)) ==
+            keccak256(abi.encodePacked(publicInputs.publicKeyPoints.x)) &&
+            keccak256(abi.encodePacked(points.y)) ==
+            keccak256(abi.encodePacked(publicInputs.publicKeyPoints.y)) &&
             signatures[keccak256(publicInputs.signature)] ==
-            keccak256(abi.encodePacked(publicKey_x, publicKey_y));
+            keccak256(abi.encodePacked(points.x, points.y));
     }
 
     function verifyProof(

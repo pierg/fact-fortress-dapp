@@ -1,15 +1,11 @@
-const { GrumpkinAddress } = require('@noir-lang/barretenberg/dest/address');
 const { contracts } = require('../contracts/contracts.js');
 
 async function verifyPublicInputs(publicKey, proof) {
     const sc = contracts.getContract("ZkpContract");
 
-    const GrumpkinPublicKey = new GrumpkinAddress(Buffer.from(publicKey.replace(/^0x/i, ''), 'hex'));
-
     try {
         const publicInputsMatch = await sc.methods.verifyPublicInputs(
-            GrumpkinPublicKey.x(),
-            GrumpkinPublicKey.y(),
+            publicKey,
             proof,
         ).call();
 
