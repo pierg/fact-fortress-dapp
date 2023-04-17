@@ -32,20 +32,28 @@ class ProofHelper {
         this.verifier = verifier;
     }
 
+    ready() {
+        return typeof this.prover !== undefined && this.verifier !== undefined
+    }
+
     async create_proof(abi) {
         return create_proof(this.prover, this.acir, abi)
     }
 }
 
-async function computeProof(publicKey, hash, signature) {
-    if (typeof barretenbergHelper === undefined || !barretenbergHelper) {
-        const barretenbergWasm = await BarretenbergWasm.new();
-        barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
-    }
+async function initHelpers() {
+    console.log("Init compute helpers (Barretenberg WASM)...");
+    const barretenbergWasm = await BarretenbergWasm.new();
+    barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
 
-    if (typeof proofHelper === undefined || !proofHelper) {
-        proofHelper = new ProofHelper();
-        await proofHelper.setup();
+    proofHelper = new ProofHelper();
+    await proofHelper.setup();
+    console.log("Init compute helpers (Barretenberg WASM) [DONE]");
+}
+
+async function computeProof(publicKey, hash, signature) {
+    if (!proofHelper.ready()) {
+        return null;
     }
 
     const abi = barretenbergHelper.generateAbi(publicKey, hash, signature);
@@ -53,4 +61,4 @@ async function computeProof(publicKey, hash, signature) {
     return [...proof];
 }
 
-module.exports = { computeProof }
+module.exports = { initHelpers, computeProof }

@@ -6,7 +6,7 @@ const { verifyPublicInputsPoP, verifyProofPoP } = require('./actions/proof.js');
 
 // frontend helpers (would not be used in Production)
 const { generateKeyPair, signMessage } = require('./frontend_helpers/keypair.js');
-const { computeProof } = require('./frontend_helpers/proof.js');
+const { initHelpers, computeProof } = require('./frontend_helpers/proof.js');
 
 
 const express = require('express');
@@ -18,11 +18,11 @@ const port = 3000;
 
 app.set('json spaces', 4);
 // app.use(express.json())
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "*");
     next();
-  });
+});
 
 function getFrom(req) {
     if (!req.headers['from']) {
@@ -245,7 +245,12 @@ app.post('/generate_proof', async (req, res) => {
 
     const result = await computeProof(publicKey, hash, signature);
 
-    if (result.error) {
+    if (result == null) {
+        res.status(500).json({
+            error: "Barretenberg Module not initialized yet",
+        });
+    }
+    else if (result.error) {
         res.status(500).json({
             error: result.error,
         });
@@ -255,7 +260,7 @@ app.post('/generate_proof', async (req, res) => {
 });
 
 // Sign message endpoint
-app.post('/sign', async(req, res) => {
+app.post('/sign', async (req, res) => {
     const privateKey = req.body['private_key'];
     if (!privateKey) {
         return res.status(500).json({
@@ -341,6 +346,10 @@ async function deploy() {
     ]
     );
 }
+
+
+// init compute proof helpers in the background (takes time)
+(async () => { await initHelpers() })()
 
 deploy().then(() => {
     const server = app.listen(port, () => console.log(`Server started on port ${port}`));
