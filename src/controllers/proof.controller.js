@@ -28,7 +28,14 @@ async function generateProofController(
         });
     }
 
-    const result = await computeProof(publicKey, hash, signature);
+    let health_function = req.body.health_function;
+
+    // TODO(Guillaume): remove once several contracts are supported
+    if (!health_function) {
+        health_function = "proof_of_provenance";
+    }
+
+    const result = await computeProof(health_function, publicKey, hash, signature);
 
     if (result == null) {
         res.status(500).json({

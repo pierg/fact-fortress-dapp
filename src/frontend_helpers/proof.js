@@ -1,70 +1,91 @@
 const {
-  setup_generic_prover_and_verifier,
-  create_proof,
+    setup_generic_prover_and_verifier,
+    create_proof,
 } = require("@noir-lang/barretenberg/dest/client_proofs");
 const { compile } = require("@noir-lang/noir_wasm");
 const { resolve } = require("path");
 const { BarretenbergWasm } = require("@noir-lang/barretenberg/dest/wasm");
 const { BarretenbergHelper } = require("./../../test/helpers.js");
+const { contracts } = require("./../contracts/contracts.js");
+
 const fs = require("fs");
 
-let barretenbergHelper, proofHelper;
+let barretenbergHelper, circuitHelper;
 
-const circuitSchnorrFilepath = resolve(
-  __dirname,
-  "../../circuits/schnorr/src/main.nr"
-);
-
-class ProofHelper {
-  constructor() {
-    if (!fs.existsSync(circuitSchnorrFilepath)) {
-      console.error(`circuit ${circuitSchnorrFilepath} does not exist`);
-      process.exit(1);
+class CircuitHelper {
+    constructor() {
+        this.circuits = {};
     }
 
-    try {
-      this.compiledProgram = compile(circuitSchnorrFilepath);
-    } catch (e) {
-      console.log(e);
-      process.exit(1);
+    async add(circuitName) {
+        const circuitFilepath = resolve(
+            __dirname,
+            `../../circuits/${circuitName}/src/main.nr`
+        );
+
+        if (!fs.existsSync(circuitFilepath)) {
+            console.error(`circuit ${circuitSchnorrFilepath} does not exist`);
+            process.exit(1);
+        }
+
+        let compiledCircuit;
+
+        try {
+            compiledCircuit = compile(circuitFilepath);
+        } catch (e) {
+            console.log(e);
+            process.exit(1);
+        }
+
+        this.circuits[circuitName] = {};
+        this.circuits[circuitName].acir = compiledCircuit.circuit;
+        const [prover, verifier] = await setup_generic_prover_and_verifier(
+            compiledCircuit.circuit,
+        );
+
+        this.circuits[circuitName].prover = prover;
+        this.circuits[circuitName].verifier = verifier;
     }
-  }
 
-  async setup() {
-    this.acir = this.compiledProgram.circuit;
-    let [prover, verifier] = await setup_generic_prover_and_verifier(this.acir);
-
-    this.prover = prover;
-    this.verifier = verifier;
-  }
-
-  ready() {
-    return typeof this.prover !== undefined && this.verifier !== undefined;
-  }
-
-  async create_proof(abi) {
-    return create_proof(this.prover, this.acir, abi);
-  }
+    async generateProof(circuitName, abi) {
+        return create_proof(
+            this.circuits[circuitName].prover,
+            this.circuits[circuitName].acir,
+            abi,
+        );
+    }
 }
 
 async function initHelpers() {
-  console.log("Init compute helpers (Barretenberg WASM)...");
-  const barretenbergWasm = await BarretenbergWasm.new();
-  barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
+    console.log("Initializing compute helpers (Barretenberg WASM)...");
+    const barretenbergWasm = await BarretenbergWasm.new();
+    barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
+    circuitHelper = new CircuitHelper();
 
-  proofHelper = new ProofHelper();
-  await proofHelper.setup();
-  console.log("Init compute helpers (Barretenberg WASM) [DONE]");
+    for (const contractName in contracts.contracts) {
+        if (contracts.contracts[contractName].is_verifier) {
+            console.log(`Initializing verifier ${contractName}`);
+            const circuitName = contracts.contracts[contractName].circuit_name;
+            await circuitHelper.add(circuitName);
+        }
+    }
+
+    console.log("Initializing compute helpers (Barretenberg WASM) [DONE]");
 }
 
-async function computeProof(publicKey, hash, signature) {
-  if (!proofHelper.ready()) {
-    return null;
-  }
+async function computeProof(healthFunction, publicKey, hash, signature) {
+    const contract = contracts.getContractByHealthFunction(healthFunction);
+    let circuitName;
 
-  const abi = barretenbergHelper.generateAbi(publicKey, hash, signature);
-  proof = await proofHelper.create_proof(abi);
-  return [...proof];
+    // TODO(Guillaume): remove once the other verifiers are implemented
+    if (!contract || !contract.circuit_name) {
+        circuitName = "schnorr";
+    } else {
+        circuitName = contract.circuit_name;
+    }
+
+    const abi = barretenbergHelper.generateAbi(publicKey, hash, signature);
+    return [...await circuitHelper.generateProof(circuitName, abi)];
 }
 
 module.exports = { initHelpers, computeProof };

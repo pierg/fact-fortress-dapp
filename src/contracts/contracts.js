@@ -15,7 +15,6 @@ class Contracts {
 
         this.contracts[contract.name] = contract;
         this.contracts[contract.name].address = address;
-        this.contracts[contract.name].args = contract.args;
         this.contracts[contract.name].abi = sc.abi;
         this.contracts[contract.name].contract = new web3.eth.Contract(sc.abi, address);
     }
@@ -47,12 +46,12 @@ class Contracts {
         return this.contracts[name]["contract"];
     }
 
-    getContractByFunction(healthFunction) {
+    getContractByHealthFunction(circuitPurpose) {
         for (const contractName in this.contracts) {
             const sc = this.contracts[contractName];
 
-            if (sc.purpose &&
-                sc.purpose.localeCompare(healthFunction, undefined, { sensitivity: 'base' }) === 0) {
+            if (sc.circuit_purpose &&
+                sc.circuit_purpose.localeCompare(circuitPurpose, undefined, { sensitivity: 'base' }) === 0) {
 
                 return sc;
             }

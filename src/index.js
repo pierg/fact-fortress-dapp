@@ -50,7 +50,9 @@ async function deploy() {
     await contracts.add({
         "filename": "zkpHealthVerifier.sol",
         "name": "ZkpHealthVerifier",
-        "purpose": "proof_of_provenance",
+        "is_verifier": true,
+        "circuit_name": "schnorr",
+        "circuit_purpose": "proof_of_provenance",
     });
 
     await contracts.add({
@@ -87,13 +89,12 @@ app.post("/verify_proof", verifyProofPoPController); // verify the proof (PoP)
 app.get("/available_functions", getAvailableFunctionsController);
 app.post("/generate_proof_function", generateProofFunctionController);
 
-
-// init compute proof helpers in the background (takes time)
-(async() => {
-    await initHelpers();
-})();
-
 deploy().then(() => {
+    // init compute proof helpers in the background (takes time)
+    (async() => {
+        await initHelpers();
+    })();
+
     const server = app.listen(port, () =>
         console.log(`Server started on port ${port}`)
     );

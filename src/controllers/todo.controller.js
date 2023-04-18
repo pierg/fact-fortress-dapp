@@ -29,10 +29,10 @@ async function generateProofFunctionController(
     res,
     next
 ) {
-    const health_function = req.query.health_function;
-    const health_data = req.query.health_data;
+    const health_function = req.body.health_function;
+    const health_data = req.body.health_data;
 
-    const sc = contracts.getContractByFunction(health_function);
+    const sc = contracts.getContractByHealthFunction(health_function);
 
     if (!sc) {
         res.status(404).json({ "error": `verifier ${health_function} not found` });
