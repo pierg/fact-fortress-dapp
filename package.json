@@ -8,7 +8,8 @@
         "test": "test"
     },
     "scripts": {
-        "serve": "node src/index.js",
+        "backend": "node src/index.js",
+        "frontend": "pnpm run hardhat:generate-abi && concurrently 'pnpm:hardhat:node' 'wait-on http://localhost:8545 && pnpm run hardhat:deploy' 'pnpm:frontend:dev'",
         "generate-verifier": "node tools/generateVerifierSol.js",
         "test": "pnpm generate-verifier && truffle test",
         "hardhat:generate-abi": "hardhat deploy --export frontend/src/contracts/contracts.json",
@@ -18,7 +19,6 @@
         "frontend:dev": "cd ./frontend && pnpm run dev",
         "frontend:clean": "cd ./frontend && pnpm run clean",
         "clean": "concurrently 'pnpm:frontend:clean' 'pnpm:hardhat:clean'",
-        "dev": "pnpm run hardhat:generate-abi && concurrently 'pnpm:hardhat:node' 'wait-on http://localhost:8545 && pnpm run hardhat:deploy' 'pnpm:frontend:dev'",
         "testfront": "hardhat test"
     },
     "dependencies": {
@@ -48,6 +48,7 @@
         "hardhat-deploy": "^0.11.26",
         "hardhat-deploy-ethers": "0.3.0-beta.13",
         "hardhat-gas-reporter": "^1.0.9",
+        "next": "^13.3.0",
         "react": "^18.2.0",
         "solc": "^0.8.19",
         "solidity-coverage": "^0.8.2",
@@ -55,6 +56,7 @@
         "ts-node": "^10.9.1",
         "typechain": "^8.1.1",
         "typescript": "^5.0.4",
+        "wait-on": "^7.0.1",
         "web3": "^1.9.0"
     },
     "engines": {

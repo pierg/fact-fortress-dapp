@@ -1,18 +1,18 @@
 // Import the smart contract
-const ZkpToken = artifacts.require("ZkpToken");
+const ZkpHealthToken = artifacts.require("ZkpHealthToken");
 
-contract("ZkpToken", (accounts) => {
-    let zkpToken;
+contract("ZkpHealthToken", (accounts) => {
+    let zkpHealthToken;
 
     beforeEach(async() => {
-        zkpToken = await ZkpToken.new();
+        zkpHealthToken = await ZkpHealthToken.new();
     });
 
     it("should mint a new token", async() => {
         // Mint a new token and get the ID
-        const tokenId = await zkpToken.mint(accounts[0]);
+        const tokenId = await zkpHealthToken.mint(accounts[0]);
 
         // Check that the token was minted and assigned to the correct address
-        assert.equal(await zkpToken.ownerOf(tokenId.receipt.logs[0].args.tokenId), accounts[0]);
+        assert.equal(await zkpHealthToken.ownerOf(tokenId.receipt.logs[0].args.tokenId), accounts[0]);
     });
 });

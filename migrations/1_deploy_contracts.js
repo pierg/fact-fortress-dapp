@@ -1,11 +1,11 @@
-const ZkpToken = artifacts.require("ZkpToken");
-const ZkpContract = artifacts.require("ZkpContract");
-const ZkpVerifier = artifacts.require("ZkpVerifier");
+const ZkpHealthToken = artifacts.require("ZkpHealthToken");
+const ZkpHealthVerifier = artifacts.require("ZkpHealthVerifier");
+const ZkpHealth = artifacts.require("ZkpHealth");
 
 module.exports = function(deployer) {
-    deployer.deploy(ZkpToken).then(function() {
-        deployer.deploy(ZkpVerifier).then(function() {
-            return deployer.deploy(ZkpContract, ZkpToken.address, ZkpVerifier.address)
+    deployer.deploy(ZkpHealthToken).then(function() {
+        deployer.deploy(ZkpHealthVerifier).then(function() {
+            return deployer.deploy(ZkpHealth, ZkpHealthToken.address, ZkpHealthVerifier.address)
         });
     });
 };

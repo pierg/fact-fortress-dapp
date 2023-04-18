@@ -2,20 +2,29 @@ const { initHelpers } = require("./frontend_helpers/proof.js");
 const { contracts } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
-const { mintController,
-  getTokenIdController } = require("./controllers/nft.controller.js");
-const { getPublicKeyController,
-  setPublicKeyController
+const {
+    mintController,
+    getTokenIdController
+} = require("./controllers/nft.controller.js");
+const {
+    getPublicKeyController,
+    setPublicKeyController
 } = require("./controllers/publicKeys.controller.js");
-const { generateKeyPairController,
-  uploadSignatureController,
-  signHashController,
-  signMessageController } = require("./controllers/signature.controller.js");
-const { getAvailableFunctionsController,
-  generateProofFunctionController } = require("./controllers/todo.controller.js");
-const { generateProofController,
-  verifyPublicInputsPoPController,
-  verifyProofPoPController } = require("./controllers/proof.controller.js");
+const {
+    generateKeyPairController,
+    uploadSignatureController,
+    signHashController,
+    signMessageController
+} = require("./controllers/signature.controller.js");
+const {
+    getAvailableFunctionsController,
+    generateProofFunctionController
+} = require("./controllers/todo.controller.js");
+const {
+    generateProofController,
+    verifyPublicInputsPoPController,
+    verifyProofPoPController
+} = require("./controllers/proof.controller.js");
 
 const express = require("express");
 const app = express();
@@ -26,19 +35,19 @@ const port = 3000;
 
 app.set("json spaces", 4);
 // app.use(express.json())
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
-  res.header("Access-Control-Allow-Headers", "*");
-  next();
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Headers", "*");
+    next();
 });
 
 async function deploy() {
-  await contracts.add("zkpToken.sol", "ZkpToken");
-  await contracts.add("zkpVerifier.sol", "ZkpVerifier");
-  await contracts.add("zkpContract.sol", "ZkpContract", [
-    contracts.getAddress("ZkpToken"),
-    contracts.getAddress("ZkpVerifier"),
-  ]);
+    await contracts.add("zkpHealthToken.sol", "ZkpHealthToken");
+    await contracts.add("zkpHealthVerifier.sol", "ZkpHealthVerifier");
+    await contracts.add("zkpHealth.sol", "ZkpHealth", [
+        contracts.getAddress("ZkpHealthToken"),
+        contracts.getAddress("ZkpHealthVerifier"),
+    ]);
 }
 
 // frontend helpers -- in Production, should be done offline --
@@ -67,52 +76,52 @@ app.post("/generate_proof_function", generateProofFunctionController);
 
 
 async function deploy() {
-  await contracts.add("zkpToken.sol", "ZkpToken");
-  await contracts.add("zkpVerifier.sol", "ZkpVerifier");
-  await contracts.add("zkpContract.sol", "ZkpContract", [
-    contracts.getAddress("ZkpToken"),
-    contracts.getAddress("ZkpVerifier"),
-  ]);
+    await contracts.add("zkpHealthToken.sol", "ZkpHealthToken");
+    await contracts.add("zkpHealthVerifier.sol", "ZkpHealthVerifier");
+    await contracts.add("zkpHealth.sol", "ZkpHealth", [
+        contracts.getAddress("ZkpHealthToken"),
+        contracts.getAddress("ZkpHealthVerifier"),
+    ]);
 }
 
 // init compute proof helpers in the background (takes time)
-(async () => {
-  await initHelpers();
+(async() => {
+    await initHelpers();
 })();
 
 deploy().then(() => {
-  const server = app.listen(port, () =>
-    console.log(`Server started on port ${port}`)
-  );
-
-  process.on("SIGTERM", shutDown);
-  process.on("SIGINT", shutDown);
-
-  let connections = [];
-
-  server.on("connection", (connection) => {
-    connections.push(connection);
-    connection.on(
-      "close",
-      () => (connections = connections.filter((curr) => curr !== connection))
+    const server = app.listen(port, () =>
+        console.log(`Server started on port ${port}`)
     );
-  });
 
-  function shutDown() {
-    console.log("Received kill signal, shutting down gracefully");
-    server.close(() => {
-      console.log("Closed out remaining connections");
-      process.exit(0);
+    process.on("SIGTERM", shutDown);
+    process.on("SIGINT", shutDown);
+
+    let connections = [];
+
+    server.on("connection", (connection) => {
+        connections.push(connection);
+        connection.on(
+            "close",
+            () => (connections = connections.filter((curr) => curr !== connection))
+        );
     });
 
-    setTimeout(() => {
-      console.error(
-        "Could not close connections in time, forcefully shutting down"
-      );
-      process.exit(1);
-    }, 10000);
+    function shutDown() {
+        console.log("Received kill signal, shutting down gracefully");
+        server.close(() => {
+            console.log("Closed out remaining connections");
+            process.exit(0);
+        });
 
-    connections.forEach((curr) => curr.end());
-    setTimeout(() => connections.forEach((curr) => curr.destroy()), 5000);
-  }
+        setTimeout(() => {
+            console.error(
+                "Could not close connections in time, forcefully shutting down"
+            );
+            process.exit(1);
+        }, 10000);
+
+        connections.forEach((curr) => curr.end());
+        setTimeout(() => connections.forEach((curr) => curr.destroy()), 5000);
+    }
 });

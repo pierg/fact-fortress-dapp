@@ -1,7 +1,7 @@
 const { contracts } = require('../contracts/contracts.js');
 
 async function setPublicKey(from, name, publicKey) {
-    const sc = contracts.getContract("ZkpContract");
+    const sc = contracts.getContract("ZkpHealth");
 
     try {
         const receipt = await sc.methods.setPublicKey(
@@ -27,7 +27,7 @@ async function setPublicKey(from, name, publicKey) {
 }
 
 async function getPublicKey(name, version) {
-    const sc = contracts.getContract("ZkpContract");
+    const sc = contracts.getContract("ZkpHealth");
 
     try {
         const publicKey = await sc.methods.getPublicKey(
@@ -47,7 +47,7 @@ async function getPublicKey(name, version) {
 }
 
 async function storeSignature(from, publicKey, signature) {
-    const sc = contracts.getContract("ZkpContract");
+    const sc = contracts.getContract("ZkpHealth");
 
     try {
         await sc.methods.storeSignature(

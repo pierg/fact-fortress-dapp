@@ -3,15 +3,15 @@
 
 pragma solidity ^0.8.0;
 
-import "./zkpToken.sol";
-import "./zkpVerifier.sol";
+import "./zkpHealthToken.sol";
+import "./zkpHealthVerifier.sol";
 
 // This contract manages the hospital's public keys and verifies, directly and indirectly
 // (by calling the proof of provenance verifier contracts), the zero-knowledge proofs
-contract ZkpContract {
+contract ZkpHealth {
     address private _owner;
-    ZkpToken private _zkpToken;
-    ZkpVerifier private _zkpVerifier;
+    ZkpHealthToken private _zkpHealthToken;
+    ZkpHealthVerifier private _zkpHealthVerifier;
 
     // Public keys
     event PublicKeyVersion(uint);
@@ -29,8 +29,8 @@ contract ZkpContract {
 
     constructor(address zkpTokenAddress, address zkpVerifierAddress) {
         _owner = msg.sender;
-        _zkpToken = ZkpToken(zkpTokenAddress);
-        _zkpVerifier = ZkpVerifier(zkpVerifierAddress);
+        _zkpHealthToken = ZkpHealthToken(zkpTokenAddress);
+        _zkpHealthVerifier = ZkpHealthVerifier(zkpVerifierAddress);
     }
 
     // PUBLIC KEYS MANAGEMENT
@@ -62,7 +62,7 @@ contract ZkpContract {
         // 1) public key cannot be empty (TODO: ensure it is valid)
         // 2) caller of the function has to own an NFT
         require(bytes(publicKey).length != 0, "Public key cannot be empty");
-        uint256 tokenId = _zkpToken.userToToken(msg.sender);
+        uint256 tokenId = _zkpHealthToken.userToToken(msg.sender);
         require(tokenId > 0, "Caller is not authorized to set a public key");
 
         if (publicKeys[name].length > 0) {
@@ -111,7 +111,7 @@ contract ZkpContract {
         bytes calldata signature
     ) external {
         require(
-            _zkpToken.userToToken(msg.sender) > 0,
+            _zkpHealthToken.userToToken(msg.sender) > 0,
             "Caller is not authorized to store a signature"
         );
 
@@ -195,6 +195,6 @@ contract ZkpContract {
     function verifyProofPoP(
         bytes calldata proof
     ) external view returns (bool result) {
-        return _zkpVerifier.verify(proof);
+        return _zkpHealthVerifier.verify(proof);
     }
 }
