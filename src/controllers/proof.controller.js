@@ -66,9 +66,7 @@ async function verifyPublicInputsPoPController(
     const result = await verifyPublicInputsPoP(publicKey, proof);
 
     if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
+        res.status(500).json(result);
     } else {
         res.status(200).json(result);
     }
@@ -89,9 +87,7 @@ async function verifyProofPoPController(
     const result = await verifyProofPoP(proof);
 
     if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
+        res.status(500).json(result);
     } else {
         res.status(200).json(result);
     }
