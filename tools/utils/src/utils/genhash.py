@@ -31,10 +31,10 @@ def get_hash(data: list[list[int]]) -> list[int]:
 
 
 def get_hash_simple(data_int: list[int]) -> list[int]:
-    print(f"data_int:\t{data_int}")
+    print(f"data_int:\t{data_hex}")
     # Convert the list of integers to a list of hex strings
     data_hex = [hex(d)[2:].zfill(2) for d in data_int]
-    print(f"data_hex:\t{data_hex}")
+    print(f"data:\t{data_hex}")
 
     # Convert the list of hex strings to a byte string
     byte_string = bytes.fromhex("".join(data_hex))
@@ -53,7 +53,5 @@ def get_hash_simple(data_int: list[int]) -> list[int]:
 
     print(f"hash_int:\t{hash_int_list}")
 
-    hash_str = 
-    print(f"hash_str:\t{hash_int_list}")
-    return "".join("{:02x}".format(x) for x in hash_bytes)
-    return hash_hex_list
+    # Print the list of hex-encoded bytes
+    print(hash_hex_list)
