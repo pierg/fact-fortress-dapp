@@ -87,20 +87,28 @@ def generate_data_file(config: dict, file_path: Path):
     data_sizes = config["data_sizes"]
     data_formats = config["data_formats"]
     data_comments = config["data_comments"]
-    precision = config["precision"]
-    sum_size = config["sum_size"]
+    precision = None
+    sum_size = None
+    population_size = None
+    if "precision" in config:
+        precision = config["precision"]
+    if "sum_size" in config:
+        sum_size = config["sum_size"]
+    if "population_size" in config:
+        population_size = config["population_size"]
     num_data_fields = len(data_sizes)
 
     with open(str(file_path), "w") as f:
         for i in range(num_data_fields):
             f.write("global D{}_SIZE: Field = {};\n".format(i + 1, data_sizes[i]))
         f.write("global DATA_SIZE: Field = {};\n".format(sum(data_sizes)))
-        f.write(
-            "global POPULATION_SIZE: Field = {};\n".format(config["population_size"])
-        )
-        f.write("global PRECISION: u8 = {};\n".format(precision))
+        if population_size is not None:
+            f.write("global POPULATION_SIZE: Field = {};\n".format(population_size))
+        if precision is not None:
+            f.write("global PRECISION: u8 = {};\n".format(precision))
         f.write("\n")
-        f.write("global SUM_SIZE: Field = {};\n".format(sum_size))
+        if sum_size is not None:
+            f.write("global SUM_SIZE: Field = {};\n".format(sum_size))
         f.write("\n")
         f.write("struct Public{\n")
         f.write("    keys: Keys,\n")

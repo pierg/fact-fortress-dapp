@@ -2,25 +2,6 @@ import hashlib
 from shared import sum_size
 
 
-class Data:
-    def __init__(self):
-        # individuals
-        self.d1 = [0] * D1_SIZE
-        # betas
-        self.d2 = [0] * D2_SIZE
-
-
-def custom_sum_new(data: list[int]) -> list[int]:
-    result = [0] * SUM_SIZE
-    for i in range(DATA_SIZE):
-        index_1 = i % D1_SIZE
-        index_2 = i % D2_SIZE
-        sum_val = (data[index_1][0] + data[index_2][0]) % 256
-        index = i % SUM_SIZE
-        result[index] = (result[index] + sum_val) % 256
-    return result
-
-
 def custom_sum(data: list[int]) -> list[int]:
     result = [0] * sum_size
     for i, d in enumerate(data):
@@ -49,12 +30,27 @@ def get_hash(data: list[list[int]]) -> list[int]:
     return hash_ints
 
 
-def get_hash_simple(data: list[int]) -> list[int]:
-    # Convert to list of 8 bytes
-    custom_array_bytes = bytes(data)
+def get_hash_simple(data_int: list[int]) -> list[int]:
+    print(f"data_int:\t{data_int}")
+    # Convert the list of integers to a list of hex strings
+    data_hex = [hex(d)[2:].zfill(2) for d in data_int]
+    print(f"data_hex:\t{data_hex}")
 
-    # Create an list of 32 bytes representing the SHA256 of custom_array_bytes
-    hash_bytes = hashlib.sha256(custom_array_bytes).digest()
+    # Convert the list of hex strings to a byte string
+    byte_string = bytes.fromhex("".join(data_hex))
 
-    # Return the hex digest of the hash
-    return "".join("{:02x}".format(x) for x in hash_bytes)
+    # Compute the SHA256 hash of the byte string
+    hash_object = hashlib.sha256(byte_string)
+    hash_digest = hash_object.digest()
+
+    # Convert the hash digest to a list of hex-encoded bytes
+    hash_hex_list = [format(b, "02x") for b in hash_digest]
+
+    print(f"hash_hex:\t{hash_hex_list}")
+
+    # Convert the hash digest to a list of integers
+    hash_int_list = [int(b) for b in hash_digest]
+
+    print(f"hash_int:\t{hash_int_list}")
+
+    return hash_hex_list
