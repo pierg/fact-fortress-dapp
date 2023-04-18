@@ -21,8 +21,8 @@ def gen_key_pairs() -> tuple[str]:
 
 def sign(message_hash: list[int], private_key: str) -> list[int]:
     # Sign a message
-    sign_url = "http://localhost:3000/sign"
-    payload = {"private_key": private_key, "message": message_hash}
+    sign_url = "http://localhost:3000/sign_hash"
+    payload = {"private_key": private_key, "hash": message_hash}
     response = requests.post(sign_url, json=payload)
 
     # Handle the response
