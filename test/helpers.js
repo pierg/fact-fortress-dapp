@@ -16,19 +16,6 @@ class BarretenbergHelper {
         return signature;
     }
 
-    generateAbi(publicKey, hashHex, signature) {
-        const publicKeyXY = Buffer.from(publicKey.replace(/^0x/i, ''), 'hex')
-        const publicKey_x = publicKeyXY.subarray(0, 32)
-        const publicKey_y = publicKeyXY.subarray(32, 64)
-
-        return {
-            pub_key_x: '0x' + publicKey_x.toString('hex'),
-            pub_key_y: '0x' + publicKey_y.toString('hex'),
-            signature,
-            hash: hexToBytes(hashHex)
-        }
-    }
-
     getRandomGrumpkinPublicKey() {
         const pubKey = this.schnorr.computePublicKey(randomBytes(32));
         const publicKey = new GrumpkinAddress(pubKey);

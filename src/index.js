@@ -1,4 +1,4 @@
-const { initHelpers } = require("./frontend_helpers/proof.js");
+const { initCircuitsHelpers } = require("./frontend_helpers/proof.js");
 const { contracts } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
@@ -18,7 +18,6 @@ const {
 } = require("./controllers/signature.controller.js");
 const {
     getAvailableFunctionsController,
-    generateProofFunctionController
 } = require("./controllers/todo.controller.js");
 const {
     generateProofController,
@@ -41,7 +40,8 @@ app.use(function(req, res, next) {
     next();
 });
 
-async function deploy() {
+async function deployContracts() {
+    console.log('---------- deploying contracts ----------');
     await contracts.add({
         "filename": "zkpHealthToken.sol",
         "name": "ZkpHealthToken",
@@ -53,6 +53,30 @@ async function deploy() {
         "is_verifier": true,
         "circuit_name": "schnorr",
         "circuit_purpose": "proof_of_provenance",
+        "abi_generator": function generateAbi(args) {
+            // right side: args.{name_of_key_in_request_body}
+            const publicKey = args.public_key;
+            const hashHex = args.hash;
+            const signature = args.signature;
+
+            // public key -> x, y
+            const publicKeyXY = Buffer.from(publicKey.replace(/^0x/i, ''), 'hex')
+            const publicKey_x = publicKeyXY.subarray(0, 32)
+            const publicKey_y = publicKeyXY.subarray(32, 64)
+
+            // hash: hex -> bytes
+            let hash = [];
+            for (let c = 0; c < hashHex.length; c += 2) {
+                hash.push(parseInt(hashHex.substr(c, 2), 16));
+            }
+
+            return {
+                pub_key_x: '0x' + publicKey_x.toString('hex'),
+                pub_key_y: '0x' + publicKey_y.toString('hex'),
+                signature,
+                hash
+            }
+        }
     });
 
     await contracts.add({
@@ -63,6 +87,8 @@ async function deploy() {
             contracts.getAddress("ZkpHealthVerifier"),
         ],
     });
+
+    console.log("► contracts deployed ✓");
 }
 
 // frontend helpers -- in Production, should be done offline --
@@ -87,46 +113,43 @@ app.post("/verify_proof", verifyProofPoPController); // verify the proof (PoP)
 
 // TODO
 app.get("/available_functions", getAvailableFunctionsController);
-app.post("/generate_proof_function", generateProofFunctionController);
 
-deploy().then(() => {
-    // init compute proof helpers in the background (takes time)
-    (async() => {
-        await initHelpers();
-    })();
-
-    const server = app.listen(port, () =>
-        console.log(`Server started on port ${port}`)
-    );
-
-    process.on("SIGTERM", shutDown);
-    process.on("SIGINT", shutDown);
-
-    let connections = [];
-
-    server.on("connection", (connection) => {
-        connections.push(connection);
-        connection.on(
-            "close",
-            () => (connections = connections.filter((curr) => curr !== connection))
+deployContracts().then(() => {
+    // init circuits helpers in the background (takes time)
+    initCircuitsHelpers().then(async() => {
+        const server = app.listen(port, () =>
+            console.log(`► server started on port ${port} ✓`)
         );
-    });
 
-    function shutDown() {
-        console.log("Received kill signal, shutting down gracefully");
-        server.close(() => {
-            console.log("Closed out remaining connections");
-            process.exit(0);
+        process.on("SIGTERM", shutDown);
+        process.on("SIGINT", shutDown);
+
+        let connections = [];
+
+        server.on("connection", (connection) => {
+            connections.push(connection);
+            connection.on(
+                "close",
+                () => (connections = connections.filter((curr) => curr !== connection))
+            );
         });
 
-        setTimeout(() => {
-            console.error(
-                "Could not close connections in time, forcefully shutting down"
-            );
-            process.exit(1);
-        }, 10000);
+        function shutDown() {
+            console.log("Received kill signal, shutting down gracefully");
+            server.close(() => {
+                console.log("Closed out remaining connections");
+                process.exit(0);
+            });
 
-        connections.forEach((curr) => curr.end());
-        setTimeout(() => connections.forEach((curr) => curr.destroy()), 5000);
-    }
+            setTimeout(() => {
+                console.error(
+                    "Could not close connections in time, forcefully shutting down"
+                );
+                process.exit(1);
+            }, 10000);
+
+            connections.forEach((curr) => curr.end());
+            setTimeout(() => connections.forEach((curr) => curr.destroy()), 5000);
+        }
+    });
 });

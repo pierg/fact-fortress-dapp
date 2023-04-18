@@ -17,7 +17,7 @@ class CircuitHelper {
         this.circuits = {};
     }
 
-    async add(circuitName) {
+    async add(circuitName, abiGenerator) {
         const circuitFilepath = resolve(
             __dirname,
             `../../circuits/${circuitName}/src/main.nr`
@@ -38,6 +38,7 @@ class CircuitHelper {
         }
 
         this.circuits[circuitName] = {};
+        this.circuits[circuitName].abiGenerator = abiGenerator;
         this.circuits[circuitName].acir = compiledCircuit.circuit;
         const [prover, verifier] = await setup_generic_prover_and_verifier(
             compiledCircuit.circuit,
@@ -45,6 +46,10 @@ class CircuitHelper {
 
         this.circuits[circuitName].prover = prover;
         this.circuits[circuitName].verifier = verifier;
+    }
+
+    generateAbi(circuitName, args) {
+        return this.circuits[circuitName].abiGenerator(args);
     }
 
     async generateProof(circuitName, abi) {
@@ -56,24 +61,25 @@ class CircuitHelper {
     }
 }
 
-async function initHelpers() {
-    console.log("Initializing compute helpers (Barretenberg WASM)...");
+async function initCircuitsHelpers() {
+    console.log('---------- initializing verifiers ----------');
     const barretenbergWasm = await BarretenbergWasm.new();
     barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
     circuitHelper = new CircuitHelper();
 
     for (const contractName in contracts.contracts) {
-        if (contracts.contracts[contractName].is_verifier) {
+        const contract = contracts.contracts[contractName];
+        if (contract.is_verifier) {
             console.log(`Initializing verifier ${contractName}`);
             const circuitName = contracts.contracts[contractName].circuit_name;
-            await circuitHelper.add(circuitName);
+            await circuitHelper.add(circuitName, contract.abi_generator);
         }
     }
 
-    console.log("Initializing compute helpers (Barretenberg WASM) [DONE]");
+    console.log("► initialized verifiers ✓");
 }
 
-async function computeProof(healthFunction, publicKey, hash, signature) {
+async function computeProof(healthFunction, args) {
     const contract = contracts.getContractByHealthFunction(healthFunction);
     let circuitName;
 
@@ -84,8 +90,9 @@ async function computeProof(healthFunction, publicKey, hash, signature) {
         circuitName = contract.circuit_name;
     }
 
-    const abi = barretenbergHelper.generateAbi(publicKey, hash, signature);
+    const abi = circuitHelper.generateAbi(circuitName, args);
+
     return [...await circuitHelper.generateProof(circuitName, abi)];
 }
 
-module.exports = { initHelpers, computeProof };
+module.exports = { initCircuitsHelpers, computeProof };

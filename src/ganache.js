@@ -1,7 +1,7 @@
 const ganache = require('ganache');
 
 // Create a new Ganache server
-const server = ganache.server({
+const ganacherServer = ganache.server({
     verbose: false,
     debug: false,
     quiet: true,
@@ -10,9 +10,9 @@ const server = ganache.server({
 });
 
 // Start the server
-server.listen(8545, () => {
-    console.log('Ganache launched');
+ganacherServer.listen(8545, () => {
+    console.log('► Ganache launched ✓');
 });
 
 // Export the server object as a module
-module.exports = server;
+module.exports = { ganacherServer };

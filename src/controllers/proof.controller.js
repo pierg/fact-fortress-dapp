@@ -6,28 +6,6 @@ async function generateProofController(
     res,
     next
 ) {
-    const publicKey = req.query.public_key;
-    if (!publicKey) {
-        return res.status(500).json({
-            error: "no public key has been provided",
-            expected_url: "/generate_proof?public_key={public_key}",
-        });
-    }
-
-    const hash = req.body["hash"];
-    if (!hash) {
-        return res.status(500).json({
-            error: "no hash has been provided in the body of the request",
-        });
-    }
-
-    const signature = req.body["signature"];
-    if (!signature) {
-        return res.status(500).json({
-            error: "no signature has been provided in the body of the request",
-        });
-    }
-
     let health_function = req.body.health_function;
 
     // TODO(Guillaume): remove once several contracts are supported
@@ -35,7 +13,7 @@ async function generateProofController(
         health_function = "proof_of_provenance";
     }
 
-    const result = await computeProof(health_function, publicKey, hash, signature);
+    const result = await computeProof(health_function, req.body);
 
     if (result == null) {
         res.status(500).json({

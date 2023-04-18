@@ -19,6 +19,31 @@ const { randomBytes } = require("crypto");
 
 const fs = require("fs");
 
+function generateAbiMock(args) {
+    // right side: args.{name_of_key_in_request_body}
+    const publicKey = args.public_key;
+    const hashHex = args.hash;
+    const signature = args.signature;
+
+    // public key -> x, y
+    const publicKeyXY = Buffer.from(publicKey.replace(/^0x/i, ''), 'hex')
+    const publicKey_x = publicKeyXY.subarray(0, 32)
+    const publicKey_y = publicKeyXY.subarray(32, 64)
+
+    // hash: hex -> bytes
+    let hash = [];
+    for (let c = 0; c < hashHex.length; c += 2) {
+        hash.push(parseInt(hashHex.substr(c, 2), 16));
+    }
+
+    return {
+        pub_key_x: '0x' + publicKey_x.toString('hex'),
+        pub_key_y: '0x' + publicKey_y.toString('hex'),
+        signature,
+        hash
+    }
+}
+
 contract("ZkpHealth", function(accounts) {
     const healthData = {
         patient_id_0: {
@@ -358,7 +383,11 @@ contract("ZkpHealth", function(accounts) {
                 const signature = helper.signHash(privateKey, hash);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
 
-                validAbi = helper.generateAbi(publicKey, hash, signature);
+                validAbi = generateAbiMock({
+                    "public_key": publicKey,
+                    "hash": hash,
+                    "signature": signature
+                });
 
                 const proof = await create_proof(prover, acir, validAbi);
                 const verified = await verify_proof(verifier, proof);
@@ -388,7 +417,11 @@ contract("ZkpHealth", function(accounts) {
                 const signature = helper.signHash(privateKey, hash);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
 
-                validAbi = helper.generateAbi(publicKey, hash, signature);
+                validAbi = generateAbiMock({
+                    "public_key": publicKey,
+                    "hash": hash,
+                    "signature": signature
+                });
 
                 const proof = await create_proof(prover, acir, validAbi);
                 const verified = await verify_proof(verifier, proof);
@@ -415,7 +448,11 @@ contract("ZkpHealth", function(accounts) {
                     from: hospitalA,
                 });
 
-                validAbi = helper.generateAbi(publicKey, hash, signature);
+                validAbi = generateAbiMock({
+                    "public_key": publicKey,
+                    "hash": hash,
+                    "signature": signature
+                });
 
                 const proof = await create_proof(prover, acir, validAbi);
                 const verified = await verify_proof(verifier, proof);
@@ -439,7 +476,11 @@ contract("ZkpHealth", function(accounts) {
                 const signature = helper.signHash(privateKey, hash);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
 
-                const abi = helper.generateAbi(publicKey, hash, signature);
+                const abi = generateAbiMock({
+                    "public_key": publicKey,
+                    "hash": hash,
+                    "signature": signature
+                });
 
                 // falsify the signature to make it invalid and fail the proof
                 abi.signature[0] = (abi.signature[0] + 1) % 256;
@@ -503,11 +544,11 @@ contract("ZkpHealth", function(accounts) {
                 const hospitalSignatureP = signature; // communicated by the hospital
 
                 // b) Generation of the proof
-                const abi = helper.generateAbi(
-                    hospitalPublicKeyP,
-                    hospitalHashP,
-                    hospitalSignatureP
-                );
+                const abi = generateAbiMock({
+                    "public_key": hospitalPublicKeyP,
+                    "hash": hospitalHashP,
+                    "signature": hospitalSignatureP
+                });
                 const proof = await create_proof(prover, acir, abi);
 
                 // c) (sanity check) The researcher verifies off-chain that the proof is valid
