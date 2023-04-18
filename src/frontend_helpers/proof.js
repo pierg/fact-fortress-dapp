@@ -6,7 +6,7 @@ const { compile } = require("@noir-lang/noir_wasm");
 const { resolve } = require("path");
 const { BarretenbergWasm } = require("@noir-lang/barretenberg/dest/wasm");
 const { BarretenbergHelper } = require("./../../test/helpers.js");
-const { contracts } = require("./../contracts/contracts.js");
+const { contractsHelper } = require("./../contracts/contracts.js");
 
 const fs = require("fs");
 
@@ -67,11 +67,11 @@ async function initCircuitsHelpers() {
     barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
     circuitHelper = new CircuitHelper();
 
-    for (const contractName in contracts.contracts) {
-        const contract = contracts.contracts[contractName];
+    for (const contractName in contractsHelper.contracts) {
+        const contract = contractsHelper.contracts[contractName];
         if (contract.is_verifier) {
             console.log(`Initializing verifier ${contractName}`);
-            const circuitName = contracts.contracts[contractName].circuit_name;
+            const circuitName = contractsHelper.contracts[contractName].circuit_name;
             await circuitHelper.add(circuitName, contract.abi_generator);
         }
     }
@@ -80,7 +80,7 @@ async function initCircuitsHelpers() {
 }
 
 async function computeProof(healthFunction, args) {
-    const contract = contracts.getContractByHealthFunction(healthFunction);
+    const contract = contractsHelper.getContractByHealthFunction(healthFunction);
 
     // guard clause: ensure the function exists
     if (!contract) {

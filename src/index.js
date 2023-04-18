@@ -1,5 +1,5 @@
 const { initCircuitsHelpers } = require("./frontend_helpers/proof.js");
-const { contracts } = require("./contracts/contracts.js");
+const { contractsHelper } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
 const {
@@ -42,12 +42,12 @@ app.use(function(req, res, next) {
 
 async function deployContracts() {
     console.log('---------- deploying contracts ----------');
-    await contracts.add({
+    await contractsHelper.add({
         "filename": "zkpHealthToken.sol",
         "name": "ZkpHealthToken",
     });
 
-    await contracts.add({
+    await contractsHelper.add({
         "filename": "zkpHealthVerifier.sol",
         "name": "ZkpHealthVerifier",
         "is_verifier": true,
@@ -79,12 +79,12 @@ async function deployContracts() {
         }
     });
 
-    await contracts.add({
+    await contractsHelper.add({
         "filename": "zkpHealth.sol",
         "name": "ZkpHealth",
         "args": [
-            contracts.getAddress("ZkpHealthToken"),
-            contracts.getAddress("ZkpHealthVerifier"),
+            contractsHelper.getAddress("ZkpHealthToken"),
+            contractsHelper.getAddress("ZkpHealthVerifier"),
         ],
     });
 
@@ -97,6 +97,7 @@ app.get("/key_pair", generateKeyPairController); // generate private/public key 
 app.post("/sign_hash", signHashController); // sign a hashed message
 app.post("/sign_message", signMessageController); // hash and sign a message
 app.post("/generate_proof", generateProofController); // generate the proof
+app.get("/available_functions", getAvailableFunctionsController);
 
 // public keys
 app.get("/mint", mintController); // authorize an entity (mint NFT and send)
@@ -110,9 +111,6 @@ app.post("/upload_signature", uploadSignatureController); // upload the signatur
 // proofs
 app.post("/verify_public_inputs", verifyPublicInputsPoPController); // verify the public inputs (PoP)
 app.post("/verify_proof", verifyProofPoPController); // verify the proof (PoP)
-
-// TODO
-app.get("/available_functions", getAvailableFunctionsController);
 
 deployContracts().then(() => {
     // init circuits helpers in the background (takes time)

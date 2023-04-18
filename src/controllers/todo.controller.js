@@ -1,5 +1,4 @@
-const { computeProof } = require("./../frontend_helpers/proof.js");
-const { contracts } = require('../contracts/contracts.js');
+const { contractsHelper } = require('../contracts/contracts.js');
 
 // Retrieve available functions endpoint
 async function getAvailableFunctionsController(
@@ -7,20 +6,27 @@ async function getAvailableFunctionsController(
     res,
     next
 ) {
-    // TODO
+    let availableHealthFunctions = {};
 
-    // FAKE EXAMPLE
-    const functions_json = {
-        health_function: ["fun1", "fun2"],
-        health_data: [
-            "hospA_type_1",
-            "hospA_type_2",
-            "hospB_type_1",
-            "hospB_type_2",
-        ],
+    for (const contractName in contractsHelper.contracts) {
+        const sc = contractsHelper.contracts[contractName];
+
+        if (sc.is_verifier) {
+            // TODO: replace with more complete examples
+            availableHealthFunctions[sc.circuit_purpose] = {
+                "health_data": [
+                    "hospA_type_1",
+                    "hospA_type_2",
+                    "hospB_type_1",
+                    "hospB_type_2",
+                ]
+            }
+        }
+
     };
 
-    res.status(200).json(functions_json);
+    res.status(200).json(availableHealthFunctions);
 }
+
 
 module.exports = { getAvailableFunctionsController }

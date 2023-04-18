@@ -2,7 +2,7 @@ const { compile } = require('./compile.js');
 const { deploy } = require('./deploy.js');
 const web3 = require('./../web3.js');
 
-class Contracts {
+class ContractsHelper {
     constructor() {
         this.contracts = {};
     }
@@ -59,6 +59,6 @@ class Contracts {
     }
 }
 
-let contracts = new Contracts;
+let contractsHelper = new ContractsHelper;
 
-module.exports = { contracts }
+module.exports = { contractsHelper }
