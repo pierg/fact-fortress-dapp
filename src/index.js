@@ -223,7 +223,7 @@ app.get("/key_pair", async (req, res) => {
   }
 });
 
-// Generate keypair endpoint
+// Retrieve available functions endpoint
 app.get("/available_functions", async (req, res) => {
   // TODO
 
@@ -247,6 +247,8 @@ app.post("/generate_proof_function", async (req, res) => {
   const health_data = req.query.health_data;
 
   // TODO
+
+  const result = await computeProof(publicKey, hash, signature);
 
   // FAKE EXAMPLE
   const proof_return = {

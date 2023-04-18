@@ -1,8 +1,17 @@
 # ZKP Health
 
-## Endpoints
+## ERRORS
+
+(utils-3.11) pier@Piergiuseppes-Laptop zkp-hackathon % npm install
+npm ERR! code EUNSUPPORTEDPROTOCOL
+npm ERR! Unsupported URL Type "link:": link:@noir-lang/barretenberg/dest/crypto/schnorr
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/pier/.npm/_logs/2023-04-18T04_09_58_474Z-debug-0.log
 
 ### Run the API Server
+
+
 
 ```
 pnpm run serve

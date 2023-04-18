@@ -1,8 +1,8 @@
-global D1_SIZE: Field = 6;
-global D2_SIZE: Field = 3;
-global DATA_SIZE: Field = 9;
-global POPULATION_SIZE: Field = 2;
+global D1_SIZE: Field = 4;
+global D2_SIZE: Field = 2;
+global DATA_SIZE: Field = 6;
 global PRECISION: u8 = 10;
+
 
 global SUM_SIZE: Field = 8;
 
@@ -17,13 +17,14 @@ struct Keys {
 }
 
 struct Statement {
-    value: u8,
+    risk_score: Field,
 }
 
 struct Private {
     provenance: Provenance,
     data: Data,
 }
+
 
 struct Provenance {
     signature: [u8; 64],
@@ -32,7 +33,9 @@ struct Provenance {
 
 struct Data {
     // individuals
-    d1: [u2; 6],
+    d1: [u2; D1_SIZE],
     // betas
-    d2: [u16; 3],
+    d2: [u16; D2_SIZE],
 }
+
+
