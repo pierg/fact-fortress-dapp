@@ -7,17 +7,17 @@ class Contracts {
         this.contracts = {};
     }
 
-    async add(filename, name, args) {
-        const sc = compile(filename, name);
-        const address = await deploy(sc, args);
+    async add(contract) {
+        const sc = compile(contract.filename, contract.name);
+        const address = await deploy(sc, contract.args);
 
-        console.log(`${name} deployed at address ${address}`);
+        console.log(`${contract.name} deployed at address ${address}`);
 
-        this.contracts[name] = {
-            "address": address,
-            "abi": sc.abi,
-            "contract": new web3.eth.Contract(sc.abi, address)
-        }
+        this.contracts[contract.name] = contract;
+        this.contracts[contract.name].address = address;
+        this.contracts[contract.name].args = contract.args;
+        this.contracts[contract.name].abi = sc.abi;
+        this.contracts[contract.name].contract = new web3.eth.Contract(sc.abi, address);
     }
 
     ensureContract(name) {
@@ -41,10 +41,22 @@ class Contracts {
         return this.contracts[name]["address"];
     }
 
-    getContract(name) {
+    getContractByName(name) {
         if (!this.ensureContract(name)) return;
 
         return this.contracts[name]["contract"];
+    }
+
+    getContractByFunction(healthFunction) {
+        for (const contractName in this.contracts) {
+            const sc = this.contracts[contractName];
+
+            if (sc.purpose &&
+                sc.purpose.localeCompare(healthFunction, undefined, { sensitivity: 'base' }) === 0) {
+
+                return sc;
+            }
+        }
     }
 }
 

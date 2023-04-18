@@ -42,12 +42,25 @@ app.use(function(req, res, next) {
 });
 
 async function deploy() {
-    await contracts.add("zkpHealthToken.sol", "ZkpHealthToken");
-    await contracts.add("zkpHealthVerifier.sol", "ZkpHealthVerifier");
-    await contracts.add("zkpHealth.sol", "ZkpHealth", [
-        contracts.getAddress("ZkpHealthToken"),
-        contracts.getAddress("ZkpHealthVerifier"),
-    ]);
+    await contracts.add({
+        "filename": "zkpHealthToken.sol",
+        "name": "ZkpHealthToken",
+    });
+
+    await contracts.add({
+        "filename": "zkpHealthVerifier.sol",
+        "name": "ZkpHealthVerifier",
+        "purpose": "proof_of_provenance",
+    });
+
+    await contracts.add({
+        "filename": "zkpHealth.sol",
+        "name": "ZkpHealth",
+        "args": [
+            contracts.getAddress("ZkpHealthToken"),
+            contracts.getAddress("ZkpHealthVerifier"),
+        ],
+    });
 }
 
 // frontend helpers -- in Production, should be done offline --
@@ -74,15 +87,6 @@ app.post("/verify_proof", verifyProofPoPController); // verify the proof (PoP)
 app.get("/available_functions", getAvailableFunctionsController);
 app.post("/generate_proof_function", generateProofFunctionController);
 
-
-async function deploy() {
-    await contracts.add("zkpHealthToken.sol", "ZkpHealthToken");
-    await contracts.add("zkpHealthVerifier.sol", "ZkpHealthVerifier");
-    await contracts.add("zkpHealth.sol", "ZkpHealth", [
-        contracts.getAddress("ZkpHealthToken"),
-        contracts.getAddress("ZkpHealthVerifier"),
-    ]);
-}
 
 // init compute proof helpers in the background (takes time)
 (async() => {
