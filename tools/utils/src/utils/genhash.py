@@ -53,7 +53,7 @@ def get_hash_simple(data_int: list[int]) -> list[int]:
 
     print(f"hash_int:\t{hash_int_list}")
 
-    hash_str = "".join("{:02x}".format(x) for x in hash_hex_list)
-
-    print(f"hash_str:\t{hash_str}")
-    return hash_str
+    hash_str = 
+    print(f"hash_str:\t{hash_int_list}")
+    return "".join("{:02x}".format(x) for x in hash_bytes)
+    return hash_hex_list
