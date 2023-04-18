@@ -5,9 +5,9 @@
             "data": {
                 "patient_id_0": {
                     "genetic_data": {
-                        "rs10757274": "GG",
-                        "rs562556": "AG",
-                        "rs429358": "CT",
+                        "rs10757274": "AA",
+                        "rs562556": "GG",
+                        "rs429358": "TT",
                         "rs7412": "CC",
                         "rs1801133": "CT"
                     },
@@ -16,12 +16,12 @@
                 "patient_id_1": {
                     "genetic_data": {
                         "rs10757274": "GG",
-                        "rs562556": "AG",
-                        "rs429358": "TT",
-                        "rs7412": "CC",
-                        "rs1801133": "TT"
+                        "rs562556": "AA",
+                        "rs429358": "CT",
+                        "rs7412": "TT",
+                        "rs1801133": "CT"
                     },
-                    "name": "Eve"
+                    "name": "Bob"
                 }
             },
             "r": "0x50421a7f32bda9098c8b8a7852ad6568cb0f75e11a63996bd48404651c6c7a77",
@@ -35,20 +35,20 @@
                         "rs10757274": "AG",
                         "rs562556": "GG",
                         "rs429358": "TT",
-                        "rs7412": "CC",
+                        "rs7412": "CT",
                         "rs1801133": "CT"
                     },
-                    "name": "Bob"
+                    "name": "Desmond"
                 },
                 "patient_id_1": {
                     "genetic_data": {
-                        "rs10757274": "AG",
-                        "rs562556": "AG",
-                        "rs429358": "CC",
+                        "rs10757274": "GG",
+                        "rs562556": "GG",
+                        "rs429358": "TT",
                         "rs7412": "TT",
                         "rs1801133": "CC"
                     },
-                    "name": "Alice"
+                    "name": "Charlie"
                 }
             },
             "r": "0xe4ca798c31f02d23615e9f428a73922bb1bbe14c8658a77470f63c042675fabe",
