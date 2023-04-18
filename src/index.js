@@ -51,8 +51,8 @@ async function deployContracts() {
         "filename": "zkpHealthVerifier.sol",
         "name": "ZkpHealthVerifier",
         "is_verifier": true,
-        "circuit_name": "schnorr",
-        "circuit_purpose": "proof_of_provenance",
+        "circuit_name": "schnorr", // i.e., name of the directory that contains the circuit
+        "circuit_purpose": "proof_of_provenance", // i.e., health_function
         "abi_generator": function generateAbi(args) {
             // right side: args.{name_of_key_in_request_body}
             const publicKey = args.public_key;

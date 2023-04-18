@@ -62,7 +62,7 @@ class CircuitHelper {
 }
 
 async function initCircuitsHelpers() {
-    console.log('---------- initializing verifiers ----------');
+    console.log('--------- initializing verifiers --------');
     const barretenbergWasm = await BarretenbergWasm.new();
     barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
     circuitHelper = new CircuitHelper();
@@ -81,14 +81,15 @@ async function initCircuitsHelpers() {
 
 async function computeProof(healthFunction, args) {
     const contract = contracts.getContractByHealthFunction(healthFunction);
-    let circuitName;
 
-    // TODO(Guillaume): remove once the other verifiers are implemented
-    if (!contract || !contract.circuit_name) {
-        circuitName = "schnorr";
-    } else {
-        circuitName = contract.circuit_name;
+    // guard clause: ensure the function exists
+    if (!contract) {
+        return {
+            "error": `Health function ${healthFunction} is not implemented`
+        }
     }
+
+    const circuitName = contract.circuit_name;
 
     const abi = circuitHelper.generateAbi(circuitName, args);
 
