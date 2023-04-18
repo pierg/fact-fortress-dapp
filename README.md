@@ -22,9 +22,11 @@ pnpm install
 pnpm dev
 ```
 
-### End-to-End Flow
+### Backend End-to-End Flow
 
 #### 1 | Generate the public/private keys pair
+
+*Hospitals generate a private/public key pair based on the Grumpkin elliptic curve, used by Noir.*
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Hospitals are expected to generate the keys themselves. |
 | ------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -56,6 +58,8 @@ curl --location 'http://localhost:3000/key_pair'
 
 #### 2 | Authorize the hospital to upload its public key *(On-Chain)*
 
+*Hospitals have to be authorized to upload their public keys on the blockchain (otherwise anyone could do it). To do so, a NFT-based mechanism is used. The owner of the NFT smart contract has to autorize hospitals once by sending them NFTs for this purpose.*
+
 ```
 GET http://localhost:3000/mint
 ```
@@ -86,6 +90,8 @@ curl --location 'http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f
 - - -
 
 #### 3 | Upload the public key *(On-Chain)*
+
+*Hospitals upload their public key (for the first time or when they generate a new one). This process enables the verification of the public inputs in the context of the proof of provenance.*
 
 ```
 PUT http://localhost:3000/publickey
@@ -122,6 +128,8 @@ curl --location --request PUT 'http://localhost:3000/publickey?name=hospitaA&pub
 
 #### 3b (optional) | Get the public key *(On-Chain)*
 
+*Using this endpoint, anyone (including the verifiers) can get the public keys of hospitals.*
+
 ```
 GET http://localhost:3000/publickey
 ```
@@ -150,6 +158,8 @@ curl --location 'http://localhost:3000/publickey?name=hospitalA&version=0'
 - - -
 
 #### 4 | Hash and Sign Health Data
+
+*Hospitals have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the health data.*
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Hospitals are expected to hash and sign the health data themselves. |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -214,7 +224,53 @@ curl --location 'http://localhost:3000/sign' \
 
 - - -
 
-#### 5 | Generate the Proof
+#### 5 | Store the signature *(On-Chain)*
+
+*Hospitals store the signature on the blockchain. That enables the verification of the proof of provenance.*
+
+```
+GET http://localhost:3000/signature
+```
+
+* **Caller**
+    * Hospital
+* **Input**
+    * (Parameter) `public_key` Grumpkin-based public key
+    * `signature` Signature of the hash (bytes)
+* **Output**
+    * `stored` Status: `true` if the signature has been stored, `false` otherwise
+
+
+https://user-images.githubusercontent.com/66550865/232287544-1b4dcc01-1fde-41b2-8f1e-3f36bc10a1cc.mov
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/signature?public_key=0x077418dea85cb9695990062d64d4d4add4a4d8cbbed3a5f9e5d5f299766bcdf22a10a3540173df59a3e03533011d867c7a8d879dc3819c8c4857ef3a04a6b103' \
+--header 'from: HospitalA' \
+--header 'Content-Type: application/json' \
+--data '{
+    "hash": "e51b88c9ef2ee7a084f676a4d07313895e2850f6789e1bb1aa9845c3d2dd6dea",
+    "signature": [
+        30,
+        149,
+        144,
+        . . .
+        10,
+        179,
+        103
+    ]
+}'
+{
+    "stored": true
+}
+```
+
+- - -
+
+#### 6 | Generate the Proof
+
+*Researchers generate the proof (should be done online).*
 
 | WARNING: This action should be performed offline. This endpoint is just an helper. Researchers are expected to generate the proofs themselves. |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -264,7 +320,9 @@ curl --location 'http://localhost:3000/generate_proof?public_key=0x0dd7811f6af9d
 
 - - -
 
-#### 6 | [ZKP] Verify the Public Inputs *(On-Chain)*
+#### 7 | [ZKP::Proof of Provenance] Verify the Public Inputs *(On-Chain)*
+
+*Verifiers verify the public inputs of the proof of provenance. This is a preliminary step to the verification of the proof of provenance itself (step 8). This step ensures that the researcher has used the expected public key and signature as public inputs. It can also be performed off-chain.*
 
 ```
 POST http://localhost:3000/verify_public_inputs
@@ -300,7 +358,9 @@ curl --location 'http://localhost:3000/verify_public_inputs?public_key=0x0dd7811
 
 - - -
 
-#### 7 | [ZKP] Verify the Proof of Provenance *(On-Chain)*
+#### 8 | [ZKP::Proof of Provenance] Verify the Proof of Provenance *(On-Chain)*
+
+*Verifiers verify the proof of provenance that ensures that the health data comes from an hospital.*
 
 ```
 POST http://localhost:3000/verify_public_inputs
