@@ -56,7 +56,10 @@ data_hash_bytes = codecs.decode(data_hash, "hex_codec")
 
 # Save individuals and betas to a TOML file
 data = {
-    "public": {"keys": {"pub_key_x": pub_key_x, "pub_key_y": pub_key_y}, "statement": {"value": result}},
+    "public": {
+        "keys": {"pub_key_x": pub_key_x, "pub_key_y": pub_key_y},
+        "statement": {"value": result},
+    },
     "private": {
         "provenance": {
             "signature": data_signature,

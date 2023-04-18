@@ -23,6 +23,7 @@ def sign(message_hash: list[int], private_key: str) -> list[int]:
     # Sign a message
     sign_url = "http://localhost:3000/sign_hash"
     payload = {"private_key": private_key, "hash": message_hash}
+    print(payload)
     response = requests.post(sign_url, json=payload)
 
     # Handle the response
