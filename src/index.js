@@ -11,6 +11,7 @@ const { verifyPublicInputsPoP, verifyProofPoP } = require("./actions/proof.js");
 // frontend helpers (would not be used in Production)
 const {
   generateKeyPair,
+  signHash,
   signMessage,
 } = require("./frontend_helpers/keypair.js");
 const { initHelpers, computeProof } = require("./frontend_helpers/proof.js");
@@ -339,7 +340,7 @@ app.post("/generate_proof", async (req, res) => {
 });
 
 // Sign message endpoint
-app.post("/sign", async (req, res) => {
+app.post("/sign_message", async (req, res) => {
   const privateKey = req.body["private_key"];
   if (!privateKey) {
     return res.status(500).json({
@@ -356,6 +357,34 @@ app.post("/sign", async (req, res) => {
   }
 
   const result = await signMessage(privateKey, message);
+
+  if (result.error) {
+    res.status(500).json({
+      error: result.error,
+    });
+  } else {
+    res.status(200).json(result);
+  }
+});
+
+// Sign hash message endpoint
+app.post("/sign_hash", async (req, res) => {
+  const privateKey = req.body["private_key"];
+  if (!privateKey) {
+    return res.status(500).json({
+      error: "no private key has been provided in the body of the request",
+    });
+  }
+
+  // message to hash and sign (i.e., health data)
+  const hash = req.body["hash"];
+  if (!hash) {
+    return res.status(500).json({
+      error: "no hash has been provided in the body of the request",
+    });
+  }
+
+  const result = await signHash(privateKey, hash);
 
   if (result.error) {
     res.status(500).json({

@@ -20,6 +20,7 @@ async function generateKeyPair() {
   };
 }
 
+// hash and sign a message
 async function signMessage(privateKey, message) {
   if (typeof helper === undefined || !helper) {
     barretenbergWasm = await BarretenbergWasm.new();
@@ -39,4 +40,20 @@ async function signMessage(privateKey, message) {
   };
 }
 
-module.exports = { generateKeyPair, signMessage };
+// sign data that has already been hashed
+async function signHash(privateKey, hash) {
+  if (typeof helper === undefined || !helper) {
+    barretenbergWasm = await BarretenbergWasm.new();
+    helper = new BarretenbergHelper(barretenbergWasm);
+  }
+
+  const privKeyBytes = Buffer.from(privateKey, "hex");
+
+  const signature = helper.signHash(privKeyBytes, hash);
+  return {
+    hash,
+    signature,
+  };
+}
+
+module.exports = { generateKeyPair, signHash, signMessage };

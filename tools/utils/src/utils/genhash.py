@@ -56,8 +56,5 @@ def get_hash_simple(data: list[int]) -> list[int]:
     # Create an list of 32 bytes representing the SHA256 of custom_array_bytes
     hash_bytes = hashlib.sha256(custom_array_bytes).digest()
 
-    # Convert hash_bytes in a list of integers
-    hash_ints = [int(b) for b in hash_bytes]
-
     # Return the hex digest of the hash
-    return hash_ints
+    return "".join("{:02x}".format(x) for x in hash_bytes)
