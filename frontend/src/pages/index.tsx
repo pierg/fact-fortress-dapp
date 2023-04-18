@@ -1,7 +1,11 @@
 import Head from 'next/head'
+import { Button, Carousel } from 'antd';
 
-import Navbar from '../components/NavBar';
+import Owner from '../components/Owner';
+import Hospital from '../components/Hospital';
+import Verifier from '../components/Verifiers';
 import Dapp from '../components/Dapp';
+import { AntDesignOutlined } from '@ant-design/icons';
 
 export default function Home() {
   return (
@@ -12,8 +16,13 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <Dapp />
+      <main  style={{ margin: '0px', padding: '0px 0px 0px 0px', boxSizing: 'border-box'}}>
+        <Carousel dotPosition='left' >
+          <Owner />
+          <Hospital />
+          <Dapp />
+          <Verifier />
+        </Carousel>
       </main>
     </>
   )

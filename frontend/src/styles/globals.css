@@ -11,11 +11,12 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  border: 1px solid #253341;
+  border: 0px solid #253341;
   -webkit-text-fill-color: white;
   -webkit-box-shadow: 0 0 0px 1000px #253341 inset;
   box-shadow: 0 0 0px 1000px #253341 inset;
   transition: background-color 5000s ease-in-out 0s;
   background-color: rgb(30, 41, 59);
-  color: white; 
+  margin: 0;
+  color: rgba(255, 255, 255, 0); 
 }

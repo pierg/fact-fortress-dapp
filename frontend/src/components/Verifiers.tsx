@@ -13,7 +13,7 @@ import React from 'react';
 
 const { TextArea } = Input;
 
-export default function Dapp() {
+export default function Verifier() {
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [transferAmount, setTransferAmout] = useState<string>("0");
   const [publicKey, setPublicKey] = useState<string>("");
@@ -192,100 +192,32 @@ export default function Dapp() {
   })
 
   return (
-<div style={{display: 'flex', 'flexDirection': 'column', backgroundColor: 'rgb(15 23 42)', height: '100vh'}}>
+<div style={{display: 'flex', 'flexDirection': 'column', backgroundColor: 'rgb(49 46 129)', height: '100vh'}}>
       {/* <Card bodyStyle={{background: '#C5C5C5'}} bordered={false}> */}
       {contextHolder}
-      <Divider/>
       <Row gutter={[4, 4]}>
       <Col span={12} offset={6}>
-          <Card style={{margin: 5, height: '85vh', overflow: 'scroll'}} headStyle={{backgroundColor: 'rgb(100 116 139)', color: 'white', textAlign: 'center'}} title="Researchers" bordered={true}>
-            <Space 
+      <Card title="Verifier" style={{margin: 5, overflow: 'scroll',top: "10%", transform: "translate(0px, 0%)"}} headStyle={{backgroundColor: 'rgb(99 102 241)', color: 'white', textAlign: 'center'}}>
+          <Space 
               direction="vertical"
               style={{
                 display: 'flex',
               }}
             >
-            <Card type='inner'  title='Token Distribution'>
-            {/* <Space 
-              direction="vertical"
-              style={{
-                display: 'flex',
-              }}
-            > */}
-            {publicKey != "" &&
-              <div style={{ width: '100%', fontWeight: 'bold'}}>
-                Token ID
-                <textarea readOnly={true} defaultValue={publicKey} style={{width: '100%', maxWidth: '100%', fontWeight: 'bold'}} />
+            <Card type='inner' title='Upload QR Code'>
+              <Dragger {...props}>
+                <p className="ant-upload-drag-icon">
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+              </Dragger>
+            </Card>
 
-              </div>
-            }
-            {JSON.stringify(mint) != '{}' &&
-              <div style={{ width: '100%', fontWeight: 'bold'}}>
-                Mint
-                <textarea readOnly={true} defaultValue={JSON.stringify(mint)} style={{width: '100%', maxWidth: '100%', fontWeight: 'bold'}} />
-              </div>
-            }
-            <br/>
-              <Button
-                  type='primary'
-                  shape='round'
-                  onClick={handleGetKeyPair}
-                >
-                Get Token ID
-              </Button>
-            {/* </Space> */}
-            </Card>
-            <Card type='inner' bodyStyle={{height: '10vh'}} title='Signed Data Secures Storage'>
-              <Button
-                  type='primary'
-                  shape='round'
-                  onClick={handleSign}
-                >
-                Sign
-              </Button>
-            </Card>
-            <Card type='inner' bodyStyle={{height: '10vh'}} title='Select Function'>
+            <Card type='inner' bodyStyle={{height: '30vh'}} title='Verify Proof'>
               <Space>
-                <Select
-                  defaultValue="Function"
-                  style={{
-                    width: 120,
-                  }}
-                  onChange={handleSelect}
-                  options={[
-                    {
-                      value: 'function1',
-                      label: 'function 1',
-                    },
-                    {
-                      value: 'function2',
-                      label: 'function 2',
-                    },
-                    {
-                      value: 'function3',
-                      label: 'function 3',
-                    },
-
-                  ]}
-                />
-                <Button
-                    type='primary'
-                    shape='round'
-                    onClick={handleCompute}
-                  >
-                  Compute
-                </Button>
+                <Button onClick={successMess}>Success</Button>
+                <Button onClick={errorMess}>Error</Button>
               </Space>
-            </Card>
-            <Card type='inner' title='Proof'>
-              <div id="myqrcode">
-                <Space direction="horizontal">
-                  <QRCode value={qrCode || '-'} />
-                  <Button type="primary" onClick={downloadQRCode}>
-                    Download
-                  </Button>
-                </Space>
-              </div>
             </Card>
             </Space>
           </Card>
