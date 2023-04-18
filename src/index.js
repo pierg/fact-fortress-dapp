@@ -21,6 +21,7 @@ app.set('json spaces', 4);
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "*");
+    res.header("Access-Control-Allow-Methods", "*");
     next();
 });
 
@@ -122,7 +123,7 @@ app.get('/publickey', async (req, res) => {
 // Set public key endpoint
 app.put('/publickey', async (req, res) => {
     expected_url = "/publickey?name={name}&public_key={public_key}";
-
+    console.log(req)
     const from = getFrom(req);
     if (typeof from === undefined || !from) {
         return res.status(500).json({

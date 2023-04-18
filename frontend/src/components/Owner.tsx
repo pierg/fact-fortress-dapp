@@ -11,7 +11,7 @@ import type { UploadProps } from 'antd';
 import axios from 'axios';
 import React from 'react';
 import SizeContext from 'antd/es/config-provider/SizeContext';
-
+const { getAddress } = require('../../../src/accounts');
 
 const { TextArea } = Input;
 
@@ -23,7 +23,8 @@ export default function Owner() {
  
 
   const handleMint = async (recipient: string) => {
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=' + recipient, {
+    let address = getAddress(recipient);
+    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=' + address, {
           headers: {
             'from': 'owner'
           }
@@ -57,41 +58,44 @@ const onFinish = (values: any) => {
     for (let i = 0; i < mintList.length; i++) {
         handleMint(mintList[i]);
     }
-    // handleMint(values['recipient1'].concat(values['recipient2']))
-    // handleMint(values['recipient2'])
+
     goToNextPage();
   };
 
 
   return (
-    <div style={{background: 'rgb(69 10 10)', height: '100vh', width: '100%', margin: 0, 'boxSizing': 'border-box'}}>
-        <Row >
-        <Col span={14} offset={1}>
+    <div style={{background: 'rgb(82 82 91)', height: '100vh', width: '100%', margin: 0, 'boxSizing': 'border-box'}}>
 
-        <Card title="Owner" style={{margin: 5, overflow: 'scroll',top: "50%", transform: "translate(0px, 0%)"}} headStyle={{backgroundColor: 'rgb(220 38 38)', color: 'white', textAlign: 'center'}}>
+    <Card 
+        title="Mint Tokens" 
+        style={{ margin: 5, overflow: 'scroll',top: "30%", left: "30%", transform: "translate(0px, 0%)", width: '45%'}} 
+        headStyle={{backgroundColor: 'rgb(161 161 170)', color: 'white', textAlign: 'center'}}
+        bodyStyle={{display:'flex', flexDirection:'column', justifyContent:'center'}}
+        >
+        <Row gutter={[8, 8]}>
+            <Col span={5}>
             <Form form={form} name="horizontal_login" layout="vertical" onFinish={onFinish}>
                 <Form.Item
                     label='Choose Hospital(s)'
                     name="recipient1"
                     rules={[{ required: true, message: 'Missing Hospital' }]}
                 >
-                    <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
+                    <Checkbox.Group  onChange={onChange}>
                         <Space>
-                            <Checkbox value="A">Hospital A</Checkbox>
-                            <Checkbox value="B">Hospital B</Checkbox>
-                            <Checkbox value="C">Hospital C</Checkbox>
+                            <Checkbox value={1}>Hospital A</Checkbox>
+                            <Checkbox value={2}>Hospital B</Checkbox>
+                            <Checkbox value={3}>Hospital C</Checkbox>
                         </Space>
                     </Checkbox.Group>
                 </Form.Item>
+                
                 <Form.Item
                     label='Choose Researcher'
                     name="recipient2"
                     rules={[{ required: true, message: 'Missing Researcher' }]}
                 >
-                   <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
-                        <Space>
-                            <Checkbox value="researcher">Researcher</Checkbox>
-                        </Space>
+                   <Checkbox.Group onChange={onChange}>
+                            <Checkbox value={4}>Researcher</Checkbox>
                     </Checkbox.Group>
                 </Form.Item>
                 <Form.Item shouldUpdate>
@@ -109,15 +113,14 @@ const onFinish = (values: any) => {
                     )}
                 </Form.Item>
             </Form>
-        </Card>
-        </Col>
-        <Col span={8} offset={0}>
-
-            <Card title="description" style={{margin: 5, overflow: 'scroll',top: "50%", transform: "translate(0px, 100%)"}} headStyle={{backgroundColor: 'rgb(220 38 38)', color: 'white', textAlign: 'center'}}>
-                Lorem ipsum dolor sit amet consectetur, adipisicing elit. Beatae cupiditate, delectus nihil dignissimos qui corrupti accusantium error, rerum blanditiis quos fugit inventore alias sint neque in iste reiciendis similique obcaecati.
+            </Col>
+            <Col span={10} offset={7}>
+            <Card>
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Explicabo doloribus nam quo reiciendis autem consequatur officiis molestias voluptatum itaque earum? Nihil maiores perferendis quod nostrum eaque neque laboriosam explicabo quam.
             </Card>
             </Col>
-        </Row>
+            </Row>
+        </Card>
     </div>
   )
 }

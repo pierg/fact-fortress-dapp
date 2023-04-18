@@ -9,6 +9,7 @@ import { UserOutlined, InboxOutlined, KeyOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import axios from 'axios';
 import React from 'react';
+import { json } from 'stream/consumers';
 
 
 const { TextArea } = Input;
@@ -16,50 +17,52 @@ const { TextArea } = Input;
 export default function Hospital() {
     const [form] = Form.useForm();
     const [mint, setMint] = useState({});
+    const [key_a, setKey_a] = useState({});
     const [messageApi, contextHolder] = message.useMessage();
-  const [uploadFile, setUploadFile] = useState({});
+  const [loading, setLoading] = useState(true);
 
     const { Dragger } = Upload;
-
-    const props: UploadProps = {
-      name: 'file',
-      multiple: true,
-      onChange(info) {
-        console.log(info)
-        const { status } = info.file;
-        if (status !== 'uploading') {
-          console.log(info.file, info.fileList);
-        }
-        if (status === 'done') {
-          setUploadFile(info)
-          message.success(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
-          message.error(`${info.file.name} file upload failed.`);
-        }
-      },
-      onDrop(e) {
-        console.log('Dropped files', e.dataTransfer.files);
-      },
-    };
  
 
-  const handleMint = async (recipient: string) => {
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=' + recipient, {
-          headers: {
-            'from': 'owner'
-          }
-          }
-        )}
+    const handleGetKeyPair = async (hospital: string) => {
+        const apiCall = () => {return axios.get('http://localhost:3000/key_pair');}
+        setLoading(true)
+    
+        apiCall()
+          .then(response => {
+            console.log(response.data);
+            setLoading(false)
+            if (hospital == 'A') {
+                setKey_a(response.data)
+            }
 
-    apiCall()
-      .then(response => {
-        console.log(response.data);
-        setMint(response.data)
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
+            // tokenCall(response.data['public_key'])
+            //   .then(response => {
+            //     console.log(response.data);
+            //     // setPublicKey(response.data['public_key'])
+            //   })
+            //   .catch(error => {
+            //     console.log(error);
+            //   });
+          })
+          .catch(error => {
+            console.log(error);
+          });
+        
+      }
+    
+    const handleUpload = async () => {
+        axios.put('http://localhost:3000/publickey?name=' + 'hospitalA&public_key=' + key_a['public_key'],null, {
+            headers: {
+              'from': 'owner'
+            }
+            })
+        .then(response => {
+            console.log(response.data)
+        }).catch(error => {
+            console.log(error)
+        })
+    }
 
   const goToNextPage = () => {
     window.scrollTo({
@@ -69,49 +72,71 @@ export default function Hospital() {
 };
 const onFinish = (values: any) => {
     console.log('Finish:', values);
-    handleMint(values['recipient1'])
-    handleMint(values['recipient2'])
-    goToNextPage();
   };
+
 
   return (
     <div style={{display: 'flex', 'flexDirection': 'column', backgroundColor: 'rgb(49 46 129)', height: '100vh'}}>
         <Row align='middle'>
         <Col span={11} offset={1}>
 
-        <Card title="Hospital A" style={{margin: 5, overflow: 'scroll',top: "50%", transform: "translate(0px, 50%)"}} headStyle={{backgroundColor: 'rgb(99 102 241)', color: 'white', textAlign: 'center'}}>
+        <Card title="Hospital A" style={{margin: 5, overflow: 'scroll',top: "30%", transform: "translate(0px, 20%)"}} headStyle={{backgroundColor: 'rgb(99 102 241)', color: 'white', textAlign: 'center'}}>
             <Form form={form} name="horizontal_login" layout="vertical" onFinish={onFinish}>
                 <Form.Item
                     name="recipient1"
-                    rules={[{ required: true, message: 'Missing first recipient' }]}
-                    label="Upload JSON"
-                >
-                    <Dragger {...props}>
-                        <p className="ant-upload-drag-icon">
-                        <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                    </Dragger>
+                    label="Generate Keys"
+                > 
+                    {JSON.stringify(key_a) != '{}' &&
+                    <div style={{ width: '100%', fontWeight: 'bold'}}>
+                        Public and Private Keys
+                        <Card bodyStyle={{overflowWrap: 'break-word'}}>{JSON.stringify(key_a)}</Card>
+                        {/* <textarea readOnly={true} defaultValue={JSON.stringify(key_a)} style={{width: '100%', maxWidth: '100%', fontWeight: 'bold'}} /> */}
+                    </div>
+                    }
+                     {JSON.stringify(key_a) == '{}' &&
+                    <div style={{ width: '100%', fontWeight: 'bold'}}>
+                        Public and Private Keys
+                        <Card loading={loading}>None</Card>
+
+                    </div>
+                    }
+                    <Button
+                        type="primary"
+                        onClick={() => {handleGetKeyPair('A')}}
+                    >
+                        Generate!
+                    </Button>
+                </Form.Item>
+                <Form.Item
+                    name="name"
+                    label='Name'
+                >   
+                {JSON.stringify(key_a) == '{}' &&
+                    <Input prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Name" />
+                }
+                 {JSON.stringify(key_a) != '{}' &&
+                    <Input prefix={<UserOutlined className="site-form-item-icon" />} defaultValue={'Hospital A'} disabled={true} />
+                }
                 </Form.Item>
                 <Form.Item
                     name="public_key"
-                    rules={[{ required: true, message: 'Missing Public Key' }]}
-                >
+                    label='Public Key'
+                >   
+                {JSON.stringify(key_a) == '{}' &&
                     <Input prefix={<KeyOutlined className="site-form-item-icon" />} placeholder="Public Key" />
+                }
+                 {JSON.stringify(key_a) != '{}' &&
+                    <Input prefix={<KeyOutlined className="site-form-item-icon" />} defaultValue={key_a['public_key']} disabled={true} />
+                }
                 </Form.Item>
-                <Form.Item shouldUpdate>
-                    {() => (
+                <Form.Item >
                     <Button
                         type="primary"
-                        htmlType="submit"
-                        disabled={
-                        !form.isFieldsTouched(true) ||
-                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                        }
+                        onClick={handleUpload}
+                        disabled={loading}
                     >
-                        Hash, Sign, and Upload Signature
+                        Upload
                     </Button>
-                    )}
                 </Form.Item>
             </Form>
         </Card>
@@ -124,12 +149,7 @@ const onFinish = (values: any) => {
                     rules={[{ required: true, message: 'Missing first recipient' }]}
                     label="Upload JSON"
                 >
-                    <Dragger {...props}>
-                        <p className="ant-upload-drag-icon">
-                        <InboxOutlined />
-                        </p>
-                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                    </Dragger>
+
                 </Form.Item>
                 <Form.Item
                     name="private_key"
@@ -142,10 +162,7 @@ const onFinish = (values: any) => {
                     <Button
                         type="primary"
                         htmlType="submit"
-                        disabled={
-                        !form.isFieldsTouched(true) ||
-                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                        }
+                        disabled={loading}
                     >
                         Hash, Sign, and Upload Signature
                     </Button>
