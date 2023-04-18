@@ -53,5 +53,7 @@ def get_hash_simple(data_int: list[int]) -> list[int]:
 
     print(f"hash_int:\t{hash_int_list}")
 
-    # Print the list of hex-encoded bytes
+    # Print the list integers
     print(hash_int_list)
+
+    return hash_int_list
