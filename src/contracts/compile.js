@@ -19,8 +19,8 @@ const IERC165SourceCode = fs.readFileSync(getOpenZeppelinPath("/utils/introspect
 const MathSourceCode = fs.readFileSync(getOpenZeppelinPath("/utils/math/Math.sol"));
 
 // core folder
-const zkpTokenSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpToken.sol"));
-const zkpVerifierSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpVerifier.sol"));
+const zkpTokenSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpHealthToken.sol"));
+const zkpVerifierSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpHealthVerifier.sol"));
 
 const buildPath = resolve(__dirname, "./build");
 
@@ -36,8 +36,8 @@ function findImports(path) {
     if (path === "@openzeppelin/contracts/utils/introspection/ERC165.sol") return { contents: `${ERC165SourceCode}` };
     if (path === "@openzeppelin/contracts/utils/introspection/IERC165.sol") return { contents: `${IERC165SourceCode}` };
     if (path === "@openzeppelin/contracts/utils/math/Math.sol") return { contents: `${MathSourceCode}` };
-    if (path === "zkpToken.sol") return { contents: `${zkpTokenSourceCode}` };
-    if (path === "zkpVerifier.sol") return { contents: `${zkpVerifierSourceCode}` };
+    if (path === "zkpHealthToken.sol") return { contents: `${zkpTokenSourceCode}` };
+    if (path === "zkpHealthVerifier.sol") return { contents: `${zkpVerifierSourceCode}` };
     else return { error: "File not found" };
 }
 

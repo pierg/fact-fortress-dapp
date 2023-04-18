@@ -1,15 +1,17 @@
-const { setup_generic_prover_and_verifier } = require('@noir-lang/barretenberg/dest/client_proofs');
-const { compile } = require('@noir-lang/noir_wasm');
-const { resolve } = require('path');
+const {
+    setup_generic_prover_and_verifier,
+} = require("@noir-lang/barretenberg/dest/client_proofs");
+const { compile } = require("@noir-lang/noir_wasm");
+const { resolve } = require("path");
 
-const fs = require('fs');
+const fs = require("fs");
 
-const verifierPath = resolve(__dirname, "../contracts/zkpVerifier.sol");
-const verifierName = "ZkpVerifier";
+const verifierPath = resolve(__dirname, "../contracts/zkpHealthVerifier.sol");
+const verifierName = "ZkpHealthVerifier";
 
 // get the indices of the first and last occurences of a given problematic variable
 function getIndices(code, problematicVariable) {
-    const lines = code.split('\n');
+    const lines = code.split("\n");
     let firstIndices = [];
     let lastIndices = [];
 
@@ -23,13 +25,13 @@ function getIndices(code, problematicVariable) {
 
     return {
         first: firstIndices,
-        last: lastIndices
+        last: lastIndices,
     };
 }
 
 // fix the `stack too deep` error using block scoping
 function fixStackTooDeepError(code, problematicVariable) {
-    const lines = code.split('\n');
+    const lines = code.split("\n");
     const indices = getIndices(code, problematicVariable);
     let variableCount = 0;
     let newVariableName;
@@ -44,7 +46,10 @@ function fixStackTooDeepError(code, problematicVariable) {
             currentLine = currentLine.replace("let ", "");
 
             // define the new variable
-            currentLine = currentLine.replace(problematicVariable, `let ${newVariableName}`);
+            currentLine = currentLine.replace(
+                problematicVariable,
+                `let ${newVariableName}`
+            );
 
             // open the local scope
             lines[i] = `\t\t{\n${currentLine}`;
@@ -58,7 +63,7 @@ function fixStackTooDeepError(code, problematicVariable) {
             lines[i] = `${currentLine}\n\t\t}`;
         }
     }
-    return lines.join('\n');
+    return lines.join("\n");
 }
 
 // Generate the verifier smart contract
@@ -68,7 +73,9 @@ async function generateVerifier() {
 
     let sc;
 
-    const compiledProgram = compile(resolve(__dirname, '../circuits/src/main.nr'));
+    const compiledProgram = compile(
+        resolve(__dirname, "../circuits/schnorr/src/main.nr")
+    );
     const acir = compiledProgram.circuit;
 
     console.log("Generating the verifier");
@@ -81,7 +88,7 @@ async function generateVerifier() {
         return;
     }
 
-    console.log("Fixing the verifier smart contract")
+    console.log("Fixing the verifier smart contract");
 
     // update the name of the smart contract (`TurboVerifier` by default)
     sc = sc.replace(/TurboVerifier/g, verifierName);
@@ -90,12 +97,12 @@ async function generateVerifier() {
 
     // list of variable names responsible for the `stack too deep` error
     const problematicVariables = ["intermediate"];
-    problematicVariables.map(problematicVariable => {
+    problematicVariables.map((problematicVariable) => {
         // address the `stack too deep` error
         sc = fixStackTooDeepError(sc, problematicVariable);
     });
 
-    console.log("Saving the verifier smart contract: ", verifierPath)
+    console.log("Saving the verifier smart contract: ", verifierPath);
 
     try {
         fs.writeFileSync(verifierPath, sc);

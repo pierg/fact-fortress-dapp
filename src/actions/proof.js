@@ -1,7 +1,7 @@
 const { contracts } = require('../contracts/contracts.js');
 
 async function verifyPublicInputsPoP(publicKey, proof) {
-    const sc = contracts.getContract("ZkpContract");
+    const sc = contracts.getContractByName("ZkpHealth");
 
     try {
         const publicInputsMatch = await sc.methods.verifyPublicInputsPoP(
@@ -28,7 +28,7 @@ async function verifyPublicInputsPoP(publicKey, proof) {
 }
 
 async function verifyProofPoP(proof) {
-    const sc = contracts.getContract("ZkpContract");
+    const sc = contracts.getContractByName("ZkpHealth");
 
     try {
         const proofStatus = await sc.methods.verifyProofPoP(

@@ -8,7 +8,8 @@
         "test": "test"
     },
     "scripts": {
-        "serve": "node src/index.js",
+        "backend": "node src/index.js",
+        "frontend": "pnpm run hardhat:generate-abi && concurrently 'pnpm:hardhat:node' 'wait-on http://localhost:8545 && pnpm run hardhat:deploy' 'pnpm:frontend:dev'",
         "generate-verifier": "node tools/generateVerifierSol.js",
         "test": "pnpm generate-verifier && truffle test",
         "hardhat:generate-abi": "hardhat deploy --export frontend/src/contracts/contracts.json",
@@ -18,13 +19,11 @@
         "frontend:dev": "cd ./frontend && pnpm run dev",
         "frontend:clean": "cd ./frontend && pnpm run clean",
         "clean": "concurrently 'pnpm:frontend:clean' 'pnpm:hardhat:clean'",
-        "dev": "pnpm run hardhat:generate-abi && concurrently 'pnpm:hardhat:node' 'wait-on http://localhost:8545 && pnpm run hardhat:deploy' 'pnpm:frontend:dev'",
         "testfront": "hardhat test"
     },
     "dependencies": {
         "@aztec/barretenberg": "^2.1.94",
         "@ethersproject/abi": "^5.7.0",
-        "@ethersproject/bytes": "^5.7.0",
         "@ethersproject/providers": "^5.7.2",
         "@noir-lang/barretenberg": "^2.19.0",
         "@noir-lang/noir_wasm": "^0.10.0",
@@ -39,10 +38,8 @@
         "@types/chai": "^4.3.4",
         "@types/mocha": "^10.0.1",
         "@types/node": "^18.15.11",
-        "bigint-buffer": "^1.1.5",
         "chai": "^4.3.7",
         "chai-as-promised": "^7.1.1",
-        "chai-ethers": "^0.0.1",
         "concurrently": "^7.6.0",
         "ethers": "^5.7.2",
         "express": "^4.18.2",
@@ -53,8 +50,6 @@
         "hardhat-gas-reporter": "^1.0.9",
         "next": "^13.3.0",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "schnorr": "link:@noir-lang/barretenberg/dest/crypto/schnorr",
         "solc": "^0.8.19",
         "solidity-coverage": "^0.8.2",
         "truffle": "^5.8.2",

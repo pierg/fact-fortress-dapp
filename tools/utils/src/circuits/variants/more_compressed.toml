@@ -1,0 +1,25 @@
+[[public_keys]]
+[public_keys.company_a]
+value = [117678814207442563868476825273025950367498056198534982218880336665156331736903]
+
+[public_keys.company_b]
+value = [16275361498367952004696354798127907456405477916386252210098750428116595345430]
+
+[[public_statements]]
+[public_statements.rs10757274_GG_percentage]
+value = 75
+
+[public_statements.rs1801133_TT_percentage]
+value = 100
+
+[[private_data.auth_a.data.patient_id_0.genetic_data]]
+value = [0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 1, 1, 1, 0, 0, 0, 2, 2, 2]
+
+[[private_data.auth_a.data.patient_id_1.genetic_data]]
+value = [0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2]
+
+[[private_data.auth_b.data.patient_id_0.genetic_data]]
+value = [0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2]
+
+[[private_data.auth_b.data.patient_id_1.genetic_data]]
+value = [0, 0, 0, 2, 2, 2, 1, 1, 1, 0, 0, 0, 2, 2, 2, 1, 1, 1, 0, 0, 0, 2, 2, 2]

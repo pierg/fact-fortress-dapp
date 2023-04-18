@@ -2,22 +2,21 @@ const { compile } = require('./compile.js');
 const { deploy } = require('./deploy.js');
 const web3 = require('./../web3.js');
 
-class Contracts {
+class ContractsHelper {
     constructor() {
         this.contracts = {};
     }
 
-    async add(filename, name, args) {
-        const sc = compile(filename, name);
-        const address = await deploy(sc, args);
+    async add(contract) {
+        const sc = compile(contract.filename, contract.name);
+        const address = await deploy(sc, contract.args);
 
-        console.log(`${name} deployed at address ${address}`);
+        console.log(`${contract.name} deployed at address ${address}`);
 
-        this.contracts[name] = {
-            "address": address,
-            "abi": sc.abi,
-            "contract": new web3.eth.Contract(sc.abi, address)
-        }
+        this.contracts[contract.name] = contract;
+        this.contracts[contract.name].address = address;
+        this.contracts[contract.name].abi = sc.abi;
+        this.contracts[contract.name].contract = new web3.eth.Contract(sc.abi, address);
     }
 
     ensureContract(name) {
@@ -41,13 +40,25 @@ class Contracts {
         return this.contracts[name]["address"];
     }
 
-    getContract(name) {
+    getContractByName(name) {
         if (!this.ensureContract(name)) return;
 
         return this.contracts[name]["contract"];
     }
+
+    getContractByHealthFunction(circuitPurpose) {
+        for (const contractName in this.contracts) {
+            const sc = this.contracts[contractName];
+
+            if (sc.circuit_purpose &&
+                sc.circuit_purpose.localeCompare(circuitPurpose, undefined, { sensitivity: 'base' }) === 0) {
+
+                return sc;
+            }
+        }
+    }
 }
 
-let contracts = new Contracts;
+let contractsHelper = new ContractsHelper;
 
-module.exports = { contracts }
+module.exports = { contractsHelper }

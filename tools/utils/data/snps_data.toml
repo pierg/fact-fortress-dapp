@@ -16,38 +16,38 @@ s = "0xd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
 name = "Frank"
 
 [private_data.auth_a.data.patient_id_1]
-name = "Eve"
-
-[private_data.auth_b.data.patient_id_0]
 name = "Bob"
 
+[private_data.auth_b.data.patient_id_0]
+name = "Desmond"
+
 [private_data.auth_b.data.patient_id_1]
-name = "Alice"
+name = "Charlie"
 
 [private_data.auth_a.data.patient_id_0.genetic_data]
-rs10757274 = "GG"
-rs562556 = "AG"
-rs429358 = "CT"
-rs7412 = "CC"
-rs1801133 = "CT"
-
-[private_data.auth_a.data.patient_id_1.genetic_data]
-rs10757274 = "GG"
-rs562556 = "AG"
-rs429358 = "TT"
-rs7412 = "CC"
-rs1801133 = "TT"
-
-[private_data.auth_b.data.patient_id_0.genetic_data]
-rs10757274 = "AG"
+rs10757274 = "AA"
 rs562556 = "GG"
 rs429358 = "TT"
 rs7412 = "CC"
 rs1801133 = "CT"
 
-[private_data.auth_b.data.patient_id_1.genetic_data]
+[private_data.auth_a.data.patient_id_1.genetic_data]
+rs10757274 = "GG"
+rs562556 = "AA"
+rs429358 = "CT"
+rs7412 = "TT"
+rs1801133 = "CT"
+
+[private_data.auth_b.data.patient_id_0.genetic_data]
 rs10757274 = "AG"
-rs562556 = "AG"
-rs429358 = "CC"
+rs562556 = "GG"
+rs429358 = "TT"
+rs7412 = "CT"
+rs1801133 = "CT"
+
+[private_data.auth_b.data.patient_id_1.genetic_data]
+rs10757274 = "GG"
+rs562556 = "GG"
+rs429358 = "TT"
 rs7412 = "TT"
 rs1801133 = "CC"

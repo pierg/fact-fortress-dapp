@@ -1,383 +1,154 @@
-const { getAddress } = require('./accounts.js');
-const { setPublicKey, getPublicKey, storeSignature } = require('./actions/publicInputs.js');
-const { mint, getTokenId } = require('./actions/tokens.js');
-const { contracts } = require('./contracts/contracts.js');
-const { verifyPublicInputsPoP, verifyProofPoP } = require('./actions/proof.js');
+const { initCircuitsHelpers } = require("./frontend_helpers/proof.js");
+const { contractsHelper } = require("./contracts/contracts.js");
 
-// frontend helpers (would not be used in Production)
-const { generateKeyPair, signMessage } = require('./frontend_helpers/keypair.js');
-const { initHelpers, computeProof } = require('./frontend_helpers/proof.js');
+const { healthController } = require("./controllers/health.controller.js");
+const {
+    mintController,
+    getTokenIdController
+} = require("./controllers/nft.controller.js");
+const {
+    getPublicKeyController,
+    setPublicKeyController
+} = require("./controllers/publicKeys.controller.js");
+const {
+    generateKeyPairController,
+    uploadSignatureController,
+    signHashController,
+    signMessageController
+} = require("./controllers/signature.controller.js");
+const {
+    getAvailableFunctionsController,
+} = require("./controllers/todo.controller.js");
+const {
+    generateProofController,
+    verifyPublicInputsPoPController,
+    verifyProofPoPController
+} = require("./controllers/proof.controller.js");
 
-
-const express = require('express');
+const express = require("express");
 const app = express();
 app.use(express.json());
 
 // server port
 const port = 3000;
 
-app.set('json spaces', 4);
+app.set("json spaces", 4);
 // app.use(express.json())
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "*");
     res.header("Access-Control-Allow-Methods", "*");
     next();
 });
 
-function getFrom(req) {
-    if (!req.headers['from']) {
-        return;
-    }
-
-    return getAddress(req.headers['from']);
-}
-
-// Health endpoint
-app.get('/health', (req, res) => {
-    res.sendStatus(200);
-});
-
-// Mint endpoint
-app.get('/mint', async (req, res) => {
-    const recipient = req.query.recipient;
-    if (!recipient) {
-        return res.status(500).json({
-            error: "no recipient has been provided",
-            expected_url: "/mint?recipient={address}"
-        })
-    }
-
-    const from = getFrom(req);
-    if (typeof from === undefined || !from) {
-        return res.status(500).json({
-            error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }'
-        })
-    }
-
-    const result = await mint(from, recipient);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Get TokenID endpoint
-app.get('/tokenid', async (req, res) => {
-    const address = req.query.address;
-    if (!address) {
-        return res.status(500).json({
-            error: "no address has been provided",
-            expected_url: "/tokenid?address={address}"
-        })
-    }
-
-    const result = await getTokenId(address);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Get public key endpoint
-app.get('/publickey', async (req, res) => {
-    expected_url = "/publickey?name={name}&version={version}";
-
-    const name = req.query.name;
-    if (!name) {
-        return res.status(500).json({
-            error: "no name for the public key has been provided",
-            expected_url
-        })
-    }
-
-    const version = req.query.version;
-    if (!version) {
-        return res.status(500).json({
-            error: "no version has been provided",
-            expected_url
-        })
-    }
-
-    const result = await getPublicKey(name, version);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-
-// Set public key endpoint
-app.put('/publickey', async (req, res) => {
-    expected_url = "/publickey?name={name}&public_key={public_key}";
-    console.log(req)
-    const from = getFrom(req);
-    if (typeof from === undefined || !from) {
-        return res.status(500).json({
-            error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }'
-        })
-    }
-
-    const name = req.query.name;
-    if (!name) {
-        return res.status(500).json({
-            error: "no name for the public key has been provided",
-            expected_url
-        })
-    }
-
-    const publicKey = req.query.public_key;
-    if (!publicKey) {
-        return res.status(500).json({
-            error: "no public key has been provided",
-            expected_url
-        })
-    }
-
-    const result = await setPublicKey(from, name, publicKey);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Store signature endpoint
-app.post('/signature', async (req, res) => {
-    const from = getFrom(req);
-    if (typeof from === undefined || !from) {
-        return res.status(500).json({
-            error: "`from` header is not properly set",
-            expected_header: '{ "from": "hospitalA|hospitalB|hospitalC" }'
-        })
-    }
-
-    const publicKey = req.query.public_key;
-    if (!publicKey) {
-        return res.status(500).json({
-            error: "no public key has been provided",
-            expected_url: "/signature?public_key={public_key}"
-        })
-    }
-
-    const signature = req.body['signature'];
-    if (!signature) {
-        return res.status(500).json({
-            error: "no signature has been provided in the body of the request",
-        })
-    }
-
-    const result = await storeSignature(from, publicKey, signature);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-async function deploy() {
-    await contracts.add("zkpToken.sol", "ZkpToken");
-    await contracts.add("zkpVerifier.sol", "ZkpVerifier");
-    await contracts.add(
-        "zkpContract.sol",
-        "ZkpContract", [
-        contracts.getAddress("ZkpToken"),
-        contracts.getAddress("ZkpVerifier"),
-    ]
-    );
-}
-
-// Generate keypair endpoint
-app.get('/key_pair', async (req, res) => {
-    const result = await generateKeyPair();
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Generate proof endpoint
-app.post('/generate_proof', async (req, res) => {
-    const publicKey = req.query.public_key;
-    if (!publicKey) {
-        return res.status(500).json({
-            error: "no public key has been provided",
-            expected_url: "/generate_proof?public_key={public_key}"
-        })
-    }
-
-    const hash = req.body['hash'];
-    if (!hash) {
-        return res.status(500).json({
-            error: "no hash has been provided in the body of the request",
-        })
-    }
-
-    const signature = req.body['signature'];
-    if (!signature) {
-        return res.status(500).json({
-            error: "no signature has been provided in the body of the request",
-        })
-    }
-
-    const result = await computeProof(publicKey, hash, signature);
-
-    if (result == null) {
-        res.status(500).json({
-            error: "Barretenberg Module not initialized yet",
-        });
-    }
-    else if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Sign message endpoint
-app.post('/sign', async (req, res) => {
-    const privateKey = req.body['private_key'];
-    if (!privateKey) {
-        return res.status(500).json({
-            error: "no private key has been provided in the body of the request",
-        })
-    }
-
-    // message to hash and sign (i.e., health data)
-    const message = req.body['message'];
-    if (!message) {
-        return res.status(500).json({
-            error: "no message has been provided in the body of the request",
-        })
-    }
-
-    const result = await signMessage(privateKey, message);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Verify public inputs endpoint
-app.post('/verify_public_inputs', async (req, res) => {
-    const publicKey = req.query.public_key;
-    if (!publicKey) {
-        return res.status(500).json({
-            error: "no public key has been provided",
-            expected_url: "/verify_public_inputs?public_key={public_key}"
-        })
-    }
-
-    const proof = req.body;
-    if (!proof) {
-        return res.status(500).json({
-            error: "no proof has been provided in the body of the request",
-        })
-    }
-
-    const result = await verifyPublicInputsPoP(publicKey, proof);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-// Verify proof endpoint
-app.post('/verify_proof', async (req, res) => {
-    const proof = req.body;
-    if (!proof) {
-        return res.status(500).json({
-            error: "no proof has been provided in the body of the request",
-        })
-    }
-
-    const result = await verifyProofPoP(proof);
-
-    if (result.error) {
-        res.status(500).json({
-            error: result.error,
-        });
-    } else {
-        res.status(200).json(result);
-    }
-});
-
-async function deploy() {
-    await contracts.add("zkpToken.sol", "ZkpToken");
-    await contracts.add("zkpVerifier.sol", "ZkpVerifier");
-    await contracts.add(
-        "zkpContract.sol",
-        "ZkpContract", [
-        contracts.getAddress("ZkpToken"),
-        contracts.getAddress("ZkpVerifier"),
-    ]
-    );
-}
-
-
-// init compute proof helpers in the background (takes time)
-(async () => { await initHelpers() })()
-
-deploy().then(() => {
-    const server = app.listen(port, () => console.log(`Server started on port ${port}`));
-
-    process.on('SIGTERM', shutDown);
-    process.on('SIGINT', shutDown);
-
-    let connections = [];
-
-    server.on('connection', connection => {
-        connections.push(connection);
-        connection.on('close', () => connections = connections.filter(curr => curr !== connection));
+async function deployContracts() {
+    console.log('---------- deploying contracts ----------');
+    await contractsHelper.add({
+        "filename": "zkpHealthToken.sol",
+        "name": "ZkpHealthToken",
     });
 
-    function shutDown() {
-        console.log('Received kill signal, shutting down gracefully');
-        server.close(() => {
-            console.log('Closed out remaining connections');
-            process.exit(0);
+    await contractsHelper.add({
+        "filename": "zkpHealthVerifier.sol",
+        "name": "ZkpHealthVerifier",
+        "is_verifier": true,
+        "circuit_name": "schnorr", // i.e., name of the directory that contains the circuit
+        "circuit_purpose": "proof_of_provenance", // i.e., health_function
+        "abi_generator": function generateAbi(args) {
+            // right side: args.{name_of_key_in_request_body}
+            const publicKey = args.public_key;
+            const hashHex = args.hash;
+            const signature = args.signature;
+
+            // public key -> x, y
+            const publicKeyXY = Buffer.from(publicKey.replace(/^0x/i, ''), 'hex')
+            const publicKey_x = publicKeyXY.subarray(0, 32)
+            const publicKey_y = publicKeyXY.subarray(32, 64)
+
+            // hash: hex -> bytes
+            let hash = [];
+            for (let c = 0; c < hashHex.length; c += 2) {
+                hash.push(parseInt(hashHex.substr(c, 2), 16));
+            }
+
+            return {
+                pub_key_x: '0x' + publicKey_x.toString('hex'),
+                pub_key_y: '0x' + publicKey_y.toString('hex'),
+                signature,
+                hash
+            }
+        }
+    });
+
+    await contractsHelper.add({
+        "filename": "zkpHealth.sol",
+        "name": "ZkpHealth",
+        "args": [
+            contractsHelper.getAddress("ZkpHealthToken"),
+            contractsHelper.getAddress("ZkpHealthVerifier"),
+        ],
+    });
+
+    console.log("► contracts deployed ✓");
+}
+
+// frontend helpers -- in Production, should be done offline --
+app.get("/health", healthController); // ensure the service is healthy
+app.get("/key_pair", generateKeyPairController); // generate private/public key keypair
+app.post("/sign_hash", signHashController); // sign a hashed message
+app.post("/sign_message", signMessageController); // hash and sign a message
+app.post("/generate_proof", generateProofController); // generate the proof
+app.get("/available_functions", getAvailableFunctionsController);
+
+// public keys
+app.get("/mint", mintController); // authorize an entity (mint NFT and send)
+app.get("/tokenid", getTokenIdController); // get NFT ID associated with address
+app.get("/publickey", getPublicKeyController); // get public key
+app.put("/publickey", setPublicKeyController); // set public key
+
+// signature
+app.post("/upload_signature", uploadSignatureController); // upload the signature on chain
+
+// proofs
+app.post("/verify_public_inputs", verifyPublicInputsPoPController); // verify the public inputs (PoP)
+app.post("/verify_proof", verifyProofPoPController); // verify the proof (PoP)
+
+deployContracts().then(() => {
+    // init circuits helpers in the background (takes time)
+    initCircuitsHelpers().then(async() => {
+        const server = app.listen(port, () =>
+            console.log(`► server started on port ${port} ✓`)
+        );
+
+        process.on("SIGTERM", shutDown);
+        process.on("SIGINT", shutDown);
+
+        let connections = [];
+
+        server.on("connection", (connection) => {
+            connections.push(connection);
+            connection.on(
+                "close",
+                () => (connections = connections.filter((curr) => curr !== connection))
+            );
         });
 
-        setTimeout(() => {
-            console.error('Could not close connections in time, forcefully shutting down');
-            process.exit(1);
-        }, 10000);
+        function shutDown() {
+            console.log("Received kill signal, shutting down gracefully");
+            server.close(() => {
+                console.log("Closed out remaining connections");
+                process.exit(0);
+            });
 
-        connections.forEach(curr => curr.end());
-        setTimeout(() => connections.forEach(curr => curr.destroy()), 5000);
-    }
+            setTimeout(() => {
+                console.error(
+                    "Could not close connections in time, forcefully shutting down"
+                );
+                process.exit(1);
+            }, 10000);
+
+            connections.forEach((curr) => curr.end());
+            setTimeout(() => connections.forEach((curr) => curr.destroy()), 5000);
+        }
+    });
 });

@@ -1,7 +1,3 @@
-// NOTES:
-// array of structs are not supported for now
-// array of str are not supported for now
-
 global NAME_LENGHT: u8 = 10;
 global AUTH_NAME_LENGTH: u8 = 9;
 
