@@ -10,7 +10,7 @@
     "scripts": {
         "backend": "node src/index.js",
         "frontend": "pnpm run hardhat:generate-abi && concurrently 'pnpm:hardhat:node' 'wait-on http://localhost:8545 && pnpm run hardhat:deploy' 'pnpm:frontend:dev'",
-        "generate-verifier": "node tools/generateVerifierSol.js",
+        "generate-verifiers": "node tools/generateVerifiersSol.js",
         "test": "pnpm generate-verifier && truffle test",
         "hardhat:generate-abi": "hardhat deploy --export frontend/src/contracts/contracts.json",
         "hardhat:clean": "rm -fr ./artifacts ./cache ./typechain-types",
