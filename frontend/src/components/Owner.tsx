@@ -23,10 +23,10 @@ export default function Owner() {
     const [messageApi, contextHolder] = message.useMessage();
  
 
-  const handleMint = async (recipient: string) => {
+  const handleMintHospital = async (recipient: string) => {
     // let address = getAddress(recipient);
     console.log(recipient)
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=' + recipient, {
+    const apiCall = () => {return axios.get('http://localhost:3000/authorize_authority?recipient=' + recipient, {
           headers: {
             'from': 'owner'
           }
@@ -40,6 +40,28 @@ export default function Owner() {
       })
       .catch(error => {
         console.log(error);
+      });
+  }
+  const handleMintResearcher = async (recipient: string) => {
+    // let address = getAddress(recipient);
+    console.log(recipient)
+    const accessTypes = ["access_type_1", "access_type_2"];
+    axios
+      .post(
+        `/authorize_researcher?recipient=${recipient}`,
+        { access_types: accessTypes },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            from: "owner",
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
       });
   }
 
@@ -75,7 +97,7 @@ const onFinish = (values: any) => {
 
     <Card 
         title="Mint Tokens" 
-        style={{ margin: 5, overflow: 'scroll',top: "15%", left: "30%", transform: "translate(0px, 0%)", width: '45%'}} 
+        style={{ margin: 5, overflow: 'scroll',top: "10%", left: "30%", transform: "translate(0px, 0%)", width: '45%'}} 
         headStyle={{backgroundColor: 'rgb(4 120 87)', color: 'white', textAlign: 'center'}}
         bodyStyle={{display:'flex', flexDirection:'column', justifyContent:'center'}}
         >
@@ -91,7 +113,7 @@ const onFinish = (values: any) => {
                         defaultValue="0x98526c571e324028250B0f5f247Ca4F1b575fadB" 
                         enterButton="Mint!"
                         size="large"
-                        onSearch={() => {handleMint('0x98526c571e324028250B0f5f247Ca4F1b575fadB')}}
+                        onSearch={() => {handleMintHospital('0x98526c571e324028250B0f5f247Ca4F1b575fadB')}}
                     />
                 </Form.Item>
                 <Form.Item
@@ -102,7 +124,7 @@ const onFinish = (values: any) => {
                         defaultValue="0x99eBB39932f6F697194EA70115762d4c06D1A9c9" 
                         enterButton="Mint!"
                         size="large"
-                        onSearch={() => {handleMint('0x99eBB39932f6F697194EA70115762d4c06D1A9c9')}}
+                        onSearch={() => {handleMintHospital('0x99eBB39932f6F697194EA70115762d4c06D1A9c9')}}
                     />
                 </Form.Item>
 
@@ -113,7 +135,7 @@ const onFinish = (values: any) => {
                         addonBefore="Insert Address"  
                         enterButton="Mint!"
                         size="large"
-                        onSearch={(e) => {handleMint(e)}}
+                        onSearch={(e) => {handleMintHospital(e)}}
                     />
                 </Form.Item>
                 
@@ -126,7 +148,7 @@ const onFinish = (values: any) => {
                         defaultValue="0xac46159C08f103f7fF87ED138CFf7e389aac0550" 
                         enterButton="Mint!"
                         size="large"
-                        onSearch={() => {handleMint('0xac46159C08f103f7fF87ED138CFf7e389aac0550')}}
+                        onSearch={() => {handleMintResearcher('0xac46159C08f103f7fF87ED138CFf7e389aac0550')}}
                     />
                 </Form.Item>
             </Form>
