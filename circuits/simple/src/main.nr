@@ -6,13 +6,13 @@ mod data;
 fn concatenate(data: data::Data) -> [u8; data::DATA_SIZE]  {
     let mut result = [0; data::DATA_SIZE];
     let mut cur_i = 0;
-    // Alleles of individuals from Hospital A
+    // Sample data description 1
     // Copy the contents of d1 into the byte array.
     for i in 0..data::D1_SIZE {
         result[cur_i] = data.d1[i] as u8;
         cur_i = cur_i + 1;
     }
-    // Beta values of heart conditions from Hospital A
+    // Sample data description 2
     // Copy the contents of d2 into the byte array.
     for i in 0..data::D2_SIZE {
         result[cur_i] = data.d2[i] as u8;
@@ -52,7 +52,7 @@ fn perform_computation_on_data(data: data::Data) -> u8  {
 
     // Dummy implementation that returns zero.
     let mut result = data.d1[0];
-    result = 32;
+    result = 0;
 
     result as u8
 }

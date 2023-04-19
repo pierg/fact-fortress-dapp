@@ -1,51 +1,38 @@
-global NAME_LENGHT: u8 = 10;
-global AUTH_NAME_LENGTH: u8 = 9;
+global D1_SIZE: Field = 2;
+global D1_SHAPE: [u8; 2] = [2, 1];
 
-struct PublicStatements{
-    rs10757274_GG_percentage: Field,
-    rs1801133_TT_percentage: Field
+global D2_SIZE: Field = 2;
+global D2_SHAPE: [u8; 2] = [2, 1];
+
+global DATA_SIZE: Field = 4;
+
+struct Data {
+    // Genome sequence of individuals from Clinic A
+    d1: [u8; 2],
+    // Genome sequence of individuals from Clinic B
+    d2: [u8; 2],
 }
 
-struct PublicKeys {
-    company_a: Field,
-    company_b: Field,
+struct Public{
+    keys: Keys,
+    statement: Statement
 }
 
-struct PrivateData {
-    auth_a: AuthA,
-    auth_b: AuthB,
+struct Keys {
+    pub_key_x: Field,
+    pub_key_y: Field,
 }
 
-struct AuthA {
-    authority: str<AUTH_NAME_LENGTH>,
-    r: Field,
-    s: Field,
-    data: DataA,
+struct Statement {
+    value: u8,
 }
 
-struct AuthB {
-    data: DataB,
+struct Private {
+    provenance: Provenance,
+    data: Data,
 }
 
-struct DataA {
-    patient_id_0: PatientData,
-    patient_id_1: PatientData,
-}
-
-struct DataB {
-    patient_id_0: PatientData,
-    patient_id_1: PatientData,
-}
-
-struct PatientData {
-    name: str<NAME_LENGHT>,
-    genetic_data: GeneticData,
-}
-
-struct GeneticData {
-    rs10757274: str<2>,
-    rs562556: str<2>,
-    rs429358: str<2>,
-    rs7412: str<2>,
-    rs1801133: str<2>,
+struct Provenance {
+    signature: [u8; 64],
+    hash: [u8; 32],
 }

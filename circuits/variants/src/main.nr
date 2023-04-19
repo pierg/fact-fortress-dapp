@@ -1,73 +1,76 @@
 use dep::std;
-
 mod data;
 
-global VALUE_rs10757274: str<2> = "GG";
-global VALUE_rs1801133: str<2> = "TT";
+// Concatenates the data into a byte array of size `DATA_SIZE`.// This function returns the concatenated byte array.mod data;
 
-// Count number of people with GG at rs10757274
-fn compute_rs10757274_GG_percentage(private_data: data::PrivateData) -> Field {
-    let total = 4;
-
-    let mut count = 0;
-
-    if (private_data.auth_a.data.patient_id_0.genetic_data.rs10757274 == VALUE_rs10757274) {
-        count = count + 1;
+fn concatenate(data: data::Data) -> [u8; data::DATA_SIZE]  {
+    let mut result = [0; data::DATA_SIZE];
+    let mut cur_i = 0;
+    // Genome sequence of individuals from Clinic A
+    // Copy the contents of d1 into the byte array.
+    for i in 0..data::D1_SIZE {
+        result[cur_i] = data.d1[i] as u8;
+        cur_i = cur_i + 1;
     }
-    if (private_data.auth_a.data.patient_id_1.genetic_data.rs10757274 == VALUE_rs10757274) {
-        count = count + 1;
+    // Genome sequence of individuals from Clinic B
+    // Copy the contents of d2 into the byte array.
+    for i in 0..data::D2_SIZE {
+        result[cur_i] = data.d2[i] as u8;
+        cur_i = cur_i + 1;
     }
-    if (private_data.auth_b.data.patient_id_0.genetic_data.rs10757274 == VALUE_rs10757274) {
-        count = count + 1;
-    }
-    if (private_data.auth_b.data.patient_id_1.genetic_data.rs10757274 == VALUE_rs10757274) {
-        count = count + 1;
-    }
-
-    let mut percentage = count * 100 / total;
-
-    percentage
+    result
 }
 
 
-// Count number of people with TT at rs1801133
-fn compute_rs1801133_TT_percentage(private_data: data::PrivateData) -> Field {
-    let total = 4;
 
-    let mut count = 0;
+// Verify the authenticity and integrity of the data by concatenating it, 
+// computing its SHA256 hash, and verifying its Schnorr signature using the 
+// public keys and the signature from the provenance.
+fn verify_data_provenance(
+    data: data::Data,    // The data to be verified.
+    keys: data::Keys,    // The public keys to be used for the verification.
+    provenance: data::Provenance    // The provenance object containing the signature to be verified.
+) -> Field  {
+    // Concatenate all the data.
+    let flat_data = concatenate(data);
 
-    if (private_data.auth_a.data.patient_id_0.genetic_data.rs1801133 == VALUE_rs1801133) {
-        count = count + 1;
-    }
-    if (private_data.auth_a.data.patient_id_1.genetic_data.rs1801133 == VALUE_rs1801133) {
-        count = count + 1;
-    }
-    if (private_data.auth_b.data.patient_id_0.genetic_data.rs1801133 == VALUE_rs1801133) {
-        count = count + 1;
-    }
-    if (private_data.auth_b.data.patient_id_1.genetic_data.rs1801133 == VALUE_rs1801133) {
-        count = count + 1;
-    }
+    // Compute the SHA256 hash of the concatenated data.
+    let mut digest256 = std::sha256::digest(flat_data);
 
-    let mut percentage = count * 100 / total;
-
-    percentage
+    // Verify the Schnorr signature of the hash using the public keys and the signature from the provenance.
+    std::schnorr::verify_signature(
+        keys.pub_key_x, 
+        keys.pub_key_y, 
+        provenance.signature, 
+        digest256)
 }
 
+
+// Perform some meaningful operations on the data and return the result.
+fn perform_computation_on_data(data: data::Data) -> u8  {
+    // TODO: Implement the actual computation on the data.
+
+    // Dummy implementation that returns zero.
+    let mut result = data.d1[0];
+    result = 10;
+
+    result as u8
+}
 
 fn main(
-    private_data : data::PrivateData,
-    public_keys : pub data::PublicKeys,
-    public_statements : pub data::PublicStatements
-    ) {
+    public : pub data::Public,    // Data containing the expected result.
+    private : data::Private,    // Data to be verified and processed.
+    ){
 
-    // dummy checks
-    constrain public_keys.company_a == 31408930950303160359960467821144649185997809649020691559087946667608250512807;
+    // Verify the authenticity and integrity of the private data.
+    constrain verify_data_provenance(private.data, public.keys, private.provenance) == 1;
 
-    constrain public_keys.company_b == 38767812175157612390478214943129528463339579156200482434025911544866189712150;
+    // Perform some meaningful operations on the private data.
+    let result = perform_computation_on_data(private.data);
 
-    constrain compute_rs10757274_GG_percentage(private_data) == public_statements.rs10757274_GG_percentage;
-
-    constrain compute_rs1801133_TT_percentage(private_data) == public_statements.rs1801133_TT_percentage;
+    // Verify that the obtained result matches the value specified in the public statement.
+    constrain result == public.statement.value;
 
 }
+
+        

@@ -1,17 +1,17 @@
-global D1_SIZE: Field = 6;
-global D1_SHAPE: [u8; 2] = [3, 2];
+global D1_SIZE: Field = 2;
+global D1_SHAPE: [u8; 2] = [2, 1];
 
-global D2_SIZE: Field = 3;
-global D2_SHAPE: [u8; 2] = [3, 1];
+global D2_SIZE: Field = 2;
+global D2_SHAPE: [u8; 2] = [2, 1];
 global D2_PRECISION: u4 = 1;
 
-global DATA_SIZE: Field = 9;
+global DATA_SIZE: Field = 4;
 
 struct Data {
-    // Alleles of individuals from Hospital A
-    d1: [u8; 6],
-    // Beta values of heart conditions from Hospital A
-    d2: [u8; 3],
+    // Sample data description 1
+    d1: [u8; 2],
+    // Sample data description 2
+    d2: [u8; 2],
 }
 
 struct Public{

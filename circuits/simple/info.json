@@ -1,0 +1,18 @@
+{
+    "function": {
+        "name": "simple",
+        "description": "simple example"
+    },
+    "data": [
+        {
+            "name": "data_A_1",
+            "description": "Sample data description 1",
+            "provider": "Provider_A"
+        },
+        {
+            "name": "data_A_2",
+            "description": "Sample data description 2",
+            "provider": "Provider_A"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "function": {
+        "name": "variants",
+        "description": "computes the average risk scores of a population"
+    },
+    "data": [
+        {
+            "name": "Genome_individuals_CA",
+            "description": "Genome sequence of individuals from Clinic A",
+            "provider": "Clinic_A"
+        },
+        {
+            "name": "Genome_individuals_CB",
+            "description": "Genome sequence of individuals from Clinic B",
+            "provider": "Clinic_B"
+        }
+    ]
+}

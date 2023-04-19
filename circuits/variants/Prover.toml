@@ -1,60 +1,18 @@
-[public_keys]
-company_a = "0x4570d32eac7ecf830f5839586e66e894df42efbc6c68889f6120cabd837ff5a7"
-company_b = "0x55b5cdd9b019c42cbcb7cd8322053c8e6d4969837e459a6d3d77c34410159b16"
+##############################
+#	computes the average risk scores of a population
+##############################
 
-[public_statements]
-rs10757274_GG_percentage = 75
-rs1801133_TT_percentage = 100
+[public.keys]
+pub_key_x = "0x2efd4986805268aae57352526ab5a11d3409355a60b4c7fb59cf1d0d2431cb4b"
+pub_key_y = "0x04fcc0f4e87e0f3f1d03426a3249ec5304cc6b02892359ee7dfe851ea725aa94"
 
+[public.statement]
+value = 10
 
-[private_data.auth_a.data.patient_id_0.genetic_data]
-rs10757274 = "GG"
-rs562556 = "GG"
-rs429358 = "CT"
-rs7412 = "CC"
-rs1801133 = "TT"
+[private.provenance]
+signature = [ 0, 113, 162, 146, 196, 196, 142, 17, 103, 68, 66, 29, 71, 38, 156, 190, 95, 155, 86, 43, 77, 140, 181, 97, 5, 249, 237, 36, 98, 61, 125, 188, 10, 151, 196, 179, 221, 42, 251, 183, 101, 157, 71, 181, 32, 249, 98, 220, 216, 202, 215, 237, 70, 39, 212, 124, 94, 209, 154, 205, 242, 192, 115, 114,]
+hash = [ 97, 66, 194, 84, 95, 198, 13, 163, 119, 176, 187, 27, 26, 199, 191, 237, 181, 197, 247, 65, 253, 33, 252, 146, 77, 250, 172, 32, 196, 140, 240, 178,]
 
-[private_data.auth_a.data.patient_id_1.genetic_data]
-rs10757274 = "GG"
-rs562556 = "GG"
-rs429358 = "TT"
-rs7412 = "TT"
-rs1801133 = "TT"
-
-[private_data.auth_b.data.patient_id_0.genetic_data]
-rs10757274 = "AA"
-rs562556 = "AA"
-rs429358 = "TT"
-rs7412 = "TT"
-rs1801133 = "TT"
-
-[private_data.auth_b.data.patient_id_1.genetic_data]
-rs10757274 = "GG"
-rs562556 = "AG"
-rs429358 = "TT"
-rs7412 = "CT"
-rs1801133 = "TT"
-
-
-
-[private_data.auth_a]
-authority = "company_a"
-r = "0x50421a7f32bda9098c8b8a7852ad6568cb0f75e11a63996bd48404651c6c7a77"
-s = "0xd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
-
-[private_data.auth_b]
-authority = "company_b"
-r = "0xe4ca798c31f02d23615e9f428a73922bb1bbe14c8658a77470f63c042675fabe"
-s = "0xd4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
-
-[private_data.auth_a.data.patient_id_0]
-name = "Bob_______"
-
-[private_data.auth_a.data.patient_id_1]
-name = "Frank_____"
-
-[private_data.auth_b.data.patient_id_0]
-name = "Charlie___"
-
-[private_data.auth_b.data.patient_id_1]
-name = "Alice_____"
+[private.data]
+d1 = [ 0, 2,]
+d2 = [ 3, 1,]
