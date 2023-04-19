@@ -131,7 +131,7 @@ async function generateVerifiers(verifierCircuits) {
 // TODO(Guillaume): remove Schnorr once the other contracts are integrated
 const verifierCircuits = [{
         "circuit_name": "schnorr", // name of the directory that contains the circuit 
-        "contract_name": "ZkpHealthVerifierSchnorr" // name of the smart contract to generated
+        "contract_name": "ZkpHealthVerifier" // name of the smart contract to generated
     },
     {
         "circuit_name": "simple",
