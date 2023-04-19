@@ -1,7 +1,7 @@
-const { contracts } = require('../contracts/contracts.js');
+const { contractsHelper } = require('../contracts/contracts.js');
 
 async function mint(from, recipient) {
-    const sc = contracts.getContractByName("ZkpHealthToken");
+    const sc = contractsHelper.getContractByName("ZkpHealthToken");
 
     try {
         const receipt = await sc.methods.mint(recipient).send({ from, gas: '1000000' });
@@ -20,7 +20,7 @@ async function mint(from, recipient) {
 }
 
 async function getTokenId(address) {
-    const sc = contracts.getContractByName("ZkpHealthToken");
+    const sc = contractsHelper.getContractByName("ZkpHealthToken");
 
     try {
         const tokenId = await sc.methods.userToToken(address).call();

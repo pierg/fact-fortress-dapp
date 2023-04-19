@@ -10,7 +10,7 @@ const { contractsHelper } = require("./../contracts/contracts.js");
 
 const fs = require("fs");
 
-let barretenbergHelper, circuitHelper;
+let circuitHelper;
 
 class CircuitHelper {
     constructor() {
@@ -24,7 +24,7 @@ class CircuitHelper {
         );
 
         if (!fs.existsSync(circuitFilepath)) {
-            console.error(`circuit ${circuitSchnorrFilepath} does not exist`);
+            console.error(`circuit ${circuitFilepath} does not exist`);
             process.exit(1);
         }
 
