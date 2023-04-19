@@ -9,7 +9,7 @@ contract("ZkpHealthAuthorityToken", (accounts) => {
     });
 
     it("should authorize an hospital", async() => {
-        const tokenRecipient = accounts[8];
+        const tokenRecipient = accounts[9];
 
         // Mint a new token and get the ID
         const tokenId = await zkpHealthAuthorityToken.authorizeAuthority(tokenRecipient);
@@ -57,8 +57,8 @@ contract("should authorize a researcher", (accounts) => {
     });
 
     it("should get own access types", async() => {
-        const researcherA = accounts[8];
-        const researcherB = accounts[9];
+        const researcherA = accounts[7];
+        const researcherB = accounts[6];
 
         const accessTypesA = ["TYPE_A", "TYPE_B", "TYPE_C"];
         const accessTypesB = ["TYPE_X", "TYPE_B", "TYPE_C"];

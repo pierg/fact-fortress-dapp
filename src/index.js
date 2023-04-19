@@ -3,8 +3,12 @@ const { contractsHelper } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
 const {
-    mintController,
-    getTokenIdController
+    authorizeAuthorityController,
+    authorizeResearcherController,
+    getAuthorityTokenIdController,
+    getResearcherTokenIdController,
+    getAllAccessTypesController,
+    getOwnAccessTypesController
 } = require("./controllers/nft.controller.js");
 const {
     getPublicKeyController,
@@ -90,6 +94,7 @@ async function deployContracts() {
         "name": "ZkpHealth",
         "args": [
             contractsHelper.getAddress("ZkpHealthAuthorityToken"),
+            contractsHelper.getAddress("ZkpHealthResearcherToken"),
             contractsHelper.getAddress("ZkpHealthVerifier"),
         ],
     });
@@ -105,9 +110,15 @@ app.post("/sign_message", signMessageController); // hash and sign a message
 app.post("/generate_proof", generateProofController); // generate the proof
 app.get("/available_functions", getAvailableFunctionsController);
 
+// authorizations (NFTs)
+app.get("/authorize_authority", authorizeAuthorityController); // authorize an authority (hospital) (mint NFT and send)
+app.post("/authorize_researcher", authorizeResearcherController); // authorize a researcher (mint NFT and send)
+app.get("/authority_token_id", getAuthorityTokenIdController); // get NFT ID associated with authority address
+app.get("/researcher_token_id", getResearcherTokenIdController); // get NFT ID associated with researcher address
+app.get("/all_access_types", getAllAccessTypesController); // get all access types
+app.get("/own_access_types", getOwnAccessTypesController); // get own access type
+
 // public keys
-app.get("/mint", mintController); // authorize an entity (mint NFT and send)
-app.get("/tokenid", getTokenIdController); // get NFT ID associated with address
 app.get("/publickey", getPublicKeyController); // get public key
 app.put("/publickey", setPublicKeyController); // set public key
 

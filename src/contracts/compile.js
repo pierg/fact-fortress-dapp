@@ -20,7 +20,7 @@ const MathSourceCode = fs.readFileSync(getOpenZeppelinPath("/utils/math/Math.sol
 
 // core folder
 const zkpAuthorityTokenSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpHealthAuthorityToken.sol"));
-const zkpResearcherTokenSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpResearcherTokenSourceCode.sol"));
+const zkpResearcherTokenSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpHealthResearcherToken.sol"));
 const zkpVerifierSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/zkpHealthVerifier.sol"));
 
 const buildPath = resolve(__dirname, "./build");
