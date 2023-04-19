@@ -52,7 +52,7 @@ fn perform_computation_on_data(data: data::Data) -> u8  {
 
     // Dummy implementation that returns zero.
     let mut result = data.d1[0];
-    result = 32;
+    result = 144;
 
     result as u8
 }

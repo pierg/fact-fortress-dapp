@@ -1,16 +1,16 @@
-global D1_SIZE: Field = 2;
-global D1_SHAPE: [u8; 2] = [2, 1];
+global D1_SIZE: Field = 25;
+global D1_SHAPE: [u8; 2] = [5, 5];
 
-global D2_SIZE: Field = 2;
-global D2_SHAPE: [u8; 2] = [2, 1];
+global D2_SIZE: Field = 25;
+global D2_SHAPE: [u8; 2] = [5, 5];
 
-global DATA_SIZE: Field = 4;
+global DATA_SIZE: Field = 50;
 
 struct Data {
     // Genome sequence of individuals from Clinic A
-    d1: [u8; 2],
+    d1: [u8; 25],
     // Genome sequence of individuals from Clinic B
-    d2: [u8; 2],
+    d2: [u8; 25],
 }
 
 struct Public{

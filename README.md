@@ -11,14 +11,15 @@ Install the dependencies:
 pnpm install
 ```
 
-### Run the API Server
+### Run the back-end
 
 ```
 pnpm backend
 ```
 
+A Postman collection is provided to interact with the backend: `tools/Postman_collection/ZKP_Health.json`
 
- ### Run front-end
+### Run the front-end
 
 ```
 pnpm frontend

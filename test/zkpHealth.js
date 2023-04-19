@@ -1,5 +1,6 @@
 const ZkpHealth = artifacts.require("ZkpHealth");
-const ZkpHealthToken = artifacts.require("ZkpHealthToken");
+const ZkpHealthAuthorityToken = artifacts.require("ZkpHealthAuthorityToken");
+const ZkpHealthResearcherToken = artifacts.require("ZkpHealthResearcherToken");
 const ZkpHealthVerifier = artifacts.require("ZkpHealthVerifier");
 
 const { BarretenbergHelper, hashHealthData } = require("./helpers");
@@ -70,7 +71,7 @@ contract("ZkpHealth", function(accounts) {
 
     // contracts
     let zkpHealthInstance; // Main contract
-    let zkpTokenInstance; // NFTs
+    let zkpAuthorityTokenInstance; // NFTs
     let zkpVerifierInstance; // Noir verifier
 
     // accounts
@@ -101,10 +102,12 @@ contract("ZkpHealth", function(accounts) {
     });
 
     beforeEach(async() => {
-        zkpTokenInstance = await ZkpHealthToken.new();
+        zkpAuthorityTokenInstance = await ZkpHealthAuthorityToken.new();
+        zkpResearcherTokenInstance = await ZkpHealthResearcherToken.new();
         zkpVerifierInstance = await ZkpHealthVerifier.new();
         zkpHealthInstance = await ZkpHealth.new(
-            zkpTokenInstance.address,
+            zkpAuthorityTokenInstance.address,
+            zkpResearcherTokenInstance.address,
             zkpVerifierInstance.address
         );
     });
@@ -125,7 +128,7 @@ contract("ZkpHealth", function(accounts) {
     describe("Public keys management with NFTs", async() => {
         it("should allow an authorized hospital with a valid ZKP token to add their public key", async() => {
             // Mint a new ZKP token for hospitalA
-            await zkpTokenInstance.mint(hospitalA);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
 
             // Set hospitalA's public key
             const name = "Hospital A";
@@ -149,7 +152,7 @@ contract("ZkpHealth", function(accounts) {
 
         it("should allow an authorized hospital with a valid ZKP token to add new public keys", async() => {
             // Mint a new ZKP token for hospitalA
-            await zkpTokenInstance.mint(hospitalA);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
 
             const name = "Hospital A";
             const publicKey1 = helper.getRandomGrumpkinPublicKey();
@@ -230,7 +233,7 @@ contract("ZkpHealth", function(accounts) {
 
         it("should allow an hospital to update their own public key", async() => {
             // Mint a new ZKP token for hospitalA
-            await zkpTokenInstance.mint(hospitalA);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
 
             // Set hospitalA's initial public key
             const initialName = "Hospital A";
@@ -260,7 +263,7 @@ contract("ZkpHealth", function(accounts) {
 
         it("should not allow an unauthorized hospital/user to set a public key", async() => {
             // Mint a new ZKP token for hospitalA
-            await zkpTokenInstance.mint(hospitalA);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
             const name = "Hospital A";
 
             // Try to set a public key for the third account using the second account's ZKP token
@@ -283,7 +286,7 @@ contract("ZkpHealth", function(accounts) {
 
         it("should not allow setting a public key with an empty string", async() => {
             // Mint a new ZKP token for hospitalA
-            await zkpTokenInstance.mint(hospitalA);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
 
             // Try to set an empty public key for hospitalA
             const name = "Hospital A";
@@ -303,12 +306,12 @@ contract("ZkpHealth", function(accounts) {
 
         it("should not allow an authorized hospital to modify another authorized hospital's public key with the same name", async() => {
             // Mint new ZKP tokens for hospitalA and hospitalB
-            await zkpTokenInstance.mint(hospitalA);
-            await zkpTokenInstance.mint(hospitalB);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
+            await zkpAuthorityTokenInstance.authorizeAuthority(hospitalB);
             const name = "Hospital A";
 
-            const hospitalATokenId = await zkpTokenInstance.userToToken(hospitalA);
-            const hospitalBTokenId = await zkpTokenInstance.userToToken(hospitalB);
+            const hospitalATokenId = await zkpAuthorityTokenInstance.userToToken(hospitalA);
+            const hospitalBTokenId = await zkpAuthorityTokenInstance.userToToken(hospitalB);
 
             // set public key for Hospital A's token and name "hospital A"
             await zkpHealthInstance.setPublicKey(
@@ -338,8 +341,8 @@ contract("ZkpHealth", function(accounts) {
         const hospitalANewAddress = accounts[2];
 
         // Mint a new ZKP token for hospitalA
-        await zkpTokenInstance.mint(hospitalA);
-        const tokenId = await zkpTokenInstance.userToToken(hospitalA);
+        await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
+        const tokenId = await zkpAuthorityTokenInstance.userToToken(hospitalA);
 
         // Set hospitalA's public key
         const name = "Hospital A";
@@ -349,7 +352,7 @@ contract("ZkpHealth", function(accounts) {
         });
 
         // Transfer the token to the new address
-        await zkpTokenInstance.transferFrom(
+        await zkpAuthorityTokenInstance.transferFrom(
             hospitalA,
             hospitalANewAddress,
             tokenId, { from: hospitalA }
@@ -398,7 +401,7 @@ contract("ZkpHealth", function(accounts) {
 
                 // prerequisite: the hospital that stores its signature is authorized
                 // to do so thanks to its NFT
-                await zkpTokenInstance.mint(hospitalA);
+                await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
 
                 await zkpHealthInstance.storeSignature(publicKey, signature, {
                     from: hospitalA,
@@ -442,7 +445,7 @@ contract("ZkpHealth", function(accounts) {
                 const signature = helper.signHash(privateKey, hash);
                 const publicKey = helper.getGrumpkinPublicKey(privateKey);
 
-                await zkpTokenInstance.mint(hospitalA);
+                await zkpAuthorityTokenInstance.authorizeAuthority(hospitalA);
 
                 await zkpHealthInstance.storeSignature(publicKey, signature, {
                     from: hospitalA,
@@ -465,7 +468,8 @@ contract("ZkpHealth", function(accounts) {
                 );
                 expect(publicKeyResult).eq(true);
 
-                const smartContractResult = await zkpHealthInstance.verifyProofPoP(
+                const smartContractResult = await zkpHealthInstance.verifyProof(
+                    "proof_of_provenance",
                     proof
                 );
                 expect(smartContractResult).eq(true);
@@ -491,7 +495,10 @@ contract("ZkpHealth", function(accounts) {
                 expect(verified).eq(false);
 
                 await expect(
-                    zkpHealthInstance.verifyProofPoP(proof)
+                    zkpHealthInstance.verifyProof(
+                        "proof_of_provenance",
+                        proof
+                    )
                 ).to.be.rejectedWith(
                     "VM Exception while processing transaction: revert Proof failed"
                 );
@@ -506,7 +513,7 @@ contract("ZkpHealth", function(accounts) {
                 const name = "Hospital C";
 
                 // a) Mint a new ZKP token for the hospital
-                await zkpTokenInstance.mint(hospitalC);
+                await zkpAuthorityTokenInstance.authorizeAuthority(hospitalC);
 
                 // b) Upload hospital's public key
                 const privateKey = randomBytes(32);
@@ -582,7 +589,10 @@ contract("ZkpHealth", function(accounts) {
 
                 // e) (Verification B)
                 // The verifier verifies the proof of provenance
-                const proofVerified = await zkpHealthInstance.verifyProofPoP(proofV);
+                const proofVerified = await zkpHealthInstance.verifyProof(
+                    "proof_of_provenance",
+                    proofV
+                );
                 expect(proofVerified).eq(true);
             });
         });
