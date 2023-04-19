@@ -1,7 +1,7 @@
 {
     "function": {
         "name": "variants",
-        "description": "computes the average risk scores of a population"
+        "description": "analyse the variants in the genomes of the individuals"
     },
     "data": [
         {
