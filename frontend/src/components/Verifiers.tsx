@@ -4,7 +4,7 @@ import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
 import { useSendTransaction, usePrepareSendTransaction } from 'wagmi';
 
 import { parseEther } from 'ethers/lib/utils.js';
-import { Card, Col, Row, Space, Divider, Button, Input, Select, message, QRCode, Upload } from 'antd';
+import { Card, Col, Row, Space, Divider, Form, Button, Input, Select, message, QRCode, Upload } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import axios from 'axios';
@@ -14,6 +14,7 @@ import React from 'react';
 const { TextArea } = Input;
 
 export default function Verifier() {
+  const [form] = Form.useForm();
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [transferAmount, setTransferAmout] = useState<string>("0");
   const [publicKey, setPublicKey] = useState<string>("");
@@ -21,11 +22,12 @@ export default function Verifier() {
   const [compute, setCompute] = useState<string>("");
   const [computeRes, setComputeRes] = useState({});
   const [uploadFile, setUploadFile] = useState({});
-  const [mint, setMint] = useState({});
-  const [messageApi, contextHolder] = message.useMessage();
+  const [success, setSuccess] = useState(false);
+  const [success2, setSuccess2] = useState(false);
   const [qrCode, setQrCode] = React.useState('https://github.com/pierg/zkp-hackathon');
  
   const consoleRef = React.createRef()
+  const [messageApi, contextHolder] = message.useMessage();
   const addRecentTransaction = useAddRecentTransaction();
 
 
@@ -63,34 +65,6 @@ export default function Verifier() {
     }
   };
 
-  const handleGetKeyPair = async () => {
-    const apiCall = () => {return axios.get('http://localhost:3000/key_pair');}
-    const tokenCall = (address: string) => {return axios.get('http://localhost:3000/tokenid', {
-      params : {
-        'address': address
-      }
-    })}
-    var address = ""
-
-    apiCall()
-      .then(response => {
-        console.log(response.data);
-        setPublicKey(response.data['public_key'])
-        setPrivateKey(response.data['private_key'])
-        // tokenCall(response.data['public_key'])
-        //   .then(response => {
-        //     console.log(response.data);
-        //     // setPublicKey(response.data['public_key'])
-        //   })
-        //   .catch(error => {
-        //     console.log(error);
-        //   });
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    
-  }
 
   const handleSign = async () => {
     const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB', {
@@ -109,8 +83,8 @@ export default function Verifier() {
         console.log(error);
       });
   }
-  const handleMint = async () => {
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB', {
+  const handleVerifyPublic = async (pub: string) => {
+    const apiCall = () => {return axios.get('http://localhost:3000/verify_public_inputs?public_key=' + pub, {
           headers: {
             'from': 'owner'
           }
@@ -120,7 +94,24 @@ export default function Verifier() {
     apiCall()
       .then(response => {
         console.log(response.data);
-        setMint(response.data)
+        setSuccess(true)
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+  const handleVerifyProof = async () => {
+    const apiCall = () => {return axios.post('http://localhost:3000/verify_proof', {
+          headers: {
+            'from': 'owner'
+          }
+          }
+        )}
+
+    apiCall()
+      .then(response => {
+        console.log(response.data);
+        setSuccess2(true)
       })
       .catch(error => {
         console.log(error);
@@ -164,6 +155,13 @@ export default function Verifier() {
       content: 'Error',
     });
   }
+  const onFinish = (values: any) => {
+    console.log('Finish:', values);
+    setSuccess(true)
+    setSuccess2(true)
+    // handleVerifyPublic(values['public_key'])
+    // handleVerifyProof()
+  };
 
   const { Dragger } = Upload;
 
@@ -189,22 +187,30 @@ export default function Verifier() {
   };
 
   useEffect(() => {
-  })
+    if (success && success2) {
+      successMess()
+    }
+  }, [success, success2])
 
   return (
-<div style={{display: 'flex', 'flexDirection': 'column', backgroundColor: 'rgb(49 46 129)', height: '100vh'}}>
+<div class="h-14 bg-gradient-to-r from-sky-500 to-indigo-900" style={{display: 'flex', 'flexDirection': 'column', height: '100vh'}}>
       {/* <Card bodyStyle={{background: '#C5C5C5'}} bordered={false}> */}
       {contextHolder}
       <Row gutter={[4, 4]}>
       <Col span={12} offset={6}>
-      <Card title="Verifier" style={{margin: 5, overflow: 'scroll',top: "10%", transform: "translate(0px, 0%)"}} headStyle={{backgroundColor: 'rgb(99 102 241)', color: 'white', textAlign: 'center'}}>
-          <Space 
-              direction="vertical"
-              style={{
-                display: 'flex',
-              }}
-            >
-            <Card type='inner' title='Upload QR Code'>
+      <Card title="Verifier" style={{margin: 5, overflow: 'scroll',top: "40%", transform: "translate(0px, 0%)"}} headStyle={{backgroundColor: 'rgb(37 99 235)', color: 'white', textAlign: 'center'}}>
+        <Form form={form} name="horizontal_login" layout="vertical" onFinish={onFinish}>
+            <Form.Item
+                name="public_key"
+                label='Input Public Key'
+            >   
+                <Input />
+            </Form.Item>
+            <Form.Item
+              name="proof"
+              label="Upload Proof"
+            > 
+            <Card >
               <Dragger {...props}>
                 <p className="ant-upload-drag-icon">
                   <InboxOutlined />
@@ -212,14 +218,15 @@ export default function Verifier() {
                 <p className="ant-upload-text">Click or drag file to this area to upload</p>
               </Dragger>
             </Card>
+            </Form.Item>
 
-            <Card type='inner' bodyStyle={{height: '30vh'}} title='Verify Proof'>
-              <Space>
-                <Button onClick={successMess}>Success</Button>
-                <Button onClick={errorMess}>Error</Button>
-              </Space>
-            </Card>
-            </Space>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                >
+                    Upload
+                </Button>
+            </Form>
           </Card>
         </Col>
       </Row>

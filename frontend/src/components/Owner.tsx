@@ -64,12 +64,17 @@ const onFinish = (values: any) => {
 
 
   return (
-    <div style={{background: 'rgb(82 82 91)', height: '100vh', width: '100%', margin: 0, 'boxSizing': 'border-box'}}>
+    <div 
+        class="h-14 bg-gradient-to-r from-emerald-500 to-green-900"
+        style={{
+            width: '100vw',
+            height: '100vh', margin: 0, 'boxSizing': 'border-box'}}
+        >
 
     <Card 
         title="Mint Tokens" 
         style={{ margin: 5, overflow: 'scroll',top: "30%", left: "30%", transform: "translate(0px, 0%)", width: '45%'}} 
-        headStyle={{backgroundColor: 'rgb(161 161 170)', color: 'white', textAlign: 'center'}}
+        headStyle={{backgroundColor: 'rgb(4 120 87)', color: 'white', textAlign: 'center'}}
         bodyStyle={{display:'flex', flexDirection:'column', justifyContent:'center'}}
         >
         <Row gutter={[8, 8]}>

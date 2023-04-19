@@ -4,9 +4,9 @@ import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
 import { useSendTransaction, usePrepareSendTransaction } from 'wagmi';
 
 import { parseEther } from 'ethers/lib/utils.js';
-import { Card, Col, Row, Space, Divider, Button, Input, Select, message, QRCode, Upload } from 'antd';
+import { Card, Col, Row, Space, Divider, Button, Input, Select, Form, message, QRCode, Upload } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
-import type { UploadProps } from 'antd';
+import type { UploadProps, SelectProps } from 'antd';
 import axios from 'axios';
 import React from 'react';
 
@@ -14,14 +14,14 @@ import React from 'react';
 const { TextArea } = Input;
 
 export default function Dapp() {
+  const [form] = Form.useForm();
   const [receiverAddress, setReceiverAddress] = useState<string>("");
   const [transferAmount, setTransferAmout] = useState<string>("0");
-  const [publicKey, setPublicKey] = useState<string>("");
-  const [privateKey, setPrivateKey] = useState<string>("");
+  const [key, setKey] = useState({});
   const [compute, setCompute] = useState<string>("");
   const [computeRes, setComputeRes] = useState({});
-  const [uploadFile, setUploadFile] = useState({});
-  const [mint, setMint] = useState({});
+  const [functions, setFunctions] = useState({});
+  const [loading, setLoading] = useState(true);
   const [messageApi, contextHolder] = message.useMessage();
   const [qrCode, setQrCode] = React.useState('https://github.com/pierg/zkp-hackathon');
  
@@ -75,8 +75,7 @@ export default function Dapp() {
     apiCall()
       .then(response => {
         console.log(response.data);
-        setPublicKey(response.data['public_key'])
-        setPrivateKey(response.data['private_key'])
+        setKey(response.data['public_key'])
         // tokenCall(response.data['public_key'])
         //   .then(response => {
         //     console.log(response.data);
@@ -92,54 +91,13 @@ export default function Dapp() {
     
   }
 
-  const handleSign = async () => {
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB', {
-          headers: {
-            'from': 'owner'
-          }
-          }
-        )}
+  const handleFetch = async () => {
+    const apiCall = () => {return axios.get('http://localhost:3000/available_functions')}
 
     apiCall()
       .then(response => {
         console.log(response.data);
-        // setComputeRes(response.data)
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-  const handleMint = async () => {
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB', {
-          headers: {
-            'from': 'owner'
-          }
-          }
-        )}
-
-    apiCall()
-      .then(response => {
-        console.log(response.data);
-        setMint(response.data)
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-
-  const handleCompute = async () => {
-    const apiCall = () => {return axios.get('http://localhost:3000/mint', {
-                                      params: {
-                                        'recipient': publicKey
-                                        }
-                                      }
-                                    )}
-
-    apiCall()
-      .then(response => {
-        console.log(response.data);
-        setComputeRes(response.data)
+        setFunctions(response.data['proof_of_provenance'])
       })
       .catch(error => {
         console.log(error);
@@ -167,117 +125,102 @@ export default function Dapp() {
 
   const { Dragger } = Upload;
 
-  const props: UploadProps = {
-    name: 'file',
-    multiple: true,
-    onChange(info) {
-      console.log(info)
-      const { status } = info.file;
-      if (status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
-      if (status === 'done') {
-        setUploadFile(info)
-        message.success(`${info.file.name} file uploaded successfully.`);
-      } else if (status === 'error') {
-        message.error(`${info.file.name} file upload failed.`);
-      }
-    },
-    onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
-    },
-  };
+  const populate_options = () => {
+    const options: SelectProps['options'] = [];
+    for (let i = 0; i < functions['health_data'].length; i++) {
+      options.push({
+        value: functions['health_data'][i],
+        label: functions['health_data'][i]
+      });
+    }
+    return options;
+  }
 
-  useEffect(() => {
-  })
+  const onFinish = (values: any) => {
+    console.log('Finish:', values);
+  };
+  // useEffect(() => {
+  //   if (JSON.stringify(functions) != '{}') {
+  //     console.log(options)
+  //   }
+    
+  // }, [functions])
+  // console.log(functions)
 
   return (
-<div style={{display: 'flex', 'flexDirection': 'column', backgroundColor: 'rgb(15 23 42)', height: '100vh'}}>
+<div 
+  class="h-14 bg-gradient-to-r from-zinc-400 to-slate-900"
+  style={{
+  width: '100vw',
+  height: '100vh', margin: 0, 'boxSizing': 'border-box'}}
+>
       {/* <Card bodyStyle={{background: '#C5C5C5'}} bordered={false}> */}
       {contextHolder}
       <Divider/>
-      <Row gutter={[4, 4]}>
+      <Row>
       <Col span={12} offset={6}>
-          <Card style={{margin: 5, height: '85vh', overflow: 'scroll'}} headStyle={{backgroundColor: 'rgb(100 116 139)', color: 'white', textAlign: 'center'}} title="Researchers" bordered={true}>
+          <Card style={{ height: '55vh', top: "30%", transform: "translate(0px, 0%)", overflow: 'scroll'}} headStyle={{backgroundColor: 'rgb(100 116 139)', color: 'white', textAlign: 'center'}} title="Researchers" bordered={true}>
             <Space 
               direction="vertical"
               style={{
                 display: 'flex',
               }}
             >
-            <Card type='inner'  title='Token Distribution'>
-            {/* <Space 
-              direction="vertical"
-              style={{
-                display: 'flex',
-              }}
-            > */}
-            {publicKey != "" &&
-              <div style={{ width: '100%', fontWeight: 'bold'}}>
-                Token ID
-                <textarea readOnly={true} defaultValue={publicKey} style={{width: '100%', maxWidth: '100%', fontWeight: 'bold'}} />
+            <Card type='inner' bodyStyle={{height: '50vh', overflow: 'auto'}} title='Select Function'>
+            <Form form={form} name="horizontal_login" layout="vertical" onFinish={onFinish}>
+                <Form.Item
+                    name="recipient1"
+                > 
+                    {JSON.stringify(key) != '{}' &&
+                    <div style={{ width: '100%', fontWeight: 'bold'}}>
+                        Public Keys
+                        <Card bodyStyle={{overflowWrap: 'break-word'}}>{JSON.stringify(key_a)}</Card>
+                        {/* <textarea readOnly={true} defaultValue={JSON.stringify(key_a)} style={{width: '100%', maxWidth: '100%', fontWeight: 'bold'}} /> */}
+                    </div>
+                    }
+                     {JSON.stringify(key) == '{}' &&
+                    <div style={{ width: '100%', fontWeight: 'bold'}}>
+                        Public Key
+                        <Card loading={loading}>None</Card>
 
-              </div>
-            }
-            {JSON.stringify(mint) != '{}' &&
-              <div style={{ width: '100%', fontWeight: 'bold'}}>
-                Mint
-                <textarea readOnly={true} defaultValue={JSON.stringify(mint)} style={{width: '100%', maxWidth: '100%', fontWeight: 'bold'}} />
-              </div>
-            }
-            <br/>
-              <Button
-                  type='primary'
-                  shape='round'
-                  onClick={handleGetKeyPair}
-                >
-                Get Token ID
-              </Button>
-            {/* </Space> */}
-            </Card>
-            <Card type='inner' bodyStyle={{height: '10vh'}} title='Signed Data Secures Storage'>
-              <Button
-                  type='primary'
-                  shape='round'
-                  onClick={handleSign}
-                >
-                Sign
-              </Button>
-            </Card>
-            <Card type='inner' bodyStyle={{height: '10vh'}} title='Select Function'>
+                    </div>
+                    }
+                    <Button
+                        type="primary"
+                        onClick={() => {handleGetKeyPair('A')}}
+                    >
+                        Fetch Public Key!
+                    </Button>
+                </Form.Item>
               <Space>
-                <Select
-                  defaultValue="Function"
-                  style={{
-                    width: 120,
-                  }}
-                  onChange={handleSelect}
-                  options={[
-                    {
-                      value: 'function1',
-                      label: 'function 1',
-                    },
-                    {
-                      value: 'function2',
-                      label: 'function 2',
-                    },
-                    {
-                      value: 'function3',
-                      label: 'function 3',
-                    },
-
-                  ]}
-                />
+              { JSON.stringify(functions) != '{}' && 
+                  <Select
+                    defaultValue="Function"
+                    style={{
+                      width: 300,
+                    }}
+                    onChange={handleSelect}
+                    options={populate_options()}
+                  />
+              }
+              { JSON.stringify(functions) == '{}' && 
+                  <Select
+                    defaultValue="Function"
+                    style={{
+                      width: 300,
+                    }}
+                    onChange={handleSelect}
+                    options={[]}
+                  />
+              }
                 <Button
                     type='primary'
-                    shape='round'
-                    onClick={handleCompute}
+                    onClick={handleFetch}
                   >
-                  Compute
+                  Fetch Functions
                 </Button>
               </Space>
-            </Card>
-            <Card type='inner' title='Proof'>
+              <Divider type='horizontal' />
               <div id="myqrcode">
                 <Space direction="horizontal">
                   <QRCode value={qrCode || '-'} />
@@ -286,7 +229,8 @@ export default function Dapp() {
                   </Button>
                 </Space>
               </div>
-            </Card>
+              </Form>
+              </Card>
             </Space>
           </Card>
         </Col>
