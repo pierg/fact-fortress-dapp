@@ -44,8 +44,13 @@ app.use(function(req, res, next) {
 async function deployContracts() {
     console.log('---------- deploying contracts ----------');
     await contractsHelper.add({
-        "filename": "zkpHealthToken.sol",
-        "name": "ZkpHealthToken",
+        "filename": "zkpHealthAuthorityToken.sol",
+        "name": "ZkpHealthAuthorityToken",
+    });
+
+    await contractsHelper.add({
+        "filename": "zkpHealthResearcherToken.sol",
+        "name": "ZkpHealthResearcherToken",
     });
 
     await contractsHelper.add({
@@ -84,7 +89,7 @@ async function deployContracts() {
         "filename": "zkpHealth.sol",
         "name": "ZkpHealth",
         "args": [
-            contractsHelper.getAddress("ZkpHealthToken"),
+            contractsHelper.getAddress("ZkpHealthAuthorityToken"),
             contractsHelper.getAddress("ZkpHealthVerifier"),
         ],
     });

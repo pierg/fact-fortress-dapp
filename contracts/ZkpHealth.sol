@@ -3,14 +3,16 @@
 
 pragma solidity ^0.8.0;
 
-import "./zkpHealthToken.sol";
+import "./zkpHealthAuthorityToken.sol";
+import "./zkpHealthResearcherToken.sol";
 import "./zkpHealthVerifier.sol";
 
 // This contract manages the hospital's public keys and verifies, directly and indirectly
 // (by calling the proof of provenance verifier contracts), the zero-knowledge proofs
 contract ZkpHealth {
     address private _owner;
-    ZkpHealthToken private _zkpHealthToken;
+    ZkpHealthAuthorityToken private _zkpHealthAuthorityToken;
+    ZkpHealthResearcherToken private _zkpHealthResearcherToken;
     ZkpHealthVerifier private _zkpHealthVerifier;
 
     // Public keys
@@ -27,9 +29,10 @@ contract ZkpHealth {
     // Signatures: hash(signature) => hash(public key)
     mapping(bytes32 => bytes32) private _signatures;
 
-    constructor(address zkpTokenAddress, address zkpVerifierAddress) {
+    constructor(address zkpAuthorityTokenAddress, address zkpResearcherTokenAddress, address zkpVerifierAddress) {
         _owner = msg.sender;
-        _zkpHealthToken = ZkpHealthToken(zkpTokenAddress);
+        _zkpHealthAuthorityToken = ZkpHealthAuthorityToken(zkpAuthorityTokenAddress);
+        _zkpHealthResearcherToken = ZkpHealthResearcherToken(zkpResearcherTokenAddress);
         _zkpHealthVerifier = ZkpHealthVerifier(zkpVerifierAddress);
     }
 
@@ -62,7 +65,7 @@ contract ZkpHealth {
         // 1) public key cannot be empty (TODO: ensure it is valid)
         // 2) caller of the function has to own an NFT
         require(bytes(publicKey).length != 0, "Public key cannot be empty");
-        uint256 tokenId = _zkpHealthToken.userToToken(msg.sender);
+        uint256 tokenId = _zkpHealthAuthorityToken.userToToken(msg.sender);
         require(tokenId > 0, "Caller is not authorized to set a public key");
 
         if (publicKeys[name].length > 0) {
@@ -111,7 +114,7 @@ contract ZkpHealth {
         bytes calldata signature
     ) external {
         require(
-            _zkpHealthToken.userToToken(msg.sender) > 0,
+            _zkpHealthAuthorityToken.userToToken(msg.sender) > 0,
             "Caller is not authorized to store a signature"
         );
 

@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 // This contract manages ERC721 tokens (non-fungible tokens) to allow
 // hospitals to manage their public keys on-chain
-contract ZkpHealthToken is ERC721 {
+contract ZkpHealthAuthorityToken is ERC721 {
     address private _owner;
 
     using Counters for Counters.Counter;
@@ -18,12 +18,12 @@ contract ZkpHealthToken is ERC721 {
     // (0 if the address has not token)
     mapping(address => uint256) private _userToToken;
 
-    constructor() ERC721("ZKP Health Token", "ZKPH") {
+    constructor() ERC721("ZKP Health Authority Token", "ZKPHA") {
         _owner = msg.sender;
     }
 
     // mint (create) a new token for and send it to an hospital
-    function mint(address user) external returns (uint256) {
+    function authorizeAuthority(address user) external returns (uint256) {
         // only the owner of the contract should be able to mint
         require(msg.sender == _owner, "Caller is not the owner");
 
