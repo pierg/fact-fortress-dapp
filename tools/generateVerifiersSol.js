@@ -69,22 +69,21 @@ async function generateVerifiers(verifierCircuits) {
     for (const circuit of verifierCircuits) {
         const verifierCircuitName = circuit.circuit_name;
         const verifierContractName = circuit.contract_name;
+        const circuitPath = resolve(__dirname, `../circuits/${verifierCircuitName}/src/main.nr`);
         const verifierPath = resolve(__dirname, `../contracts/${verifierContractName}.sol`);
 
         console.log(`---- Compiling circuit ${verifierCircuitName} ----`);
 
         // guard clause: ensure that the circuit exists
-        if (!fs.existsSync(verifierPath)) {
-            console.log(`Error: circuit ${verifierCircuitName} (${verifierPath})does not exist`);
+        if (!fs.existsSync(circuitPath)) {
+            console.log(`Error: circuit ${verifierCircuitName} (${circuitPath}) does not exist`);
             return;
         }
 
         let sc, compiledProgram;
 
         try {
-            compiledProgram = compile(
-                resolve(__dirname, `../circuits/${verifierCircuitName}/src/main.nr`)
-            );
+            compiledProgram = compile(circuitPath);
         } catch (e) {
             console.log(`Compilation error: ${e}`);
             return;
