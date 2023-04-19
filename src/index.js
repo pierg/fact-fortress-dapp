@@ -18,7 +18,7 @@ const {
 } = require("./controllers/signature.controller.js");
 const {
     getAvailableFunctionsController,
-} = require("./controllers/todo.controller.js");
+} = require("./frontend_helpers/healthFunctions.js");
 const {
     generateProofController,
     verifyPublicInputsPoPController,

@@ -1,6 +1,5 @@
 const fs = require('fs');
 const { resolve } = require('path');
-const toml = require('toml');
 
 // list of enabled health functions
 const healthFunctions = ["risk", "simple", "variants"]
@@ -12,10 +11,10 @@ async function getAvailableFunctionsController(
     res,
     next
 ) {
-    let availableHealthFunctions = {};
+    let availableHealthFunctions = [];
 
     for (const healthFunction of healthFunctions) {
-        filePath = resolve(__dirname, `../../circuits/${healthFunction}/Prover.toml`);
+        filePath = resolve(__dirname, `../../circuits/${healthFunction}/Info.json`);
 
         if (!fs.existsSync(filePath)) {
             console.log(`Error: skipping ${healthFunction} (${filePath} does not exist)`)
@@ -24,9 +23,7 @@ async function getAvailableFunctionsController(
 
         const data = fs.readFileSync(filePath, 'utf8');
 
-        availableHealthFunctions[healthFunction] = {
-            "health_data": toml.parse(data)
-        }
+        availableHealthFunctions.push(JSON.parse(data));
     }
 
     res.status(200).json(availableHealthFunctions);
