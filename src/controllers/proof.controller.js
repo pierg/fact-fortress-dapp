@@ -1,4 +1,4 @@
-const { verifyProofPoP, verifyPublicInputsPoP } = require("./../actions/proof.js");
+const { verifyProof, verifyPublicInputsPoP } = require("./../actions/proof.js");
 const { computeProof } = require("./../frontend_helpers/proof.js");
 
 async function generateProofController(
@@ -57,11 +57,20 @@ async function verifyPublicInputsPoPController(
     }
 }
 
-async function verifyProofPoPController(
+async function verifyProofController(
     req,
     res,
     next
 ) {
+
+    const healthFunction = req.query.health_function;
+    if (!healthFunction) {
+        return res.status(500).json({
+            error: "no health function has been provided",
+            expected_url: "/verify_proof?health_function={health_function}",
+        });
+    }
+
     const proof = req.body;
     if (!proof) {
         return res.status(500).json({
@@ -69,7 +78,7 @@ async function verifyProofPoPController(
         });
     }
 
-    const result = await verifyProofPoP(proof);
+    const result = await verifyProof(healthFunction, proof);
 
     if (result.error) {
         res.status(500).json(result);
@@ -82,5 +91,5 @@ async function verifyProofPoPController(
 module.exports = {
     generateProofController,
     verifyPublicInputsPoPController,
-    verifyProofPoPController,
+    verifyProofController,
 }

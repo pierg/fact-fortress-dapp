@@ -27,18 +27,20 @@ async function verifyPublicInputsPoP(publicKey, proof) {
     }
 }
 
-async function verifyProofPoP(proof) {
+async function verifyProof(healthFunction, proof) {
     const sc = contractsHelper.getContractByName("ZkpHealth");
 
     try {
-        const proofStatus = await sc.methods.verifyProofPoP(
-            proof,
+        const proofStatus = await sc.methods.verifyProof(
+            healthFunction, proof,
         ).call();
 
         if (proofStatus) {
-            console.log(`Proof is valid`)
+            console.log(`
+            Proof is valid `)
         } else {
-            console.log(`Proof is invalid`)
+            console.log(`
+            Proof is invalid `)
         }
 
         return {
@@ -53,4 +55,4 @@ async function verifyProofPoP(proof) {
     }
 }
 
-module.exports = { verifyPublicInputsPoP, verifyProofPoP }
+module.exports = { verifyPublicInputsPoP, verifyProof }

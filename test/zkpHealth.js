@@ -468,7 +468,8 @@ contract("ZkpHealth", function(accounts) {
                 );
                 expect(publicKeyResult).eq(true);
 
-                const smartContractResult = await zkpHealthInstance.verifyProofPoP(
+                const smartContractResult = await zkpHealthInstance.verifyProof(
+                    "proof_of_provenance",
                     proof
                 );
                 expect(smartContractResult).eq(true);
@@ -494,7 +495,10 @@ contract("ZkpHealth", function(accounts) {
                 expect(verified).eq(false);
 
                 await expect(
-                    zkpHealthInstance.verifyProofPoP(proof)
+                    zkpHealthInstance.verifyProof(
+                        "proof_of_provenance",
+                        proof
+                    )
                 ).to.be.rejectedWith(
                     "VM Exception while processing transaction: revert Proof failed"
                 );
@@ -585,7 +589,10 @@ contract("ZkpHealth", function(accounts) {
 
                 // e) (Verification B)
                 // The verifier verifies the proof of provenance
-                const proofVerified = await zkpHealthInstance.verifyProofPoP(proofV);
+                const proofVerified = await zkpHealthInstance.verifyProof(
+                    "proof_of_provenance",
+                    proofV
+                );
                 expect(proofVerified).eq(true);
             });
         });

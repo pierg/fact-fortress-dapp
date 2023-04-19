@@ -26,7 +26,7 @@ const {
 const {
     generateProofController,
     verifyPublicInputsPoPController,
-    verifyProofPoPController
+    verifyProofController
 } = require("./controllers/proof.controller.js");
 
 const express = require("express");
@@ -127,7 +127,7 @@ app.post("/upload_signature", uploadSignatureController); // upload the signatur
 
 // proofs
 app.post("/verify_public_inputs", verifyPublicInputsPoPController); // verify the public inputs (PoP)
-app.post("/verify_proof", verifyProofPoPController); // verify the proof (PoP)
+app.post("/verify_proof", verifyProofController); // verify the proof
 
 deployContracts().then(() => {
     // init circuits helpers in the background (takes time)
