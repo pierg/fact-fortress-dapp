@@ -119,8 +119,7 @@ const onFinish = (values: any) => {
     <div 
     class="h-14 bg-gradient-to-r from-amber-500 to-red-800"
     style={{
-            width: '100vw',
-            height: '100vh', margin: 0, 'boxSizing': 'border-box'}}
+            height: '100vh', margin: 0, 'boxSizing': 'border-box', overflow: 'hidden'}}
     >
         <Row gutter={[4, 4]}>
         <Col span={11} offset={1}>

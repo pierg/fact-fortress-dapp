@@ -14,6 +14,7 @@ import SizeContext from 'antd/es/config-provider/SizeContext';
 const { getAddress } = require('../../../src/accounts');
 
 const { TextArea } = Input;
+const { Search } = Input;
 
 export default function Owner() {
     const [form] = Form.useForm();
@@ -23,8 +24,9 @@ export default function Owner() {
  
 
   const handleMint = async (recipient: string) => {
-    let address = getAddress(recipient);
-    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=' + address, {
+    // let address = getAddress(recipient);
+    console.log(recipient)
+    const apiCall = () => {return axios.get('http://localhost:3000/mint?recipient=' + recipient, {
           headers: {
             'from': 'owner'
           }
@@ -53,11 +55,11 @@ const onChange = (checkedValues: CheckboxValueType[]) => {
   
 const onFinish = (values: any) => {
     console.log('Finish:', values);
-    let mintList = values['recipient1'].concat(values['recipient2']);
+    // let mintList = values['recipient1'].concat(values['recipient2']);
 
-    for (let i = 0; i < mintList.length; i++) {
-        handleMint(mintList[i]);
-    }
+    // for (let i = 0; i < mintList.length; i++) {
+    //     handleMint(mintList[i]);
+    // }
 
     goToNextPage();
   };
@@ -68,54 +70,64 @@ const onFinish = (values: any) => {
         class="h-14 bg-gradient-to-r from-emerald-500 to-green-900"
         style={{
             width: '100vw',
-            height: '100vh', margin: 0, 'boxSizing': 'border-box'}}
+            height: '100vh', margin: 0, overflow: 'scroll'}}
         >
 
     <Card 
         title="Mint Tokens" 
-        style={{ margin: 5, overflow: 'scroll',top: "30%", left: "30%", transform: "translate(0px, 0%)", width: '45%'}} 
+        style={{ margin: 5, overflow: 'scroll',top: "15%", left: "30%", transform: "translate(0px, 0%)", width: '45%'}} 
         headStyle={{backgroundColor: 'rgb(4 120 87)', color: 'white', textAlign: 'center'}}
         bodyStyle={{display:'flex', flexDirection:'column', justifyContent:'center'}}
         >
         <Row gutter={[8, 8]}>
-            <Col span={5}>
+            <Col span={20}>
             <Form form={form} name="horizontal_login" layout="vertical" onFinish={onFinish}>
                 <Form.Item
-                    label='Choose Hospital(s)'
+                    label='Data Providers'
                     name="recipient1"
-                    rules={[{ required: true, message: 'Missing Hospital' }]}
                 >
-                    <Checkbox.Group  onChange={onChange}>
-                        <Space>
-                            <Checkbox value={1}>Hospital A</Checkbox>
-                            <Checkbox value={2}>Hospital B</Checkbox>
-                            <Checkbox value={3}>Hospital C</Checkbox>
-                        </Space>
-                    </Checkbox.Group>
+                    <Search 
+                        addonBefore="Hospital A" 
+                        defaultValue="0x98526c571e324028250B0f5f247Ca4F1b575fadB" 
+                        enterButton="Mint!"
+                        size="large"
+                        onSearch={() => {handleMint('0x98526c571e324028250B0f5f247Ca4F1b575fadB')}}
+                    />
+                </Form.Item>
+                <Form.Item
+                    name="recipient2"
+                >
+                    <Search 
+                        addonBefore="Hospital B" 
+                        defaultValue="0x99eBB39932f6F697194EA70115762d4c06D1A9c9" 
+                        enterButton="Mint!"
+                        size="large"
+                        onSearch={() => {handleMint('0x99eBB39932f6F697194EA70115762d4c06D1A9c9')}}
+                    />
+                </Form.Item>
+
+                <Form.Item
+                    name="recipient3"
+                >
+                    <Search 
+                        addonBefore="Insert Address"  
+                        enterButton="Mint!"
+                        size="large"
+                        onSearch={(e) => {handleMint(e)}}
+                    />
                 </Form.Item>
                 
                 <Form.Item
-                    label='Choose Researcher'
-                    name="recipient2"
-                    rules={[{ required: true, message: 'Missing Researcher' }]}
+                    label='Data Consumer'
+                    name="recipient4"
                 >
-                   <Checkbox.Group onChange={onChange}>
-                            <Checkbox value={4}>Researcher</Checkbox>
-                    </Checkbox.Group>
-                </Form.Item>
-                <Form.Item shouldUpdate>
-                    {() => (
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        disabled={
-                        !form.isFieldsTouched(true) ||
-                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
-                        }
-                    >
-                        Mint!
-                    </Button>
-                    )}
+                   <Search 
+                        addonBefore="Researcher" 
+                        defaultValue="0xac46159C08f103f7fF87ED138CFf7e389aac0550" 
+                        enterButton="Mint!"
+                        size="large"
+                        onSearch={() => {handleMint('0xac46159C08f103f7fF87ED138CFf7e389aac0550')}}
+                    />
                 </Form.Item>
             </Form>
             </Col>

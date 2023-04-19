@@ -152,7 +152,7 @@ export default function Dapp() {
   class="h-14 bg-gradient-to-r from-zinc-400 to-slate-900"
   style={{
   width: '100vw',
-  height: '100vh', margin: 0, 'boxSizing': 'border-box'}}
+  height: '100vh', margin: 0, 'boxSizing': 'border-box', overflow: 'hidden'}}
 >
       {/* <Card bodyStyle={{background: '#C5C5C5'}} bordered={false}> */}
       {contextHolder}

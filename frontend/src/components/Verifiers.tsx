@@ -193,7 +193,7 @@ export default function Verifier() {
   }, [success, success2])
 
   return (
-<div class="h-14 bg-gradient-to-r from-sky-500 to-indigo-900" style={{display: 'flex', 'flexDirection': 'column', height: '100vh'}}>
+<div class="h-14 bg-gradient-to-r from-sky-500 to-indigo-900" style={{ height: '100vh', overflow: 'hidden'}}>
       {/* <Card bodyStyle={{background: '#C5C5C5'}} bordered={false}> */}
       {contextHolder}
       <Row gutter={[4, 4]}>

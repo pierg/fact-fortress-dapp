@@ -33,7 +33,7 @@ const wagmiClient = createClient({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider modalSize="compact" showRecentTransactions={true} theme={darkTheme()} chains={chains}>
+      <RainbowKitProvider modalSize="compact" showRecentTransactions={true} chains={chains}>
         <Component {...pageProps} />
       </RainbowKitProvider>
     </WagmiConfig>

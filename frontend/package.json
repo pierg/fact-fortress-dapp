@@ -10,6 +10,7 @@
         "clean": "rm -fr ./.next/ && rm src/contracts/contracts.json"
     },
     "dependencies": {
+        "@ant-design/icons": "^5.0.1",
         "@babel/core": ">=7.4.0 <8.0.0",
         "@next/font": "13.1.6",
         "@rainbow-me/rainbowkit": "^0.8.1",

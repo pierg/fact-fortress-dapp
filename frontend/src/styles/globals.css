@@ -20,3 +20,26 @@ select:-webkit-autofill:focus {
   margin: 0;
   color: rgba(255, 255, 255, 0); 
 }
+
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+.ant-carousel .slick-prev,
+.ant-carousel .slick-prev:hover {
+  left: 10px;
+  z-index: 2;
+  color: white;
+  font-size: 20px;
+  height: 30px;
+}
+
+.ant-carousel .slick-next,
+.ant-carousel .slick-next:hover {
+  right: 10px;
+  z-index: 2;
+  color: white;
+  font-size: 20px;
+  height: 30px;
+}

@@ -1,11 +1,11 @@
 import Head from 'next/head'
-import { Button, Carousel } from 'antd';
+import { Carousel } from 'antd';
 
 import Owner from '../components/Owner';
 import Hospital from '../components/Hospital';
 import Verifier from '../components/Verifiers';
 import Dapp from '../components/Dapp';
-import { AntDesignOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 export default function Home() {
   return (
@@ -17,7 +17,12 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main >
-        <Carousel dotPosition='left' >
+        <Carousel 
+          arrows
+          prevArrow={<LeftOutlined />}
+          nextArrow={<RightOutlined />}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: 0, padding: 0}}
+        >
           <Owner />
           <Hospital />
           <Dapp />
