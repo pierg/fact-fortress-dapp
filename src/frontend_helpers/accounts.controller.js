@@ -16,14 +16,14 @@ async function getAccountsController(
     res,
     next
 ) {
-    const policy = req.query.account_type;
+    const type = req.query.account_type;
     if (!type) {
         return res.status(500).json({
             error: "no (account) type has been provided",
         });
     }
 
-    const accountType = policy
+    const accountType = type
         .replace(/ /g, '')
         .toLowerCase();
 
