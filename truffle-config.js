@@ -5,6 +5,9 @@ module.exports = {
         development: {
             provider: ganache.provider({
                 quiet: true,
+                chain: { 
+                    hardfork: "merge",
+                }
             }),
             host: "localhost",
             port: 8545,

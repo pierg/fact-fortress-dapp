@@ -1,25 +1,30 @@
 {
-    "name": "zkpcontract",
+    "name": "fact_fortress",
     "version": "1.0.0",
     "description": "",
     "license": "MIT",
+    "contributors": [
+        {
+            "name": "Guillaume Lethuillier",
+            "url": "https://github.com/glethuillier"
+        },
+        {
+            "name": "Piergiuseppe Mallozzi",
+            "url": "https://github.com/pierg"
+        }
+    ],
     "main": "src/index.js",
     "directories": {
         "test": "test"
     },
     "scripts": {
         "backend": "node src/index.js",
-        "frontend": "pnpm run hardhat:generate-abi && concurrently 'pnpm:hardhat:node' 'wait-on http://localhost:8545 && pnpm run hardhat:deploy' 'pnpm:frontend:dev'",
+        "frontend": "cd ./frontend && pnpm run dev",
         "generate-verifiers": "node tools/generateVerifiersSol.js",
         "test": "pnpm generate-verifiers && truffle test",
-        "hardhat:generate-abi": "hardhat deploy --export frontend/src/contracts/contracts.json",
-        "hardhat:clean": "rm -fr ./artifacts ./cache ./typechain-types",
-        "hardhat:deploy": "hardhat deploy --network localhost --export frontend/src/contracts/contracts.json",
-        "hardhat:node": "hardhat node",
-        "frontend:dev": "cd ./frontend && pnpm run dev",
         "frontend:clean": "cd ./frontend && pnpm run clean",
-        "clean": "concurrently 'pnpm:frontend:clean' 'pnpm:hardhat:clean'",
-        "testfront": "hardhat test"
+        "preinstall": "git submodule update && cd ./frontend && pnpm install",
+        "update": "git submodule update && pnpm update"
     },
     "dependencies": {
         "@aztec/barretenberg": "^2.1.94",
@@ -27,37 +32,19 @@
         "@ethersproject/providers": "^5.7.2",
         "@noir-lang/barretenberg": "^2.19.0",
         "@noir-lang/noir_wasm": "^0.10.0",
-        "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
-        "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
-        "@nomicfoundation/hardhat-toolbox": "^2.0.2",
-        "@nomiclabs/hardhat-ethers": "^2.2.3",
-        "@nomiclabs/hardhat-etherscan": "^3.1.7",
         "@openzeppelin/contracts": "^4.8.3",
         "@typechain/ethers-v5": "^10.2.0",
         "@typechain/hardhat": "^6.1.5",
         "@types/chai": "^4.3.4",
         "@types/mocha": "^10.0.1",
-        "@types/node": "^18.15.11",
         "chai": "^4.3.7",
         "chai-as-promised": "^7.1.1",
-        "concurrently": "^7.6.0",
         "ethers": "^5.7.2",
         "express": "^4.18.2",
         "ganache": "^7.8.0",
-        "hardhat": "^2.14.0",
-        "hardhat-deploy": "^0.11.26",
-        "hardhat-deploy-ethers": "0.3.0-beta.13",
-        "hardhat-gas-reporter": "^1.0.9",
-        "next": "^13.3.0",
-        "react": "^18.2.0",
         "solc": "^0.8.19",
         "solidity-coverage": "^0.8.2",
-        "toml": "^3.0.0",
         "truffle": "^5.8.2",
-        "ts-node": "^10.9.1",
-        "typechain": "^8.1.1",
-        "typescript": "^5.0.4",
-        "wait-on": "^7.0.1",
         "web3": "^1.9.0"
     },
     "engines": {
