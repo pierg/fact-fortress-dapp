@@ -119,8 +119,8 @@ app.get("/authorize_authority", authorizeAuthorityController); // authorize an a
 app.post("/authorize_researcher", authorizeResearcherController); // authorize a researcher (mint NFT and send)
 app.get("/authority_token_id", getAuthorityTokenIdController); // get NFT ID associated with authority address
 app.get("/researcher_token_id", getResearcherTokenIdController); // get NFT ID associated with researcher address
-app.get("/all_access_types", getAllAccessTypesController); // get all access types
-app.get("/access_types", getAccessTypesController); // get access type by address
+app.get("/all_access_policies", getAllAccessTypesController); // get all access policies
+app.get("/access_policies", getAccessTypesController); // get access policy by address
 
 // public keys
 app.get("/publickey", getPublicKeyController); // get public key

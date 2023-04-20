@@ -16,14 +16,14 @@ async function getAccountsController(
     res,
     next
 ) {
-    const type = req.query.account_type;
+    const policy = req.query.account_type;
     if (!type) {
         return res.status(500).json({
             error: "no (account) type has been provided",
         });
     }
 
-    const accountType = type
+    const accountType = policy
         .replace(/ /g, '')
         .toLowerCase();
 
@@ -40,10 +40,10 @@ async function getAccountsController(
     } else if (accountType.includes("analyzer")) {
         accounts = sanitize(getAccountsByType(AccountsTypes.data_analyzer));
 
-        // get access types for each data analyzer/researcher
+        // get access policies for each data analyzer/researcher
         for (let i = 0; i < accounts.length; ++i) {
-            const accessTypes = await getAccessTypes(accounts[i].address);
-            Object.assign(accounts[i], { "access_types ": accessTypes.accessTypes });
+            const accessPolicies = await getAccessTypes(accounts[i].address);
+            Object.assign(accounts[i], { "access_policies ": accessPolicies.accessPolicies });
         }
     } else if (accountType.includes("verifier")) {
         accounts = sanitize(

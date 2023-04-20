@@ -57,7 +57,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"access_types\": [\n        \"TYPE_A\",\n        \"TYPE_B\",\n        \"TYPE_C\"\n    ]\n}",
+									"raw": "{\n    \"access_policies\": [\n        \"TYPE_A\",\n        \"TYPE_B\",\n        \"TYPE_C\",\n        \"validator\"\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -65,7 +65,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/authorize_researcher?recipient=0xac46159C08f103f7fF87ED138CFf7e389aac0550",
+									"raw": "http://localhost:3000/authorize_researcher?recipient=0x5455280E6c20A01de3e846d683562AdeA6891026",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -77,7 +77,7 @@
 									"query": [
 										{
 											"key": "recipient",
-											"value": "0xac46159C08f103f7fF87ED138CFf7e389aac0550"
+											"value": "0x5455280E6c20A01de3e846d683562AdeA6891026"
 										}
 									]
 								}
@@ -135,26 +135,26 @@
 							"response": []
 						},
 						{
-							"name": "Get all access types",
+							"name": "Get all access policies",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/all_access_types",
+									"raw": "http://localhost:3000/all_access_policies",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"all_access_types"
+										"all_access_policies"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "Get access type",
+							"name": "Get access policies",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -166,14 +166,14 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:3000/access_types?address=0xac46159C08f103f7fF87ED138CFf7e389aac0550",
+									"raw": "http://localhost:3000/access_policies?address=0xac46159C08f103f7fF87ED138CFf7e389aac0550",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"access_types"
+										"access_policies"
 									],
 									"query": [
 										{

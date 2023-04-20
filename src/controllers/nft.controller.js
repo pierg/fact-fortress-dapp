@@ -59,14 +59,14 @@ async function authorizeResearcherController(
         });
     }
 
-    const accessTypes = req.body["access_types"];
-    if (!accessTypes) {
+    const accessPolicies = req.body["access_policies"];
+    if (!accessPolicies) {
         return res.status(500).json({
-            error: "no access types array has been provided in the body of the request",
+            error: "no access policies array has been provided in the body of the request",
         });
     }
 
-    const result = await authorizeResearcher(from, recipient, accessTypes);
+    const result = await authorizeResearcher(from, recipient, accessPolicies);
 
     if (result.error) {
         res.status(500).json({

@@ -19,16 +19,16 @@ async function authorizeAuthority(from, recipient) {
     }
 }
 
-async function authorizeResearcher(from, recipient, accessTypes) {
+async function authorizeResearcher(from, recipient, accessPolicies) {
     const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
 
     try {
         const receipt = await sc.methods.authorizeResearcher(
             recipient,
-            accessTypes
+            accessPolicies
         ).send({ from, gas: '1000000' });
         const tokenId = receipt.events.Transfer.returnValues.tokenId;
-        console.log(`researcher authorized: ${tokenId} (${accessTypes}) tx ${receipt.transactionHash}`);
+        console.log(`researcher authorized: ${tokenId} (${accessPolicies}) tx ${receipt.transactionHash}`);
         return {
             recipient,
             token_id: tokenId,
@@ -69,7 +69,7 @@ async function getResearcherTokenId(address) {
         return {
             address,
             token_id: tokenId._tokenId,
-            access_types: tokenId._accessTypes,
+            access_policies: tokenId._accessPolicies,
         };
     } catch (e) {
         console.error(e);
@@ -83,10 +83,10 @@ async function getAllAccessTypes() {
     const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
 
     try {
-        const accessTypes = await sc.methods.getAllAccessTypes().call();
-        console.log(`All access types: ${accessTypes}`);
+        const accessPolicies = await sc.methods.getAllAccessTypes().call();
+        console.log(`All access policies: ${accessPolicies}`);
         return {
-            accessTypes,
+            accessPolicies,
         };
     } catch (e) {
         console.error(e);
@@ -100,11 +100,11 @@ async function getAccessTypes(address) {
     const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
 
     try {
-        const accessTypes = await sc.methods.getAccessTypes(address).call();
-        console.log(`Address ${address} has access types #${accessTypes}`);
+        const accessPolicies = await sc.methods.getAccessTypes(address).call();
+        console.log(`Address ${address} has access policies #${accessPolicies}`);
         return {
             address,
-            accessTypes,
+            accessPolicies,
         };
     } catch (e) {
         console.error(e);

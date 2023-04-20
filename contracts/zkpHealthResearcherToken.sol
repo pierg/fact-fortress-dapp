@@ -16,13 +16,13 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     struct ResearcherToken {
         uint256 _tokenId;
-        string[] _accessTypes;
+        string[] _accessPolicies;
     }
 
-    // set of access types
+    // set of access policies
     // TODO(Guillaume): to improve (set of strings...), obviously; 
     //                  okayish just for demo purposes
-    mapping(string => bool) private _accessTypes;
+    mapping(string => bool) private _accessPolicies;
     string[] private _allAccessTypes;
 
     // address => token ID
@@ -31,13 +31,14 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     constructor() ERC721("ZKP Health Researcher Token", "ZKPHR") {
         _owner = msg.sender;
+        _allAccessTypes.push("default_policy"); // set default access policy
     }
 
     // mint (create) a new token for and send it to a researcher
-    // with a set of access types
+    // with a set of access policies
     function authorizeResearcher(
         address user,
-        string[] memory accessTypes
+        string[] memory accessPolicies
     ) external returns (uint256) {
         // only the owner of the contract should be able to mint
         require(msg.sender == _owner, "Caller is not the owner");
@@ -47,13 +48,13 @@ contract ZkpHealthResearcherToken is ERC721 {
         uint256 newItemId = _tokenIds.current();
         _mint(user, newItemId);
 
-        _userToToken[user] = ResearcherToken(newItemId, accessTypes);
+        _userToToken[user] = ResearcherToken(newItemId, accessPolicies);
 
-        for (uint256 i = 0; i < accessTypes.length; i++) {
-            if (!_accessTypes[accessTypes[i]]) {
-                _allAccessTypes.push(accessTypes[i]);
+        for (uint256 i = 0; i < accessPolicies.length; i++) {
+            if (!_accessPolicies[accessPolicies[i]]) {
+                _allAccessTypes.push(accessPolicies[i]);
             }
-            _accessTypes[accessTypes[i]] = true;
+            _accessPolicies[accessPolicies[i]] = true;
         }
 
         return newItemId;
@@ -61,7 +62,7 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     // allows a researcher to transfer its token to another address
     // (e.g. a new wallet)
-    // Note: the access types remain the same
+    // Note: the access policies remain the same
     function transferFrom(
         address from,
         address to,
@@ -97,6 +98,6 @@ contract ZkpHealthResearcherToken is ERC721 {
     }
 
     function getAccessTypes(address user) external view returns (string[] memory) {
-        return _userToToken[user]._accessTypes;
+        return _userToToken[user]._accessPolicies;
     }
 }
