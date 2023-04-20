@@ -23,7 +23,7 @@
         "generate-verifiers": "node tools/generateVerifiersSol.js",
         "test": "pnpm generate-verifiers && truffle test",
         "frontend:clean": "cd ./frontend && pnpm run clean",
-        "preinstall": "git submodule update && cd ./frontend && pnpm install",
+        "pnpm:devPreinstall": "git submodule update && cd ./frontend && pnpm install",
         "update": "git submodule update && pnpm update"
     },
     "dependencies": {
