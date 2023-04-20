@@ -4,7 +4,7 @@ const {
     getAuthorityTokenId,
     getResearcherTokenId,
     getAllAccessTypes,
-    getOwnAccessTypes
+    getAccessTypes
 } = require("./../actions/tokens.js");
 const { getFrom } = require("./common.controller.js");
 
@@ -139,20 +139,19 @@ async function getAllAccessTypesController(
     }
 }
 
-async function getOwnAccessTypesController(
+async function getAccessTypesController(
     req,
     res,
     next
 ) {
-    const from = getFrom(req);
-    if (typeof from === undefined || !from) {
+    const address = req.query.address;
+    if (!address) {
         return res.status(500).json({
-            error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
+            error: "no address has been provided",
         });
     }
 
-    const result = await getOwnAccessTypes(from);
+    const result = await getAccessTypes(address);
 
     if (result.error) {
         res.status(500).json({
@@ -169,5 +168,5 @@ module.exports = {
     getAuthorityTokenIdController,
     getResearcherTokenIdController,
     getAllAccessTypesController,
-    getOwnAccessTypesController
+    getAccessTypesController
 }

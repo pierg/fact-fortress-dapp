@@ -79,15 +79,14 @@ async function getResearcherTokenId(address) {
     }
 }
 
-async function getAllAccessTypes(address) {
+async function getAllAccessTypes() {
     const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
 
     try {
-        const tokenId = await sc.methods.getAllAccessTypes().call();
-        console.log(`Address ${address} has token #${tokenId}`);
+        const accessTypes = await sc.methods.getAllAccessTypes().call();
+        console.log(`All access types: ${accessTypes}`);
         return {
-            address,
-            token_id: tokenId,
+            accessTypes,
         };
     } catch (e) {
         console.error(e);
@@ -97,15 +96,15 @@ async function getAllAccessTypes(address) {
     }
 }
 
-async function getOwnAccessTypes(address) {
+async function getAccessTypes(address) {
     const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
 
     try {
-        const tokenId = await sc.methods.getAllAccessTypes().call({ from: address });
-        console.log(`Address ${address} has token #${tokenId}`);
+        const accessTypes = await sc.methods.getAccessTypes(address).call();
+        console.log(`Address ${address} has access types #${accessTypes}`);
         return {
             address,
-            token_id: tokenId,
+            accessTypes,
         };
     } catch (e) {
         console.error(e);
@@ -121,5 +120,5 @@ module.exports = {
     getAuthorityTokenId,
     getResearcherTokenId,
     getAllAccessTypes,
-    getOwnAccessTypes
+    getAccessTypes
 };

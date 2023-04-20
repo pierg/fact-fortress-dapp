@@ -5,8 +5,8 @@ module.exports = {
         development: {
             provider: ganache.provider({
                 quiet: true,
-                chain: { 
-                    hardfork: "merge",
+                chain: {
+                    hardfork: "grayGlacier", // to temporarily address the nonce issue during the tests
                 }
             }),
             host: "localhost",

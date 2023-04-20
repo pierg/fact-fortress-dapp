@@ -25,6 +25,12 @@ A Postman collection is provided to interact with the backend: `tools/Postman_co
 pnpm frontend
 ```
 
+### Run the unit tests
+
+```
+pnpm run test
+```
+
 ### Backend End-to-End Flow
 
 #### 1 | Generate the public/private keys pair

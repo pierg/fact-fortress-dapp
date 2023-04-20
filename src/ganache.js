@@ -8,7 +8,7 @@ const ganacherServer = ganache.server({
     // mnemonic is required to make it deterministic
     mnemonic: "hard degree special clarify patch shield loyal purse away neglect lens mouse",
     chain: {
-        hardfork: "merge",
+        hardfork: "grayGlacier", // to temporarily address the nonce issue during the tests
     }
 });
 

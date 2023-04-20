@@ -1,5 +1,5 @@
 const { verifyProof, verifyPublicInputsPoP } = require("./../actions/proof.js");
-const { computeProof } = require("./../frontend_helpers/proof.js");
+const { computeProof } = require("../frontend_helpers/proof.controller.js");
 
 async function generateProofController(
     req,

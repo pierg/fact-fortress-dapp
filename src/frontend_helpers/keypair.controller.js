@@ -1,4 +1,4 @@
-const { BarretenbergHelper } = require("./../../test/helpers.js");
+const { BarretenbergHelper } = require("../../test/helpers.js");
 const { createHash, randomBytes } = require("crypto");
 const { BarretenbergWasm } = require("@noir-lang/barretenberg/dest/wasm");
 

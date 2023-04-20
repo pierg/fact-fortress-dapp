@@ -3,7 +3,7 @@ const {
     generateKeyPair,
     signHash,
     signMessage,
-} = require("./../frontend_helpers/keypair.js");
+} = require("../frontend_helpers/keypair.controller.js");
 const { getFrom } = require("./common.controller.js");
 
 async function uploadSignatureController(

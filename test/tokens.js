@@ -56,22 +56,28 @@ contract("should authorize a researcher", (accounts) => {
         expect(allAccessTypes2).to.have.deep.members(["TYPE_A", "TYPE_B", "TYPE_C", "TYPE_X"]);
     });
 
-    it("should get own access types", async() => {
+    it("should get respective access types", async() => {
         const researcherA = accounts[7];
         const researcherB = accounts[6];
+        const researcherC = accounts[5];
 
         const accessTypesA = ["TYPE_A", "TYPE_B", "TYPE_C"];
         const accessTypesB = ["TYPE_X", "TYPE_B", "TYPE_C"];
 
-        // Mint a new token for researcher A
+        // Researcher with a set of access type
         await zkpHealthResearcherToken.authorizeResearcher(researcherA, accessTypesA);
 
-        // Mint a new token for researcher B
+        const accessTypes1 = await zkpHealthResearcherToken.getAccessTypes(researcherA);
+        expect(accessTypes1).to.have.deep.members(accessTypesA);
+
+        // Researcher with a different set of access types
         await zkpHealthResearcherToken.authorizeResearcher(researcherB, accessTypesB);
 
-        const ownAccessTypes = await zkpHealthResearcherToken.getOwnAccessTypes({ from: researcherA });
+        const accessTypes2 = await zkpHealthResearcherToken.getAccessTypes(researcherB);
+        expect(accessTypes2).to.have.deep.members(accessTypesB);
 
-        // Researcher A should only get its own access types
-        expect(ownAccessTypes).to.have.deep.members(accessTypesA);
+        // Researcher with no access type (not authorized)
+        const accessTypes3 = await zkpHealthResearcherToken.getAccessTypes(researcherC);
+        expect(accessTypes3).to.have.deep.members([]);
     });
 });

@@ -1,4 +1,4 @@
-const { initCircuitsHelpers } = require("./frontend_helpers/proof.js");
+const { initCircuitsHelpers } = require("./frontend_helpers/proof.controller.js");
 const { contractsHelper } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
@@ -8,7 +8,7 @@ const {
     getAuthorityTokenIdController,
     getResearcherTokenIdController,
     getAllAccessTypesController,
-    getOwnAccessTypesController
+    getAccessTypesController
 } = require("./controllers/nft.controller.js");
 const {
     getPublicKeyController,
@@ -22,7 +22,10 @@ const {
 } = require("./controllers/signature.controller.js");
 const {
     getAvailableFunctionsController,
-} = require("./frontend_helpers/healthFunctions.js");
+} = require("./frontend_helpers/healthFunctions.controller.js");
+const {
+    getAccountsController,
+} = require("./frontend_helpers/accounts.controller.js");
 const {
     generateProofController,
     verifyPublicInputsPoPController,
@@ -104,6 +107,7 @@ async function deployContracts() {
 
 // frontend helpers -- in Production, should be done offline --
 app.get("/health", healthController); // ensure the service is healthy
+app.get("/accounts", getAccountsController); // get accounts
 app.get("/key_pair", generateKeyPairController); // generate private/public key keypair
 app.post("/sign_hash", signHashController); // sign a hashed message
 app.post("/sign_message", signMessageController); // hash and sign a message
@@ -116,7 +120,7 @@ app.post("/authorize_researcher", authorizeResearcherController); // authorize a
 app.get("/authority_token_id", getAuthorityTokenIdController); // get NFT ID associated with authority address
 app.get("/researcher_token_id", getResearcherTokenIdController); // get NFT ID associated with researcher address
 app.get("/all_access_types", getAllAccessTypesController); // get all access types
-app.get("/own_access_types", getOwnAccessTypesController); // get own access type
+app.get("/access_types", getAccessTypesController); // get access type by address
 
 // public keys
 app.get("/publickey", getPublicKeyController); // get public key

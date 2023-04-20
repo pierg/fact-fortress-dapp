@@ -5,8 +5,8 @@ const {
 const { compile } = require("@noir-lang/noir_wasm");
 const { resolve } = require("path");
 const { BarretenbergWasm } = require("@noir-lang/barretenberg/dest/wasm");
-const { BarretenbergHelper } = require("./../../test/helpers.js");
-const { contractsHelper } = require("./../contracts/contracts.js");
+const { BarretenbergHelper } = require("../../test/helpers.js");
+const { contractsHelper } = require("../contracts/contracts.js");
 
 const fs = require("fs");
 

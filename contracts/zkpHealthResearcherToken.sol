@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 /// @author Guillaume Lethuillier
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.1;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -20,6 +20,8 @@ contract ZkpHealthResearcherToken is ERC721 {
     }
 
     // set of access types
+    // TODO(Guillaume): to improve (set of strings...), obviously; 
+    //                  okayish just for demo purposes
     mapping(string => bool) private _accessTypes;
     string[] private _allAccessTypes;
 
@@ -94,8 +96,7 @@ contract ZkpHealthResearcherToken is ERC721 {
         return _allAccessTypes;
     }
 
-    function getOwnAccessTypes() external view returns (string[] memory) {
-        require(_userToToken[msg.sender]._tokenId > 0, "Caller has not token");
-        return _userToToken[msg.sender]._accessTypes;
+    function getAccessTypes(address user) external view returns (string[] memory) {
+        return _userToToken[user]._accessTypes;
     }
 }

@@ -49,8 +49,7 @@ async function setPublicKeyController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header:
-                '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
+            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
         });
     }
 

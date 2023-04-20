@@ -1,9 +1,8 @@
-const { AccountsIds, getAddress, getPrivateKey } = require('./../accounts.js');
+const { AccountsIds, getAccountsByType, getPrivateKey } = require('./../accounts.js');
 const web3 = require('./../web3.js');
 
 async function deploy(contract, arguments) {
-    const owner = AccountsIds.Owner;
-    const account = await getAddress(owner);
+    const account = getAccountsByType(AccountsIds.Owner)[0].address;
 
     await web3.eth.personal.unlockAccount(account, '');
 
@@ -23,7 +22,7 @@ async function deploy(contract, arguments) {
             data: deployTx.encodeABI(),
             gas: await deployTx.estimateGas() * 2,
         },
-        getPrivateKey(owner)
+        getPrivateKey(AccountsIds.Owner)
     );
 
     const createReceipt = await web3.eth.sendSignedTransaction(createTransaction.rawTransaction);
