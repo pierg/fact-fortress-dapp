@@ -3,8 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "license": "MIT",
-    "contributors": [
-        {
+    "contributors": [{
             "name": "Guillaume Lethuillier",
             "url": "https://github.com/glethuillier"
         },
@@ -23,7 +22,6 @@
         "generate-verifiers": "node tools/generateVerifiersSol.js",
         "test": "pnpm generate-verifiers && truffle test",
         "frontend:clean": "cd ./frontend && pnpm run clean",
-        "pnpm:devPreinstall": "git submodule update && cd ./frontend && pnpm install",
         "update": "git submodule update && pnpm update"
     },
     "dependencies": {

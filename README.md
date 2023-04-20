@@ -9,6 +9,7 @@ Install the dependencies:
 
 ```
 pnpm install
+cd frontend && pnpm install
 ```
 
 ### Run the back-end
