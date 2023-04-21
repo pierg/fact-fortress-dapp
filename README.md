@@ -6,16 +6,20 @@
 ### Prerequisites
 
 - NodeJS 18
-- PNPM
+- pnpm [https://pnpm.io/fr/installation](https://pnpm.io/fr/installation)
 
-Install the dependencies:
+Install the backend and the frontend:
 
 ```
-pnpm install
-cd frontend && pnpm install
+git clone git@github.com:pierg/fact-fortress-dapp.git
+cd fact-fortress-dapp && pnpm install
+git clone git@github.com:pierg/fact-fortress-frontend.git
+cd fact-fortress-frontend && pnpm install
 ```
 
 ### Run the back-end
+
+From the root directory, run:
 
 ```
 pnpm backend
@@ -25,11 +29,15 @@ A Postman collection is provided to interact with the backend: `tools/Postman_co
 
 ### Run the front-end
 
+*Once the backend is running* (`► server started on port 3000 ✓`), from the root directory run:
+
 ```
 pnpm frontend
 ```
 
 ### Run the unit tests
+
+From the root directory, run:
 
 ```
 pnpm run test

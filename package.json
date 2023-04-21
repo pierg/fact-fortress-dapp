@@ -19,11 +19,10 @@
     },
     "scripts": {
         "backend": "node src/index.js",
-        "frontend": "cd ./frontend && pnpm run dev",
+        "frontend": "cd ./fact-fortress-frontend && pnpm run dev",
         "generate-verifiers": "node tools/generateVerifiersSol.js",
         "test": "pnpm generate-verifiers && truffle test",
-        "frontend:clean": "cd ./frontend && pnpm run clean",
-        "update": "git submodule update && pnpm update"
+        "frontend:clean": "cd ./fact-fortress-frontend && pnpm run clean"
     },
     "dependencies": {
         "@aztec/barretenberg": "^2.1.95",
