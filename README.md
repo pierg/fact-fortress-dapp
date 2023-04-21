@@ -2,7 +2,14 @@
 
 ![Fact Fortress](./docs/logo.png)
 
-### Prerequisites
+Fact Fortress is a blockchain-integrated solution that democratizes the use of zero-knowledge proofs to ensure the integrity of private data. **It provides a user-friendly interface for generating proofs off-chain through a circuit generator that leverages the Noir language, **and facilitates on-chain verification of the proofs on Ethereum.**
+ 
+By enabling the validation of data integrity without revealing the data itself, our solution offers a powerful mechanism for preserving the privacy of sensitive information while ensuring the security and transparency of blockchain technology.
+
+![Flow](./docs/flow.png)
+
+
+## Prerequisites
 
 - NodeJS 18
 - pnpm [https://pnpm.io/fr/installation](https://pnpm.io/fr/installation)
@@ -16,7 +23,7 @@ git clone git@github.com:pierg/fact-fortress-frontend.git
 cd fact-fortress-frontend && pnpm install
 ```
 
-### Run the back-end
+## Run the back-end
 
 From the root directory, run:
 
@@ -28,7 +35,7 @@ pnpm backend
 
 A Postman collection is provided to interact with the backend: `tools/Postman_collection/ZKP_Health.json`
 
-### Run the front-end
+## Run the front-end
 
 ![Unit tests](./docs/frontend.png)
 
@@ -42,7 +49,7 @@ Then, open `http://localhost:8080` on your browser.
 
 (By default, the backend runs on port `8080`).
 
-### Run the unit tests
+## Run the unit tests
 
 ![Unit tests](./docs/ut.png)
 
@@ -54,9 +61,9 @@ pnpm run test
 
 These tests notably contain an end-to-end flow, from the authorization of authorities to the on-chain verification of the proof of Schnorr signature.
 
-### Backend End-to-End Flow
+## Backend End-to-End Flow
 
-#### 1 | Generate the public/private keys pair
+### 1 | Generate the public/private keys pair
 
 *Hospitals generate a private/public key pair based on the Grumpkin elliptic curve, used by Noir.*
 
@@ -88,7 +95,7 @@ curl --location 'http://localhost:3000/key_pair'
 
 - - -
 
-#### 2 | Authorize the hospital to upload its public key *(On-Chain)*
+### 2 | Authorize the hospital to upload its public key *(On-Chain)*
 
 *Hospitals have to be authorized to upload their public keys on the blockchain (otherwise anyone could do it). To do so, a NFT-based mechanism is used. The owner of the NFT smart contract has to autorize hospitals once by sending them NFTs for this purpose.*
 
@@ -121,7 +128,7 @@ curl --location 'http://localhost:3000/mint?recipient=0x98526c571e324028250B0f5f
 
 - - -
 
-#### 3 | Upload the public key *(On-Chain)*
+### 3 | Upload the public key *(On-Chain)*
 
 *Hospitals upload their public key (for the first time or when they generate a new one). This process enables the verification of the public inputs in the context of the proof of provenance.*
 
@@ -158,7 +165,7 @@ curl --location --request PUT 'http://localhost:3000/publickey?name=hospitaA&pub
 
 - - -
 
-#### 3b (optional) | Get the public key *(On-Chain)*
+### 3b (optional) | Get the public key *(On-Chain)*
 
 *Using this endpoint, anyone (including the verifiers) can get the public keys of hospitals.*
 
@@ -189,7 +196,7 @@ curl --location 'http://localhost:3000/publickey?name=hospitalA&version=0'
 
 - - -
 
-#### 4 | Hash and Sign Health Data
+### 4 | Hash and Sign Health Data
 
 *Hospitals have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the health data.*
 
@@ -256,7 +263,7 @@ curl --location 'http://localhost:3000/sign' \
 
 - - -
 
-#### 5 | Store the signature *(On-Chain)*
+### 5 | Store the signature *(On-Chain)*
 
 *Hospitals store the signature on the blockchain. That enables the verification of the proof of provenance.*
 
@@ -300,7 +307,7 @@ curl --location 'http://localhost:3000/signature?public_key=0x077418dea85cb96959
 
 - - -
 
-#### 6 | Generate the Proof
+### 6 | Generate the Proof
 
 *Researchers generate the proof (should be done online).*
 
@@ -352,7 +359,7 @@ curl --location 'http://localhost:3000/generate_proof?public_key=0x0dd7811f6af9d
 
 - - -
 
-#### 7 | [ZKP::Proof of Provenance] Verify the Public Inputs *(On-Chain)*
+### 7 | [ZKP::Proof of Provenance] Verify the Public Inputs *(On-Chain)*
 
 *Verifiers verify the public inputs of the proof of provenance. This is a preliminary step to the verification of the proof of provenance itself (step 8). This step ensures that the researcher has used the expected public key and signature as public inputs. It can also be performed off-chain.*
 
@@ -390,7 +397,7 @@ curl --location 'http://localhost:3000/verify_public_inputs?public_key=0x0dd7811
 
 - - -
 
-#### 8 | [ZKP::Proof of Provenance] Verify the Proof of Provenance *(On-Chain)*
+### 8 | [ZKP::Proof of Provenance] Verify the Proof of Provenance *(On-Chain)*
 
 *Verifiers verify the proof of provenance that ensures that the health data comes from an hospital.*
 
