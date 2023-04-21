@@ -2,7 +2,6 @@
 
 ![Fact Fortress](./docs/logo.png)
 
-
 ### Prerequisites
 
 - NodeJS 18
@@ -25,9 +24,13 @@ From the root directory, run:
 pnpm backend
 ```
 
+(By default, the backend runs on port `3000`).
+
 A Postman collection is provided to interact with the backend: `tools/Postman_collection/ZKP_Health.json`
 
 ### Run the front-end
+
+![Unit tests](./docs/frontend.png)
 
 *Once the backend is running* (`► server started on port 3000 ✓`), from the root directory run:
 
@@ -35,13 +38,21 @@ A Postman collection is provided to interact with the backend: `tools/Postman_co
 pnpm frontend
 ```
 
+Then, open `http://localhost:8080` on your browser.
+
+(By default, the backend runs on port `8080`).
+
 ### Run the unit tests
+
+![Unit tests](./docs/ut.png)
 
 From the root directory, run:
 
 ```
 pnpm run test
 ```
+
+These tests notably contain an end-to-end flow, from the authorization of authorities to the on-chain verification of the proof of Schnorr signature.
 
 ### Backend End-to-End Flow
 
