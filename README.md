@@ -2,7 +2,7 @@
 
 ![Fact Fortress](./docs/logo.png)
 
-Fact Fortress is a blockchain-integrated solution that democratizes the use of zero-knowledge proofs to ensure the integrity of private data. **It provides a user-friendly interface for generating proofs off-chain through a circuit generator that leverages the Noir language, **and facilitates on-chain verification of the proofs on Ethereum.**
+Fact Fortress is a blockchain-integrated solution that democratizes the use of zero-knowledge proofs to ensure the integrity of private data. **It provides a user-friendly interface for generating proofs off-chain through a circuit generator that leverages the Noir language, and facilitates on-chain verification of the proofs on Ethereum.**
  
 By enabling the validation of data integrity without revealing the data itself, our solution offers a powerful mechanism for preserving the privacy of sensitive information while ensuring the security and transparency of blockchain technology.
 
