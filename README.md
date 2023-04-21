@@ -1,4 +1,4 @@
-# Fact Fortress Dapp
+# Fact Fortress DApp
 
 ![Fact Fortress](./docs/logo.png)
 
