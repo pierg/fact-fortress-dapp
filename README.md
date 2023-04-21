@@ -1,4 +1,7 @@
-# ZKP Health
+# Fact Fortress Dapp
+
+![Fact Fortress](./docs/logo.png)
+
 
 ### Prerequisites
 
