@@ -3,8 +3,8 @@ const {
     authorizeResearcher,
     getAuthorityTokenId,
     getResearcherTokenId,
-    getAllAccessTypes,
-    getAccessTypes
+    getAllAccessPolicies,
+    getAccessPolicies
 } = require("./../actions/tokens.js");
 const { getFrom } = require("./common.controller.js");
 
@@ -123,12 +123,12 @@ async function getResearcherTokenIdController(
     }
 }
 
-async function getAllAccessTypesController(
+async function getAllAccessPoliciesController(
     req,
     res,
     next
 ) {
-    const result = await getAllAccessTypes();
+    const result = await getAllAccessPolicies();
 
     if (result.error) {
         res.status(500).json({
@@ -139,7 +139,7 @@ async function getAllAccessTypesController(
     }
 }
 
-async function getAccessTypesController(
+async function getAccessPoliciesController(
     req,
     res,
     next
@@ -151,7 +151,7 @@ async function getAccessTypesController(
         });
     }
 
-    const result = await getAccessTypes(address);
+    const result = await getAccessPolicies(address);
 
     if (result.error) {
         res.status(500).json({
@@ -167,6 +167,6 @@ module.exports = {
     authorizeResearcherController,
     getAuthorityTokenIdController,
     getResearcherTokenIdController,
-    getAllAccessTypesController,
-    getAccessTypesController
+    getAllAccessPoliciesController,
+    getAccessPoliciesController
 }

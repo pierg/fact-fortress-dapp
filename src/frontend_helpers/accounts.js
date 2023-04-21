@@ -1,5 +1,11 @@
 const { AccountsTypes, getAccountsByType } = require("../accounts.js");
-const { getAccessTypes } = require("./../actions/tokens.js");
+const {
+    getAccessPolicies,
+    unauthorizeAuthority,
+    unauthorizeResearcher,
+    removeAllAccessPolicies
+} = require("../actions/tokens.js");
+const { getFrom } = require("../controllers/common.controller.js");
 
 function sanitize(accounts) {
     return accounts
@@ -42,7 +48,7 @@ async function getAccountsController(
 
         // get access policies for each data analyzer/researcher
         for (let i = 0; i < accounts.length; ++i) {
-            const accessPolicies = await getAccessTypes(accounts[i].address);
+            const accessPolicies = await getAccessPolicies(accounts[i].address);
             Object.assign(accounts[i], { "access_policies ": accessPolicies.accessPolicies });
         }
     } else if (accountType.includes("verifier")) {
@@ -62,4 +68,34 @@ async function getAccountsController(
     }
 }
 
-module.exports = { getAccountsController }
+async function resetAccountsController(
+    req,
+    res,
+    next
+) {
+    const from = getFrom(req);
+    if (typeof from === undefined || !from) {
+        return res.status(500).json({
+            error: "`from` header is not properly set",
+            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
+        });
+    }
+
+    r = [];
+
+    // reset authorities tokens
+    for (const authority of getAccountsByType(AccountsTypes.data_provider)) {
+        r.push(await unauthorizeAuthority(from, authority.address));
+    }
+
+    // reset researchers tokens
+    for (const researcher of getAccountsByType(AccountsTypes.data_analyzer)) {
+        r.push(await unauthorizeResearcher(from, researcher.address));
+    }
+
+    r.push(await removeAllAccessPolicies(from));
+
+    res.status(200).json(r);
+}
+
+module.exports = { getAccountsController, resetAccountsController }

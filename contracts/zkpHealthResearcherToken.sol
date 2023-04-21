@@ -20,10 +20,10 @@ contract ZkpHealthResearcherToken is ERC721 {
     }
 
     // set of access policies
-    // TODO(Guillaume): to improve (set of strings...), obviously; 
+    // TODO(Guillaume): to improve (set of strings...), obviously;
     //                  okayish just for demo purposes
     mapping(string => bool) private _accessPolicies;
-    string[] private _allAccessTypes;
+    string[] private _allaccessPolicies;
 
     // address => token ID
     // (0 if the address has not token)
@@ -31,7 +31,12 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     constructor() ERC721("ZKP Health Researcher Token", "ZKPHR") {
         _owner = msg.sender;
-        _allAccessTypes.push("default_policy"); // set default access policy
+        initializeDefaultPolicies();
+    }
+
+    // set default access policies
+    function initializeDefaultPolicies() internal {
+        _allaccessPolicies.push("default_policy");
     }
 
     // mint (create) a new token for and send it to a researcher
@@ -52,12 +57,23 @@ contract ZkpHealthResearcherToken is ERC721 {
 
         for (uint256 i = 0; i < accessPolicies.length; i++) {
             if (!_accessPolicies[accessPolicies[i]]) {
-                _allAccessTypes.push(accessPolicies[i]);
+                _allaccessPolicies.push(accessPolicies[i]);
             }
             _accessPolicies[accessPolicies[i]] = true;
         }
 
         return newItemId;
+    }
+
+    // remove an authorization
+    // TODO(Guillaume): improve the implementation
+    function unauthorizeResearcher(address user) external {
+        require(msg.sender == _owner, "Caller is not the owner"); // TODO(Guillaume): extend to authorities
+
+        // TODO(Guillaume): remove access policies specific to this user
+        //                  (for demo purposes, will be delegated to the backend)
+
+        delete _userToToken[user];
     }
 
     // allows a researcher to transfer its token to another address
@@ -93,11 +109,26 @@ contract ZkpHealthResearcherToken is ERC721 {
         return _tokenIds.current();
     }
 
-    function getAllAccessTypes() external view returns (string[] memory) {
-        return _allAccessTypes;
+    function getAllAccessPolicies() external view returns (string[] memory) {
+        return _allaccessPolicies;
     }
 
-    function getAccessTypes(address user) external view returns (string[] memory) {
+    function getAccessPolicies(
+        address user
+    ) external view returns (string[] memory) {
         return _userToToken[user]._accessPolicies;
+    }
+
+    // reset all access policies
+    // TODO(Guillaume): improve the implementation
+    function removeAllAccessPolicies() external {
+        require(msg.sender == _owner, "Caller is not the owner");
+
+        for (uint256 i = 0; i < _allaccessPolicies.length; i++) {
+            delete _accessPolicies[_allaccessPolicies[i]];
+        }
+
+        delete _allaccessPolicies;
+        initializeDefaultPolicies();
     }
 }

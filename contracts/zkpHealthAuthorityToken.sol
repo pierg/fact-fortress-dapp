@@ -37,6 +37,15 @@ contract ZkpHealthAuthorityToken is ERC721 {
         return newItemId;
     }
 
+    // remove an authorization
+    // TODO(Guillaume): improve the implementation
+    function unauthorizeAuthority(address user) external {
+        // only the owner of the contract should be able to remove an authorization
+        require(msg.sender == _owner, "Caller is not the owner");
+
+        delete _userToToken[user];
+    }
+
     // allows an hospital to transfer its token to another address
     // (e.g. a new wallet)
     function transferFrom(

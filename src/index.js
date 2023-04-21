@@ -1,4 +1,4 @@
-const { initCircuitsHelpers } = require("./frontend_helpers/proof.controller.js");
+const { initCircuitsHelpers } = require("./frontend_helpers/proof.js");
 const { contractsHelper } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
@@ -7,8 +7,8 @@ const {
     authorizeResearcherController,
     getAuthorityTokenIdController,
     getResearcherTokenIdController,
-    getAllAccessTypesController,
-    getAccessTypesController
+    getAllAccessPoliciesController,
+    getAccessPoliciesController,
 } = require("./controllers/nft.controller.js");
 const {
     getPublicKeyController,
@@ -22,10 +22,11 @@ const {
 } = require("./controllers/signature.controller.js");
 const {
     getAvailableFunctionsController,
-} = require("./frontend_helpers/healthFunctions.controller.js");
+} = require("./frontend_helpers/healthFunctions.js");
 const {
     getAccountsController,
-} = require("./frontend_helpers/accounts.controller.js");
+    resetAccountsController,
+} = require("./frontend_helpers/accounts.js");
 const {
     generateProofController,
     verifyPublicInputsPoPController,
@@ -113,14 +114,15 @@ app.post("/sign_hash", signHashController); // sign a hashed message
 app.post("/sign_message", signMessageController); // hash and sign a message
 app.post("/generate_proof", generateProofController); // generate the proof
 app.get("/available_functions", getAvailableFunctionsController);
+app.get("/reset_accounts", resetAccountsController); // reset all accounts
 
 // authorizations (NFTs)
 app.get("/authorize_authority", authorizeAuthorityController); // authorize an authority (hospital) (mint NFT and send)
 app.post("/authorize_researcher", authorizeResearcherController); // authorize a researcher (mint NFT and send)
 app.get("/authority_token_id", getAuthorityTokenIdController); // get NFT ID associated with authority address
 app.get("/researcher_token_id", getResearcherTokenIdController); // get NFT ID associated with researcher address
-app.get("/all_access_policies", getAllAccessTypesController); // get all access policies
-app.get("/access_policies", getAccessTypesController); // get access policy by address
+app.get("/all_access_policies", getAllAccessPoliciesController); // get all access policies
+app.get("/access_policies", getAccessPoliciesController); // get access policy by address
 
 // public keys
 app.get("/publickey", getPublicKeyController); // get public key

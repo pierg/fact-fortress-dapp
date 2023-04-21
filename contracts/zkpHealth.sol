@@ -105,6 +105,8 @@ contract ZkpHealth {
         return version;
     }
 
+    //TODO(Guillaume): implement a function to remove public keys
+    
     // ZKP PROOF VERIFICATION
 
     // public key `x` and `y`
