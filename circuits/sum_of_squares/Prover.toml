@@ -1,0 +1,18 @@
+##############################
+#	Computes the sum of squares of a given list of numbers with a given precision, where each number in the list is squared and then summed up. The precision can be specified as the number of decimal places to include in the result.
+##############################
+
+[public.keys]
+pub_key_x = "0x2f2d9a76072f29c3913b02815225305a5b5baf9650c73b3870f466f8c4f39302"
+pub_key_y = "0x01298badf8a49d414270232ec9aa1a2a21be90f52edd7dd65d1a1705881e2547"
+
+[public.statement]
+value = 26
+
+[private.provenance]
+signature = [ 12, 58, 229, 3, 120, 203, 39, 36, 188, 45, 188, 127, 6, 204, 16, 211, 176, 151, 191, 115, 188, 117, 133, 136, 167, 215, 55, 66, 117, 177, 191, 202, 203, 8, 65, 75, 107, 34, 183, 141, 148, 52, 151, 115, 104, 43, 61, 248, 111, 32, 195, 133, 173, 13, 90, 85, 66, 45, 152, 239, 74, 235, 104, 238,]
+hash = [ 122, 168, 154, 51, 222, 230, 10, 67, 209, 76, 152, 124, 110, 71, 247, 129, 4, 49, 190, 236, 234, 87, 82, 29, 178, 66, 195, 180, 47, 41, 229, 214,]
+
+[private.data]
+d1 = [ 2, 1, 2, 0, 0, 0, 2, 1, 2, 0, 0, 2, 0, 2, 2, 1, 1, 0, 0, 0, 2, 0, 0, 0, 1, 1, 2, 2, 0, 2, 0, 0,]
+d2 = [ 23, 5, 15, 29,]

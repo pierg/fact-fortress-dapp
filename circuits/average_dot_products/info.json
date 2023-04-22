@@ -1,0 +1,18 @@
+{
+    "function": {
+        "name": "average_dot_products",
+        "description": "Computes the average of dot-products between a two-dimensional matrix and a vector with a given precision, where the dot-product between each row of the matrix and the vector is computed and then averaged over all rows. The precision can be specified as the number of decimal places to include in the result."
+    },
+    "data": [
+        {
+            "name": "Data_1",
+            "description": "Two-dimensional matrix from Authority_A",
+            "provider": "Authority_A"
+        },
+        {
+            "name": "Data_2",
+            "description": "Vector of quantized double from Authority_A",
+            "provider": "Authority_A"
+        }
+    ]
+}

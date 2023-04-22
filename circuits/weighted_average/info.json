@@ -1,0 +1,18 @@
+{
+    "function": {
+        "name": "weighted_average",
+        "description": "Computes the weighted average of a given list of numbers and their corresponding weights with a given precision, where each number is multiplied by its weight, and then the resulting products are summed up and divided by the sum of the weights. The precision can be specified as the number of decimal places to include in the result."
+    },
+    "data": [
+        {
+            "name": "Data_1",
+            "description": "Two-dimensional matrix from Authority_A",
+            "provider": "Authority_A"
+        },
+        {
+            "name": "Data_2",
+            "description": "Vector of quantized double from Authority_A",
+            "provider": "Authority_A"
+        }
+    ]
+}

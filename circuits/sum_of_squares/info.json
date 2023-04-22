@@ -1,0 +1,18 @@
+{
+    "function": {
+        "name": "sum_of_squares",
+        "description": "Computes the sum of squares of a given list of numbers with a given precision, where each number in the list is squared and then summed up. The precision can be specified as the number of decimal places to include in the result."
+    },
+    "data": [
+        {
+            "name": "Data_1",
+            "description": "Two-dimensional matrix from Authority_B",
+            "provider": "Authority_B"
+        },
+        {
+            "name": "Data_2",
+            "description": "Vector of quantized double from Authority_B",
+            "provider": "Authority_B"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+##############################
+#	Computes the weighted average of a given list of numbers and their corresponding weights with a given precision, where each number is multiplied by its weight, and then the resulting products are summed up and divided by the sum of the weights. The precision can be specified as the number of decimal places to include in the result.
+##############################
+
+[public.keys]
+pub_key_x = "0x1448aadc2f26388382b7cae816008c5e18558bc6c1cd642ca65a9733c873e9a1"
+pub_key_y = "0x0d40ab062fd387a792b6eb5a53c1b9cd63d9c4d35a00de5c54dda95a81b22d2c"
+
+[public.statement]
+value = 28
+
+[private.provenance]
+signature = [ 21, 85, 87, 47, 44, 204, 215, 11, 77, 233, 174, 74, 100, 107, 63, 53, 93, 255, 60, 138, 245, 144, 76, 178, 125, 66, 21, 117, 100, 62, 15, 154, 131, 58, 232, 75, 126, 73, 114, 19, 163, 117, 103, 234, 114, 192, 62, 208, 87, 219, 166, 87, 216, 67, 192, 242, 54, 134, 128, 4, 172, 10, 4, 143,]
+hash = [ 190, 129, 105, 161, 235, 50, 234, 241, 74, 155, 77, 149, 15, 202, 181, 131, 150, 73, 60, 119, 54, 26, 0, 100, 71, 136, 7, 22, 0, 58, 219, 148,]
+
+[private.data]
+d1 = [ 2, 2, 2, 1, 2, 2, 2, 0, 2, 0, 2, 2, 1, 2, 0, 2, 0, 2, 1, 2, 0, 1, 0, 2, 1, 0, 2, 2, 2, 1, 1, 2,]
+d2 = [ 6, 12, 5, 29,]
