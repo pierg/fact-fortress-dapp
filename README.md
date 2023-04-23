@@ -2,11 +2,37 @@
 
 ![Fact Fortress](./docs/logo.png)
 
-Fact Fortress is a blockchain-integrated solution that democratizes the use of zero-knowledge proofs to ensure the integrity of private data. **It provides a user-friendly interface for generating proofs off-chain through a circuit generator that leverages the Noir language, and facilitates on-chain verification of the proofs on Ethereum.**
+Fact Fortress is a blockchain-integrated solution that democratizes the use of zero-knowledge proofs to ensure the integrity of private data. **It provides a user-friendly interface for generating proofs off-chain through a circuit generator that leverages the Noir language and facilitates on-chain verification of the proofs on Ethereum.**
  
 By enabling the validation of data integrity without revealing the data itself, our solution offers a powerful mechanism for preserving the privacy of sensitive information while ensuring the security and transparency of blockchain technology.
 
 ![Flow](./docs/flow.png)
+
+- [Fact Fortress DApp](#fact-fortress-dapp)
+  - [Prerequisites](#prerequisites)
+  - [Run](#run)
+    - [Run the backend](#run-the-backend)
+    - [Run the frontend](#run-the-frontend)
+    - [Run the unit tests](#run-the-unit-tests)
+  - [Backend End-to-End Flows](#backend-end-to-end-flows)
+    - [Flow 1. Generate and Verify a Proof](#flow-1-generate-and-verify-a-proof)
+      - [1 | Generate the public/private keys pair](#1--generate-the-publicprivate-keys-pair)
+      - [2 | Authorize the data provider to upload its public key *(On-Chain)*](#2--authorize-the-data-provider-to-upload-its-public-key-on-chain)
+      - [3 | Upload the public key *(On-Chain)*](#3--upload-the-public-key-on-chain)
+      - [3b (optional) | Get the public key *(On-Chain)*](#3b-optional--get-the-public-key-on-chain)
+      - [4 | Hash and Sign Data](#4--hash-and-sign-data)
+      - [5 | Store the signature *(On-Chain)*](#5--store-the-signature-on-chain)
+      - [6 | Generate the Proof](#6--generate-the-proof)
+      - [7 | \[ZKP::Proof of Provenance\] Verify the Public Inputs *(On-Chain)*](#7--zkpproof-of-provenance-verify-the-public-inputs-on-chain)
+      - [8 | \[ZKP::Proof of Provenance\] Verify the Proof of Provenance *(On-Chain)*](#8--zkpproof-of-provenance-verify-the-proof-of-provenance-on-chain)
+    - [Flow 2. Manage Authorizations (NFTs)](#flow-2-manage-authorizations-nfts)
+      - [1 | Check All Access Policies (Default Policy)](#1--check-all-access-policies-default-policy)
+      - [2 | Check Unauthorized Data Provider's Token ID (No Token)](#2--check-unauthorized-data-providers-token-id-no-token)
+      - [3 | Check Unauthorized Data Analyzer's Token ID (No Token)](#3--check-unauthorized-data-analyzers-token-id-no-token)
+      - [4 | Authorize a Data Provider](#4--authorize-a-data-provider)
+      - [5 | Authorize a Data Analyzer](#5--authorize-a-data-analyzer)
+      - [6 | Check Authorized Data Analyzer's Token ID](#6--check-authorized-data-analyzers-token-id)
+      - [7 | Check All Access Policies](#7--check-all-access-policies)
 
 
 ## Prerequisites
@@ -23,7 +49,9 @@ git clone git@github.com:pierg/fact-fortress-frontend.git
 cd fact-fortress-frontend && pnpm install
 ```
 
-## Run the back-end
+## Run
+
+### Run the backend
 
 From the root directory, run:
 
@@ -35,7 +63,7 @@ pnpm backend
 
 A Postman collection is provided to interact with the backend: `tools/Postman_collection/Fact_Fortress.postman_collection.json`
 
-## Run the front-end
+### Run the frontend
 
 ![Unit tests](./docs/frontend.png)
 
@@ -49,7 +77,7 @@ Then, open `http://localhost:8080` on your browser.
 
 (By default, the backend runs on port `8080`).
 
-## Run the unit tests
+### Run the unit tests
 
 ![Unit tests](./docs/ut.png)
 
@@ -67,10 +95,10 @@ These tests notably contain an end-to-end flow, from the authorization of author
 
 #### 1 | Generate the public/private keys pair
 
-*Authorities generate a private/public key pair based on the Grumpkin elliptic curve, used by Noir.*
+*Authorities generate a private/public key pair based on the Grumpkin elliptic curve used by Noir.*
 
-| WARNING: This action should be performed offline. This endpoint is just an helper. Authorities are expected to generate the keys themselves. |
-| ------------------------------------------------------------------------------------------------------------------------------------------ |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Authorities are expected to generate the keys themselves. |
+| -------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
 GET http://localhost:3000/key_pair
@@ -98,7 +126,7 @@ curl --location 'http://localhost:3000/key_pair'
 
 #### 2 | Authorize the data provider to upload its public key *(On-Chain)*
 
-*Authorities have to be authorized to upload their public keys on the blockchain (otherwise anyone could do it). To do so, a NFT-based mechanism is used. The owner of the NFT smart contract has to autorize data providers once by sending them NFTs for this purpose.*
+*Authorities have to be authorized to upload their public keys on the blockchain (otherwise, anyone could do it). To do so, an NFT-based mechanism is used. The owner of the NFT smart contract has to authorize data providers once by sending them NFTs for this purpose.*
 
 ```
 GET http://localhost:3000/authorize_provider
@@ -198,8 +226,8 @@ curl --location 'http://localhost:3000/publickey?name=ABC&version=0'
 
 *Authorities have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the Data.*
 
-| WARNING: This action should be performed offline. This endpoint is just an helper. Authorities are expected to hash and sign the Data themselves. |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Authorities are expected to hash and sign the Data themselves. |
+| ------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
 POST http://localhost:3000/sign_message
@@ -219,8 +247,8 @@ POST http://localhost:3000/sign_message
 curl --location 'http://localhost:3000/sign_message' \
 --header 'Content-Type: application/json' \
 --data '{
-	"private_key": "ca1a2b52a7405f06f71c03cbaada78559aa86a0e2d01321540012f3762a12818",
-	"message": {
+    "private_key": "ca1a2b52a7405f06f71c03cbaada78559aa86a0e2d01321540012f3762a12818",
+    "message": {
         "patient_id_0": {
             "genetic_data": {
                 "rs10757274": "AA",
@@ -241,7 +269,7 @@ curl --location 'http://localhost:3000/sign_message' \
             },
             "name": "Alice"
         }
-	}
+    }
 }'
 
 {
@@ -307,7 +335,7 @@ curl --location 'http://localhost:3000/upload_signature?public_key=0x077418dea85
 
 *Researchers generate the proof (should be done online).*
 
-| WARNING: This action should be performed offline. This endpoint is just an helper. Researchers are expected to generate the proofs themselves. |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Researchers are expected to generate the proofs themselves. |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
@@ -427,7 +455,7 @@ curl --location 'http://localhost:3000/verify_proof' \
 ### Flow 2. Manage Authorizations (NFTs)
 
 | WARNING: Before running this flow, ensure to reset the accounts and authorizations using the frontend helper (implemented for demonstrations purposes only): `GET http://localhost:3000/reset_accounts` |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 
 #### 1 | Check All Access Policies (Default Policy)
@@ -640,4 +668,3 @@ curl --location 'http://localhost:3000/all_access_policies'
 }
 ```
 
-- - -
