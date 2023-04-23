@@ -37,7 +37,7 @@ By enabling the validation of data integrity without revealing the data itself, 
 
 ## Prerequisites
 
-- NodeJS 18
+- NodeJS LTS [https://nodejs.org/en/download](https://nodejs.org/en/download)
 - pnpm [https://pnpm.io/fr/installation](https://pnpm.io/fr/installation)
 
 Install the backend and the frontend:
