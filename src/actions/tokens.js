@@ -24,7 +24,7 @@ async function unauthorizeProvider(from, address) {
 
     try {
         await sc.methods.unauthorizeProvider(address).send({ from, gas: '1000000' });
-        console.log(`[reset] Provider ${address} has been unauthorized`);
+        console.log(`[reset] Data provider ${address} has been unauthorized`);
         return {
             address,
             "unauthorized": true,
@@ -48,7 +48,7 @@ async function authorizeAnalyzer(from, recipient, accessPolicies) {
         const tokenId = receipt.events.Transfer.returnValues.tokenId;
         console.log(`data analyzer authorized: ${tokenId} (${accessPolicies}) tx ${receipt.transactionHash}`);
         return {
-            recipient,
+            "address": recipient,
             token_id: tokenId,
         };
     } catch (e) {
@@ -136,7 +136,7 @@ async function getAllAccessPolicies() {
         const accessPolicies = await sc.methods.getAllAccessPolicies().call();
         console.log(`All access policies: ${accessPolicies}`);
         return {
-            accessPolicies,
+            "access_policies": accessPolicies,
         };
     } catch (e) {
         console.error(e);
@@ -171,7 +171,7 @@ async function getAccessPolicies(address) {
         console.log(`Address ${address} has access policies #${accessPolicies}`);
         return {
             address,
-            accessPolicies,
+            "access_policies": accessPolicies,
         };
     } catch (e) {
         console.error(e);

@@ -61,9 +61,11 @@ pnpm run test
 
 These tests notably contain an end-to-end flow, from the authorization of authorities to the on-chain verification of the proof of Schnorr signature.
 
-## Backend End-to-End Flow
+## Backend End-to-End Flows
 
-### 1 | Generate the public/private keys pair
+### Flow 1. Generate and Verify a Proof
+
+#### 1 | Generate the public/private keys pair
 
 *Authorities generate a private/public key pair based on the Grumpkin elliptic curve, used by Noir.*
 
@@ -80,8 +82,6 @@ GET http://localhost:3000/key_pair
     * `public_key` Public key based on the Grumpkin curve, used by Noir
     * `private_key` Random private key
 
-https://user-images.githubusercontent.com/66550865/232197455-d07dbda7-45aa-470e-86fa-e5cfa62a14a6.mov
-
 
 *Example*
 
@@ -96,7 +96,7 @@ curl --location 'http://localhost:3000/key_pair'
 
 - - -
 
-### 2 | Authorize the data provider to upload its public key *(On-Chain)*
+#### 2 | Authorize the data provider to upload its public key *(On-Chain)*
 
 *Authorities have to be authorized to upload their public keys on the blockchain (otherwise anyone could do it). To do so, a NFT-based mechanism is used. The owner of the NFT smart contract has to autorize data providers once by sending them NFTs for this purpose.*
 
@@ -108,29 +108,27 @@ GET http://localhost:3000/authorize_provider
     * Owner of the contract
 * **Input**
     * (Header) `from: owner` Only the owner of the contract can mint
-    * (Parameter) `recipient` Address of the data provider about to receive the NFT
+    * (Parameter) `address` Address of the data provider about to receive the NFT
 * **Output**
-    * `recipient` Address of the data provider having received the NFT
+    * `address` Address of the data provider having received the NFT
     * `token_id` NFT token ID
-
-https://user-images.githubusercontent.com/66550865/232197466-fc5ce95b-7f7b-4915-b0f3-3c334716a538.mov
 
 
 *Example*
 
 ```
-curl --location 'http://localhost:3000/authorize_provider?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB' \
+curl --location 'http://localhost:3000/authorize_provider?address=0x98526c571e324028250B0f5f247Ca4F1b575fadB' \
 --header 'from: owner'
 
 {
-    "recipient": "0x98526c571e324028250B0f5f247Ca4F1b575fadB",
+    "address": "0x98526c571e324028250B0f5f247Ca4F1b575fadB",
     "token_id": "1"
 }
 ```
 
 - - -
 
-### 3 | Upload the public key *(On-Chain)*
+#### 3 | Upload the public key *(On-Chain)*
 
 *Authorities upload their public key (for the first time or when they generate a new one). This process enables the verification of the public inputs in the context of the proof of provenance.*
 
@@ -150,8 +148,6 @@ PUT http://localhost:3000/publickey
     * `public_key_version` Version of the public key
 
 
-https://user-images.githubusercontent.com/66550865/232227093-1b747ec1-f287-450d-b50a-a4c6d20ee952.mov
-
 
 *Example*
 
@@ -168,7 +164,7 @@ curl --location --request PUT 'http://localhost:3000/publickey?name=ABC&public_k
 
 - - -
 
-### 3b (optional) | Get the public key *(On-Chain)*
+#### 3b (optional) | Get the public key *(On-Chain)*
 
 *Using this endpoint, anyone (including the verifiers) can get the public keys of data providers.*
 
@@ -185,8 +181,6 @@ GET http://localhost:3000/publickey
     * `public_key` Grumpkin-based public key
 
 
-https://user-images.githubusercontent.com/66550865/232227105-e7224e43-92b5-4dbc-ad4a-a8edcb2745cf.mov
-
 
 *Example*
 
@@ -200,7 +194,7 @@ curl --location 'http://localhost:3000/publickey?name=ABC&version=0'
 
 - - -
 
-### 4 | Hash and Sign Data
+#### 4 | Hash and Sign Data
 
 *Authorities have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the Data.*
 
@@ -218,8 +212,6 @@ POST http://localhost:3000/sign_message
     * `hash` SHA-256 hash of the data (hex)
     * `signature` Signature of the hash (bytes)
 
-
-https://user-images.githubusercontent.com/66550865/232200525-d5610ff1-f8b9-4973-b1d5-5a7c43e00dbe.mov
 
 *Example*
 
@@ -268,7 +260,7 @@ curl --location 'http://localhost:3000/sign_message' \
 
 - - -
 
-### 5 | Store the signature *(On-Chain)*
+#### 5 | Store the signature *(On-Chain)*
 
 *Authorities store the signature on the blockchain. That enables the verification of the proof of provenance.*
 
@@ -284,8 +276,6 @@ GET http://localhost:3000/upload_signature
 * **Output**
     * `stored` Status: `true` if the signature has been stored, `false` otherwise
 
-
-https://user-images.githubusercontent.com/66550865/232287544-1b4dcc01-1fde-41b2-8f1e-3f36bc10a1cc.mov
 
 *Example*
 
@@ -313,7 +303,7 @@ curl --location 'http://localhost:3000/upload_signature?public_key=0x077418dea85
 
 - - -
 
-### 6 | Generate the Proof
+#### 6 | Generate the Proof
 
 *Researchers generate the proof (should be done online).*
 
@@ -331,8 +321,6 @@ POST http://localhost:3000/generate_proof
 * **Output**
     * Proof (bytes)
 
-
-https://user-images.githubusercontent.com/66550865/232200514-b9a3cee7-d667-42e9-9ac2-ae6aea97361c.mov
 
 
 *Example*
@@ -366,7 +354,7 @@ curl --location 'http://localhost:3000/generate_proof?public_key=0x0dd7811f6af9d
 
 - - -
 
-### 7 | [ZKP::Proof of Provenance] Verify the Public Inputs *(On-Chain)*
+#### 7 | [ZKP::Proof of Provenance] Verify the Public Inputs *(On-Chain)*
 
 *Verifiers verify the public inputs of the proof of provenance. This is a preliminary step to the verification of the proof of provenance itself (step 8). This step ensures that the data analyzer has used the expected public key and signature as public inputs. It can also be performed off-chain.*
 
@@ -380,8 +368,6 @@ POST http://localhost:3000/verify_public_inputs
 * **Output**
     * `public_input_match`: `true` (public inputs match) or `false` (public inputs do not match)
 
-
-https://user-images.githubusercontent.com/66550865/232200505-c275c6c5-93e0-416f-9864-a13f3c897858.mov
 
 *Example*
 
@@ -405,7 +391,7 @@ curl --location 'http://localhost:3000/verify_public_inputs?public_key=0x0dd7811
 
 - - -
 
-### 8 | [ZKP::Proof of Provenance] Verify the Proof of Provenance *(On-Chain)*
+#### 8 | [ZKP::Proof of Provenance] Verify the Proof of Provenance *(On-Chain)*
 
 *Verifiers verify the proof of provenance that ensures that the Data comes from a data provider.*
 
@@ -417,8 +403,6 @@ POST http://localhost:3000/verify_public_inputs
     * (Body) Proof (bytes)
 * **Output**
     * `valid_proof_of_provenance`: `true` (valid proof) or `false` (invalid proof)
-
-https://user-images.githubusercontent.com/66550865/232200501-9d28d465-f139-4631-8f56-581f9bfb42cb.mov
 
 *Example*
 
@@ -439,3 +423,221 @@ curl --location 'http://localhost:3000/verify_proof' \
     "valid_proof_of_provenance": true
 }
 ```
+
+### Flow 2. Manage Authorizations (NFTs)
+
+| WARNING: Before running this flow, ensure to reset the accounts and authorizations using the frontend helper (implemented for demonstrations purposes only): `GET http://localhost:3000/reset_accounts` |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- |
+
+
+#### 1 | Check All Access Policies (Default Policy)
+
+*Get registered access policies when no data analyzer has been authorized yet: only the default access policy is returned.*
+
+```
+GET http://localhost:3000/all_access_policies
+```
+
+* **Input**
+    * (None)
+* **Output**
+    * `access_policies` List of *all* registered data policies
+
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/all_access_policies'
+
+{
+    "access_policies": [
+        "default_policy"
+    ]
+}
+```
+
+- - -
+
+
+#### 2 | Check Unauthorized Data Provider's Token ID (No Token)
+
+*An unauthorized data provider has no token ID*
+
+```
+GET http://localhost:3000/provider_token_id
+```
+
+* **Input**
+    * (parameter) `address` Address of the data provider
+* **Output**
+    * `error` When the data provider is unauthorized: `Address does not have a token`
+
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/provider_token_id?address=0x98526c571e324028250B0f5f247Ca4F1b575fadB'
+
+{
+    "error": "Address does not have a token"
+}
+```
+
+- - -
+
+#### 3 | Check Unauthorized Data Analyzer's Token ID (No Token)
+
+*An unauthorized data analyzer has no token ID*
+
+```
+GET http://localhost:3000/analyzer_token_id
+```
+
+* **Input**
+    * (parameter) `address` Address of the data provider
+* **Output**
+    * `error` When the data provider is unauthorized: `Address does not have a token`
+
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
+
+{
+    "error": "Address does not have a token"
+}
+```
+
+- - -
+
+#### 4 | Authorize a Data Provider
+
+*Authorize a data provider*
+
+```
+GET http://localhost:3000/authorize_provider
+```
+
+* **Input**
+    * (header) `from: owner` Only the owner of the smart contract can call the underlying function
+    * (parameter) `address` Address of the data provider
+* **Output**
+    * `address` Address of the data provider
+    * `token_id` ID of the NFT sent to the data provider
+
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
+
+{
+    "address": "0x98526c571e324028250B0f5f247Ca4F1b575fadB",
+    "token_id": "1"
+}
+```
+
+- - -
+
+#### 5 | Authorize a Data Analyzer
+
+*Authorize a data analyzer with a set of access policies*
+
+```
+POST http://localhost:3000/authorize_analyzer
+```
+
+* **Input**
+    * (header) `from: owner` Only the owner of the smart contract can call the underlying function
+    * (parameter) `address` Address of the data analyzer
+    * (body) `access_policies` Set of access policies for this data analyzer
+* **Output**
+    * `address` Address of the data provider
+    * `token_id` ID of the NFT sent to the data provider
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/authorize_analyzer?address=0x5455280E6c20A01de3e846d683562AdeA6891026' \
+--header 'from: owner' \
+--header 'Content-Type: application/json' \
+--data '{
+    "access_policies": [
+        "TYPE_A",
+        "TYPE_B",
+        "TYPE_C",
+    ]
+}'
+
+{
+    "address": "0x98526c571e324028250B0f5f247Ca4F1b575fadB",
+    "token_id": "1"
+}
+```
+
+- - -
+
+#### 6 | Check Authorized Data Analyzer's Token ID
+
+*Now that the data analyzer has been approved, her token ID can be retrieved*
+
+```
+GET http://localhost:3000/analyzer_token_id
+```
+
+* **Input**
+    * (parameter) `address` Address of the data analyzer
+* **Output**
+    * `address` Address of the data analyzer
+    * `token_id` ID of the NFT sent to the data provider
+    * `access_policies` Set of access policies for this data analyzer
+  
+*Example*
+
+```
+curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
+
+{
+    "address": "0x5455280E6c20A01de3e846d683562AdeA6891026",
+    "token_id": "1",
+    "access_policies": [
+        "TYPE_A",
+        "TYPE_B",
+        "TYPE_C",
+    ]
+}
+```
+
+- - -
+
+#### 7 | Check All Access Policies
+
+*Now that at least on data analyzer has been authorized, the set of all access policies has been updated by the smart contract*
+
+```
+GET http://localhost:3000/all_access_policies
+```
+
+* **Input**
+    * (None)
+* **Output**
+    * `access_policies` List of *all* registered data policies
+
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/all_access_policies'
+
+{
+    "access_policies": [
+        "default_policy",
+        "TYPE_A",
+        "TYPE_B",
+        "TYPE_C",
+    ]
+}
+```
+
+- - -

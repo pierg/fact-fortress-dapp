@@ -13,10 +13,10 @@ async function authorizeProviderController(
     res,
     next
 ) {
-    const recipient = req.query.recipient;
-    if (!recipient) {
+    const address = req.query.address;
+    if (!address) {
         return res.status(500).json({
-            error: "no recipient has been provided",
+            error: "no address has been provided",
         });
     }
 
@@ -28,7 +28,7 @@ async function authorizeProviderController(
         });
     }
 
-    const result = await authorizeProvider(from, recipient);
+    const result = await authorizeProvider(from, address);
 
     if (result.error) {
         res.status(500).json({
@@ -44,10 +44,10 @@ async function authorizeDataAnalyzerController(
     res,
     next
 ) {
-    const recipient = req.query.recipient;
-    if (!recipient) {
+    const address = req.query.address;
+    if (!address) {
         return res.status(500).json({
-            error: "no recipient has been provided",
+            error: "no address has been provided",
         });
     }
 
@@ -66,7 +66,7 @@ async function authorizeDataAnalyzerController(
         });
     }
 
-    const result = await authorizeAnalyzer(from, recipient, accessPolicies);
+    const result = await authorizeAnalyzer(from, address, accessPolicies);
 
     if (result.error) {
         res.status(500).json({

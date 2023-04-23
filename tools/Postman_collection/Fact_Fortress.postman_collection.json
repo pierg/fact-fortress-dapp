@@ -25,7 +25,7 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:3000/authorize_provider?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB",
+									"raw": "http://localhost:3000/authorize_provider?address=0x98526c571e324028250B0f5f247Ca4F1b575fadB",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -36,7 +36,7 @@
 									],
 									"query": [
 										{
-											"key": "recipient",
+											"key": "address",
 											"value": "0x98526c571e324028250B0f5f247Ca4F1b575fadB"
 										}
 									]
@@ -65,7 +65,7 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/authorize_analyzer?recipient=0x5455280E6c20A01de3e846d683562AdeA6891026",
+									"raw": "http://localhost:3000/authorize_analyzer?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
 									"protocol": "http",
 									"host": [
 										"localhost"
@@ -76,7 +76,7 @@
 									],
 									"query": [
 										{
-											"key": "recipient",
+											"key": "address",
 											"value": "0x5455280E6c20A01de3e846d683562AdeA6891026"
 										}
 									]
