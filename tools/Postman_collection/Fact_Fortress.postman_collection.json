@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "6773a65b-9d48-44fa-8456-9f65fb7d9053",
-		"name": "ZKP backend",
+		"_postman_id": "08546611-be00-4e5f-b5f8-0c21c272df84",
+		"name": "Fact Fortress endpoints",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "26919793",
-		"_collection_link": "https://lunar-space-885672.postman.co/workspace/Team-Workspace~6fc2575d-66ce-4ced-8a6e-a735c6ad7af2/collection/26919793-6773a65b-9d48-44fa-8456-9f65fb7d9053?action=share&creator=26919793&source=collection_link"
+		"_collection_link": "https://lunar-space-885672.postman.co/workspace/Team-Workspace~6fc2575d-66ce-4ced-8a6e-a735c6ad7af2/collection/26919793-08546611-be00-4e5f-b5f8-0c21c272df84?action=share&creator=26919793&source=collection_link"
 	},
 	"item": [
 		{
@@ -14,7 +14,7 @@
 					"name": "NFTs",
 					"item": [
 						{
-							"name": "Authorize hospital (mint)",
+							"name": "Authorize data provider (mint)",
 							"request": {
 								"method": "GET",
 								"header": [
@@ -25,14 +25,14 @@
 									}
 								],
 								"url": {
-									"raw": "http://localhost:3000/authorize_authority?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB",
+									"raw": "http://localhost:3000/authorize_provider?recipient=0x98526c571e324028250B0f5f247Ca4F1b575fadB",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"authorize_authority"
+										"authorize_provider"
 									],
 									"query": [
 										{
@@ -45,7 +45,7 @@
 							"response": []
 						},
 						{
-							"name": "Authorize researcher (mint)",
+							"name": "Authorize data analyzer (mint)",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -65,14 +65,14 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/authorize_researcher?recipient=0x5455280E6c20A01de3e846d683562AdeA6891026",
+									"raw": "http://localhost:3000/authorize_analyzer?recipient=0x5455280E6c20A01de3e846d683562AdeA6891026",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"authorize_researcher"
+										"authorize_analyzer"
 									],
 									"query": [
 										{
@@ -85,19 +85,19 @@
 							"response": []
 						},
 						{
-							"name": "Get hospital token ID",
+							"name": "Get data provider token ID",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/authority_token_id?address=0x98526c571e324028250B0f5f247Ca4F1b575fadB",
+									"raw": "http://localhost:3000/provider_token_id?address=0x98526c571e324028250B0f5f247Ca4F1b575fadB",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"authority_token_id"
+										"provider_token_id"
 									],
 									"query": [
 										{
@@ -110,19 +110,19 @@
 							"response": []
 						},
 						{
-							"name": "Get researcher token ID",
+							"name": "Get data analyzer token ID",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/researcher_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
+									"raw": "http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"researcher_token_id"
+										"analyzer_token_id"
 									],
 									"query": [
 										{
@@ -194,12 +194,12 @@
 						"header": [
 							{
 								"key": "from",
-								"value": "hospitalA",
+								"value": "providerA",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "http://localhost:3000/publickey?name=HospitalA&public_key=0x2efa5224b3083d7f16d14572441141f4280a4db920904a4cbffa0bedac56ea07267547bdf2aa3c5035b80a3a164123c0b2d1421855c3ba6bf524053007e2e571",
+							"raw": "http://localhost:3000/publickey?name=Provider A&public_key=0x2efa5224b3083d7f16d14572441141f4280a4db920904a4cbffa0bedac56ea07267547bdf2aa3c5035b80a3a164123c0b2d1421855c3ba6bf524053007e2e571",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -211,7 +211,7 @@
 							"query": [
 								{
 									"key": "name",
-									"value": "HospitalA"
+									"value": "Provider A"
 								},
 								{
 									"key": "public_key",
@@ -228,7 +228,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/publickey?name=HospitalA&version=0",
+							"raw": "http://localhost:3000/publickey?name=Provider A&version=0",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -240,7 +240,7 @@
 							"query": [
 								{
 									"key": "name",
-									"value": "HospitalA"
+									"value": "Provider A"
 								},
 								{
 									"key": "version",
@@ -258,7 +258,7 @@
 						"header": [
 							{
 								"key": "from",
-								"value": "HospitalA",
+								"value": "ProviderA",
 								"type": "text"
 							}
 						],
@@ -340,7 +340,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/verify_proof?health_function=proof_of_provenance",
+							"raw": "http://localhost:3000/verify_proof?statement_function=proof_of_provenance",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -356,7 +356,7 @@
 									"disabled": true
 								},
 								{
-									"key": "health_function",
+									"key": "statement_function",
 									"value": "proof_of_provenance"
 								}
 							]
@@ -439,7 +439,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Available Health Functions",
+					"name": "Get Available Statement Functions",
 					"request": {
 						"method": "GET",
 						"header": [],

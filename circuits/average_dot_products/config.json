@@ -104,7 +104,7 @@
     "statement": 20,
     "authorities": {
         "auth_1": {
-            "name": "Authority_A",
+            "name": "Provider_A",
             "pub_key_x": "0x2448462def57713935769d6ecb533fe1fc673d0291dd106bb113698bcd897a48",
             "pub_key_y": "0x20bc73626b5de79c06db7a118ebe7dc8d0dc9a9d6406e17951eb069a65f20417",
             "private_key": "52b89e3a2ca597bcd21cf1d355dc0976e8787bfe42c12eaf4fd667033eba081e"
@@ -117,8 +117,8 @@
     "data": {
         "d1": {
             "name": "Data_1",
-            "description": "Two-dimensional matrix from Authority_A",
-            "provider": "Authority_A",
+            "description": "Two-dimensional matrix from Provider_A",
+            "provider": "Provider_A",
             "values": [
                 0,
                 1,
@@ -138,8 +138,8 @@
         },
         "d2": {
             "name": "Data_2",
-            "description": "Vector of quantized double from Authority_A",
-            "provider": "Authority_A",
+            "description": "Vector of quantized double from Provider_A",
+            "provider": "Provider_A",
             "values": [
                 3,
                 11

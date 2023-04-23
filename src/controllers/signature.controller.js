@@ -15,7 +15,7 @@ async function uploadSignatureController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "hospitalA|hospitalB|hospitalC" }',
+            expected_header: '{ "from": "providerA|providerB|providerC" }',
         });
     }
 

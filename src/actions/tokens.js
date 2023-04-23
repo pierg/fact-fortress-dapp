@@ -1,12 +1,12 @@
 const { contractsHelper } = require('../contracts/contracts.js');
 
-async function authorizeAuthority(from, recipient) {
-    const sc = contractsHelper.getContractByName("ZkpHealthAuthorityToken");
+async function authorizeProvider(from, recipient) {
+    const sc = contractsHelper.getContractByName("DataProvidersNFTs");
 
     try {
-        const receipt = await sc.methods.authorizeAuthority(recipient).send({ from, gas: '1000000' });
+        const receipt = await sc.methods.authorizeProvider(recipient).send({ from, gas: '1000000' });
         const tokenId = receipt.events.Transfer.returnValues.tokenId;
-        console.log(`authority authorized: ${tokenId} — tx ${receipt.transactionHash}`);
+        console.log(`data provider authorized: ${tokenId} — tx ${receipt.transactionHash}`);
         return {
             recipient,
             token_id: tokenId,
@@ -19,12 +19,12 @@ async function authorizeAuthority(from, recipient) {
     }
 }
 
-async function unauthorizeAuthority(from, address) {
-    const sc = contractsHelper.getContractByName("ZkpHealthAuthorityToken");
+async function unauthorizeProvider(from, address) {
+    const sc = contractsHelper.getContractByName("DataProvidersNFTs");
 
     try {
-        await sc.methods.unauthorizeAuthority(address).send({ from, gas: '1000000' });
-        console.log(`[reset] Authority ${address} has been unauthorized`);
+        await sc.methods.unauthorizeProvider(address).send({ from, gas: '1000000' });
+        console.log(`[reset] Provider ${address} has been unauthorized`);
         return {
             address,
             "unauthorized": true,
@@ -37,16 +37,16 @@ async function unauthorizeAuthority(from, address) {
     }
 }
 
-async function authorizeResearcher(from, recipient, accessPolicies) {
-    const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
+async function authorizeAnalyzer(from, recipient, accessPolicies) {
+    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
 
     try {
-        const receipt = await sc.methods.authorizeResearcher(
+        const receipt = await sc.methods.authorizeAnalyzer(
             recipient,
             accessPolicies
         ).send({ from, gas: '1000000' });
         const tokenId = receipt.events.Transfer.returnValues.tokenId;
-        console.log(`researcher authorized: ${tokenId} (${accessPolicies}) tx ${receipt.transactionHash}`);
+        console.log(`data analyzer authorized: ${tokenId} (${accessPolicies}) tx ${receipt.transactionHash}`);
         return {
             recipient,
             token_id: tokenId,
@@ -59,12 +59,12 @@ async function authorizeResearcher(from, recipient, accessPolicies) {
     }
 }
 
-async function unauthorizeResearcher(from, address) {
-    const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
+async function unauthorizeAnalyzer(from, address) {
+    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
 
     try {
-        await sc.methods.unauthorizeResearcher(address).send({ from, gas: '1000000' });
-        console.log(`[reset] Researcher ${address} has been unauthorized`);
+        await sc.methods.unauthorizeAnalyzer(address).send({ from, gas: '1000000' });
+        console.log(`[reset] Data analyzer ${address} has been unauthorized`);
         return {
             address,
             "unauthorized": true,
@@ -78,8 +78,8 @@ async function unauthorizeResearcher(from, address) {
 }
 
 
-async function getAuthorityTokenId(address) {
-    const sc = contractsHelper.getContractByName("ZkpHealthAuthorityToken");
+async function getProviderTokenId(address) {
+    const sc = contractsHelper.getContractByName("DataProvidersNFTs");
 
     try {
         const tokenId = await sc.methods.userToToken(address).call();
@@ -103,8 +103,8 @@ async function getAuthorityTokenId(address) {
     }
 }
 
-async function getResearcherTokenId(address) {
-    const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
+async function getAnalyzerTokenId(address) {
+    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
 
     try {
         const tokenId = await sc.methods.userToToken(address).call();
@@ -130,7 +130,7 @@ async function getResearcherTokenId(address) {
 }
 
 async function getAllAccessPolicies() {
-    const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
+    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
 
     try {
         const accessPolicies = await sc.methods.getAllAccessPolicies().call();
@@ -147,7 +147,7 @@ async function getAllAccessPolicies() {
 }
 
 async function removeAllAccessPolicies(from) {
-    const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
+    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
 
     try {
         await sc.methods.removeAllAccessPolicies().send({ from, gas: '1000000' });
@@ -164,7 +164,7 @@ async function removeAllAccessPolicies(from) {
 }
 
 async function getAccessPolicies(address) {
-    const sc = contractsHelper.getContractByName("ZkpHealthResearcherToken");
+    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
 
     try {
         const accessPolicies = await sc.methods.getAccessPolicies(address).call();
@@ -184,12 +184,12 @@ async function getAccessPolicies(address) {
 
 
 module.exports = {
-    authorizeAuthority,
-    unauthorizeAuthority,
-    authorizeResearcher,
-    unauthorizeResearcher,
-    getAuthorityTokenId,
-    getResearcherTokenId,
+    authorizeProvider,
+    unauthorizeProvider,
+    authorizeAnalyzer,
+    unauthorizeAnalyzer,
+    getProviderTokenId,
+    getAnalyzerTokenId,
     getAllAccessPolicies,
     removeAllAccessPolicies,
     getAccessPolicies

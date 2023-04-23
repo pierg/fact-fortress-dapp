@@ -10,9 +10,9 @@ global D2_PRECISION: u4 = 2;
 global DATA_SIZE: Field = 36;
 
 struct Data {
-    // Two-dimensional matrix from Authority_B
+    // Two-dimensional matrix from Provider_B
     d1: [u8; 32],
-    // Vector of quantized double from Authority_B
+    // Vector of quantized double from Provider_B
     d2: [u8; 4],
 }
 

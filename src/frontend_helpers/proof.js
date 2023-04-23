@@ -79,13 +79,13 @@ async function initCircuitsHelpers() {
     console.log("► initialized verifiers ✓");
 }
 
-async function computeProof(healthFunction, args) {
-    const contract = contractsHelper.getContractByHealthFunction(healthFunction);
+async function computeProof(statementFunction, args) {
+    const contract = contractsHelper.getContractByStatementFunction(statementFunction);
 
     // guard clause: ensure the function exists
     if (!contract) {
         return {
-            "error": `Health function ${healthFunction} is not implemented`
+            "error": `Statement function ${statementFunction} is not implemented`
         }
     }
 

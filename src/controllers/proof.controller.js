@@ -6,14 +6,14 @@ async function generateProofController(
     res,
     next
 ) {
-    let health_function = req.body.health_function;
+    let statement_function = req.body.statement_function;
 
     // TODO(Guillaume): remove once several contracts are supported
-    if (!health_function) {
-        health_function = "proof_of_provenance";
+    if (!statement_function) {
+        statement_function = "proof_of_provenance";
     }
 
-    const result = await computeProof(health_function, req.body);
+    const result = await computeProof(statement_function, req.body);
 
     if (result == null) {
         res.status(500).json({
@@ -63,11 +63,11 @@ async function verifyProofController(
     next
 ) {
 
-    const healthFunction = req.query.health_function;
-    if (!healthFunction) {
+    const statementFunction = req.query.statement_function;
+    if (!statementFunction) {
         return res.status(500).json({
-            error: "no health function has been provided",
-            expected_url: "/verify_proof?health_function={health_function}",
+            error: "no statement function has been provided",
+            expected_url: "/verify_proof?statement_function={statement_function}",
         });
     }
 
@@ -78,7 +78,7 @@ async function verifyProofController(
         });
     }
 
-    const result = await verifyProof(healthFunction, proof);
+    const result = await verifyProof(statementFunction, proof);
 
     if (result.error) {
         res.status(500).json(result);

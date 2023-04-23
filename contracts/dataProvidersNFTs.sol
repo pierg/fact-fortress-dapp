@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 // This contract manages ERC721 tokens (non-fungible tokens) to allow
-// hospitals to manage their public keys on-chain
-contract ZkpHealthAuthorityToken is ERC721 {
+// authorities to manage their public keys on-chain
+contract DataProvidersNFTs is ERC721 {
     address private _owner;
 
     using Counters for Counters.Counter;
@@ -18,12 +18,12 @@ contract ZkpHealthAuthorityToken is ERC721 {
     // (0 if the address has not token)
     mapping(address => uint256) private _userToToken;
 
-    constructor() ERC721("ZKP Health Authority Token", "ZKPHA") {
+    constructor() ERC721("Fact Fortress Provider Token", "FFP") {
         _owner = msg.sender;
     }
 
-    // mint (create) a new token for and send it to an hospital
-    function authorizeAuthority(address user) external returns (uint256) {
+    // mint (create) a new token for and send it to a data provider
+    function authorizeProvider(address user) external returns (uint256) {
         // only the owner of the contract should be able to mint
         require(msg.sender == _owner, "Caller is not the owner");
 
@@ -39,14 +39,14 @@ contract ZkpHealthAuthorityToken is ERC721 {
 
     // remove an authorization
     // TODO(Guillaume): improve the implementation
-    function unauthorizeAuthority(address user) external {
+    function unauthorizeProvider(address user) external {
         // only the owner of the contract should be able to remove an authorization
         require(msg.sender == _owner, "Caller is not the owner");
 
         delete _userToToken[user];
     }
 
-    // allows an hospital to transfer its token to another address
+    // allows a data provider to transfer its token to another address
     // (e.g. a new wallet)
     function transferFrom(
         address from,

@@ -3,21 +3,21 @@
 
 pragma solidity ^0.8.1;
 
-import "./zkpHealthAuthorityToken.sol";
-import "./zkpHealthResearcherToken.sol";
-import "./zkpHealthVerifier.sol";
+import "./dataProvidersNFTs.sol";
+import "./dataAnalyzersNFTs.sol";
+import "./verifierProvenance.sol";
 
 contract Verifier {
     function verify(bytes calldata) external view returns (bool result){}
 }
 
-// This contract manages the hospital's public keys and verifies, directly and indirectly
+// This contract manages the data provider's public keys and verifies, directly and indirectly
 // (by calling the proof of provenance verifier contracts), the zero-knowledge proofs
-contract ZkpHealth {
+contract FactFortress {
     address private _owner;
-    ZkpHealthAuthorityToken private _zkpHealthAuthorityToken;
-    ZkpHealthResearcherToken private _zkpHealthResearcherToken;
-    ZkpHealthVerifier private _zkpHealthVerifier;
+    DataProvidersNFTs private _dataProvidersNFTs;
+    DataAnalyzersNFTs private _dataAnalyzersNFTs;
+    VerifierProvenance private _verifierProvenance;
 
     // Public keys
     event PublicKeyVersion(uint);
@@ -26,31 +26,31 @@ contract ZkpHealth {
     mapping(string => string[]) public publicKeys;
 
     // name => token ID
-    // (used to prevent an hospital to associate its public key
+    // (used to prevent a data provider to associate its public key
     // with a name that is not its own)
     mapping(string => uint256) private _tokenIds;
 
     // Signatures: hash(signature) => hash(public key)
     mapping(bytes32 => bytes32) private _signatures;
 
-    // Verifiers: health function => verifier address
+    // Verifiers: statement function => verifier address
     mapping(string => address) private _verifiers;
 
     constructor(
-        address zkpAuthorityTokenAddress,
-        address zkpResearcherTokenAddress,
-        address zkpVerifierAddress
+        address dataProvidersNFTsAddress,
+        address dataAnalyzersNFTsAddress,
+        address VerifierProvenanceAddress
     ) {
         _owner = msg.sender;
-        _zkpHealthAuthorityToken = ZkpHealthAuthorityToken(
-            zkpAuthorityTokenAddress
+        _dataProvidersNFTs = DataProvidersNFTs(
+            dataProvidersNFTsAddress
         );
-        _zkpHealthResearcherToken = ZkpHealthResearcherToken(
-            zkpResearcherTokenAddress
+        _dataAnalyzersNFTs = DataAnalyzersNFTs(
+            dataAnalyzersNFTsAddress
         );
-        _zkpHealthVerifier = ZkpHealthVerifier(zkpVerifierAddress);
+        _verifierProvenance = VerifierProvenance(VerifierProvenanceAddress);
 
-        _verifiers["proof_of_provenance"] = zkpVerifierAddress;
+        _verifiers["proof_of_provenance"] = VerifierProvenanceAddress;
     }
 
     // PUBLIC KEYS MANAGEMENT
@@ -82,11 +82,11 @@ contract ZkpHealth {
         // 1) public key cannot be empty (TODO: ensure it is valid)
         // 2) caller of the function has to own an NFT
         require(bytes(publicKey).length != 0, "Public key cannot be empty");
-        uint256 tokenId = _zkpHealthAuthorityToken.userToToken(msg.sender);
+        uint256 tokenId = _dataProvidersNFTs.userToToken(msg.sender);
         require(tokenId > 0, "Caller is not authorized to set a public key");
 
         if (publicKeys[name].length > 0) {
-            // 3) if the name is already used, only the hospital which
+            // 3) if the name is already used, only the data provider which
             //    used it first can upload a new public key associated
             //    with this name
             require(
@@ -133,7 +133,7 @@ contract ZkpHealth {
         bytes calldata signature
     ) external {
         require(
-            _zkpHealthAuthorityToken.userToToken(msg.sender) > 0,
+            _dataProvidersNFTs.userToToken(msg.sender) > 0,
             "Caller is not authorized to store a signature"
         );
 
@@ -215,15 +215,15 @@ contract ZkpHealth {
 
     // verify the proof by calling the verifier contract
     function verifyProof(
-        string calldata healthFunction,
+        string calldata statementFunction,
         bytes calldata proof
     ) external view returns (bool result) {
         require(
-            _verifiers[healthFunction] != address(0),
+            _verifiers[statementFunction] != address(0),
             "No verifier at this address"
         );
 
-        Verifier verifier = Verifier(_verifiers[healthFunction]);
+        Verifier verifier = Verifier(_verifiers[statementFunction]);
         return verifier.verify(proof);
     }
 }

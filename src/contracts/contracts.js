@@ -46,7 +46,7 @@ class ContractsHelper {
         return this.contracts[name]["contract"];
     }
 
-    getContractByHealthFunction(circuitPurpose) {
+    getContractByStatementFunction(circuitPurpose) {
         for (const contractName in this.contracts) {
             const sc = this.contracts[contractName];
 

@@ -7,14 +7,14 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 // This contract manages ERC721 tokens (non-fungible tokens) to allow
-// researchers to manage their public keys on-chain
-contract ZkpHealthResearcherToken is ERC721 {
+// data analyzers to manage their public keys on-chain
+contract DataAnalyzersNFTs is ERC721 {
     address private _owner;
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    struct ResearcherToken {
+    struct AnalyzerToken {
         uint256 _tokenId;
         string[] _accessPolicies;
     }
@@ -27,9 +27,9 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     // address => token ID
     // (0 if the address has not token)
-    mapping(address => ResearcherToken) private _userToToken;
+    mapping(address => AnalyzerToken) private _userToToken;
 
-    constructor() ERC721("ZKP Health Researcher Token", "ZKPHR") {
+    constructor() ERC721("Fact Fortress Analyzer Token", "FFA") {
         _owner = msg.sender;
         initializeDefaultPolicies();
     }
@@ -39,9 +39,9 @@ contract ZkpHealthResearcherToken is ERC721 {
         _allaccessPolicies.push("default_policy");
     }
 
-    // mint (create) a new token for and send it to a researcher
+    // mint (create) a new token for and send it to a data analyzer
     // with a set of access policies
-    function authorizeResearcher(
+    function authorizeAnalyzer(
         address user,
         string[] memory accessPolicies
     ) external returns (uint256) {
@@ -53,7 +53,7 @@ contract ZkpHealthResearcherToken is ERC721 {
         uint256 newItemId = _tokenIds.current();
         _mint(user, newItemId);
 
-        _userToToken[user] = ResearcherToken(newItemId, accessPolicies);
+        _userToToken[user] = AnalyzerToken(newItemId, accessPolicies);
 
         for (uint256 i = 0; i < accessPolicies.length; i++) {
             if (!_accessPolicies[accessPolicies[i]]) {
@@ -67,7 +67,7 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     // remove an authorization
     // TODO(Guillaume): improve the implementation
-    function unauthorizeResearcher(address user) external {
+    function unauthorizeAnalyzer(address user) external {
         require(msg.sender == _owner, "Caller is not the owner"); // TODO(Guillaume): extend to authorities
 
         // TODO(Guillaume): remove access policies specific to this user
@@ -76,7 +76,7 @@ contract ZkpHealthResearcherToken is ERC721 {
         delete _userToToken[user];
     }
 
-    // allows a researcher to transfer its token to another address
+    // allows a data analyzer to transfer its token to another address
     // (e.g. a new wallet)
     // Note: the access policies remain the same
     function transferFrom(
@@ -97,7 +97,7 @@ contract ZkpHealthResearcherToken is ERC721 {
 
     function userToToken(
         address user
-    ) external view returns (ResearcherToken memory) {
+    ) external view returns (AnalyzerToken memory) {
         return _userToToken[user];
     }
 

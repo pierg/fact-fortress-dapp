@@ -1,8 +1,8 @@
 const { AccountsTypes, getAccountsByType } = require("../accounts.js");
 const {
     getAccessPolicies,
-    unauthorizeAuthority,
-    unauthorizeResearcher,
+    unauthorizeProvider,
+    unauthorizeAnalyzer,
     removeAllAccessPolicies
 } = require("../actions/tokens.js");
 const { getFrom } = require("../controllers/common.controller.js");
@@ -46,7 +46,7 @@ async function getAccountsController(
     } else if (accountType.includes("analyzer")) {
         accounts = sanitize(getAccountsByType(AccountsTypes.data_analyzer));
 
-        // get access policies for each data analyzer/researcher
+        // get access policies for each data analyzer
         for (let i = 0; i < accounts.length; ++i) {
             const accessPolicies = await getAccessPolicies(accounts[i].address);
             Object.assign(accounts[i], { "access_policies ": accessPolicies.accessPolicies });
@@ -77,20 +77,20 @@ async function resetAccountsController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyzer|any" }',
         });
     }
 
     r = [];
 
     // reset authorities tokens
-    for (const authority of getAccountsByType(AccountsTypes.data_provider)) {
-        r.push(await unauthorizeAuthority(from, authority.address));
+    for (const provider of getAccountsByType(AccountsTypes.data_provider)) {
+        r.push(await unauthorizeProvider(from, provider.address));
     }
 
-    // reset researchers tokens
-    for (const researcher of getAccountsByType(AccountsTypes.data_analyzer)) {
-        r.push(await unauthorizeResearcher(from, researcher.address));
+    // reset data analyzers tokens
+    for (const analyzer of getAccountsByType(AccountsTypes.data_analyzer)) {
+        r.push(await unauthorizeAnalyzer(from, analyzer.address));
     }
 
     r.push(await removeAllAccessPolicies(from));

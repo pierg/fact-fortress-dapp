@@ -36,10 +36,10 @@ function hexToBytes(hex) {
     return bytes;
 }
 
-function hashHealthData(healthData) {
+function hashData(data) {
     return createHash('sha256')
-        .update(JSON.stringify(healthData))
+        .update(JSON.stringify(data))
         .digest('hex');
 }
 
-module.exports = { BarretenbergHelper, hashHealthData, hexToBytes }
+module.exports = { BarretenbergHelper, hashData, hexToBytes }

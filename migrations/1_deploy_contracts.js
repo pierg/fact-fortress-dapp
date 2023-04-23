@@ -1,17 +1,17 @@
-const ZkpHealthAuthorityToken = artifacts.require("ZkpHealthAuthorityToken");
-const ZkpHealthResearcherToken = artifacts.require("ZkpHealthResearcherToken");
-const ZkpHealthVerifier = artifacts.require("ZkpHealthVerifier");
-const ZkpHealth = artifacts.require("ZkpHealth");
+const DataProvidersNFTs = artifacts.require("DataProvidersNFTs");
+const DataAnalyzersNFTs = artifacts.require("DataAnalyzersNFTs");
+const VerifierProvenance = artifacts.require("VerifierProvenance");
+const FactFortress = artifacts.require("FactFortress");
 
 module.exports = function(deployer) {
-    deployer.deploy(ZkpHealthAuthorityToken).then(function() {
-        deployer.deploy(ZkpHealthResearcherToken).then(function() {
-            deployer.deploy(ZkpHealthVerifier).then(function() {
+    deployer.deploy(DataProvidersNFTs).then(function() {
+        deployer.deploy(DataAnalyzersNFTs).then(function() {
+            deployer.deploy(VerifierProvenance).then(function() {
                 return deployer.deploy(
-                    ZkpHealth,
-                    ZkpHealthAuthorityToken.address,
-                    ZkpHealthResearcherToken.address,
-                    ZkpHealthVerifier.address,
+                    FactFortress,
+                    DataProvidersNFTs.address,
+                    DataAnalyzersNFTs.address,
+                    VerifierProvenance.address,
                 )
             });
         });

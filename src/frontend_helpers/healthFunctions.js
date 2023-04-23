@@ -1,34 +1,34 @@
 const fs = require("fs");
 const { resolve } = require("path");
 
-// list of enabled health functions
-const healthFunctions = [
-  "average_dot_products",
-  "sum_of_squares",
-  "weighted_average",
+// list of enabled statement functions
+const statementFunctions = [
+    "average_dot_products",
+    "sum_of_squares",
+    "weighted_average",
 ];
 
 // Retrieve available functions endpoint
-// (i.e. list of enabled health functions)
+// (i.e. list of enabled statement functions)
 async function getAvailableFunctionsController(req, res, next) {
-  let availableHealthFunctions = [];
+    let availableStatementFunctions = [];
 
-  for (const healthFunction of healthFunctions) {
-    filePath = resolve(__dirname, `../../circuits/${healthFunction}/Info.json`);
+    for (const statementFunction of statementFunctions) {
+        filePath = resolve(__dirname, `../../circuits/${statementFunction}/Info.json`);
 
-    if (!fs.existsSync(filePath)) {
-      console.log(
-        `Error: skipping ${healthFunction} (${filePath} does not exist)`
-      );
-      continue;
+        if (!fs.existsSync(filePath)) {
+            console.log(
+                `Error: skipping ${statementFunction} (${filePath} does not exist)`
+            );
+            continue;
+        }
+
+        const data = fs.readFileSync(filePath, "utf8");
+
+        availableStatementFunctions.push(JSON.parse(data));
     }
 
-    const data = fs.readFileSync(filePath, "utf8");
-
-    availableHealthFunctions.push(JSON.parse(data));
-  }
-
-  res.status(200).json(availableHealthFunctions);
+    res.status(200).json(availableStatementFunctions);
 }
 
 module.exports = { getAvailableFunctionsController };

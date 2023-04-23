@@ -3,10 +3,10 @@ const { contractsHelper } = require("./contracts/contracts.js");
 
 const { healthController } = require("./controllers/health.controller.js");
 const {
-    authorizeAuthorityController,
-    authorizeResearcherController,
-    getAuthorityTokenIdController,
-    getResearcherTokenIdController,
+    authorizeProviderController,
+    authorizeDataAnalyzerController,
+    getProviderTokenIdController,
+    getAnalyzerTokenIdController,
     getAllAccessPoliciesController,
     getAccessPoliciesController,
 } = require("./controllers/nft.controller.js");
@@ -52,21 +52,21 @@ app.use(function(req, res, next) {
 async function deployContracts() {
     console.log('---------- deploying contracts ----------');
     await contractsHelper.add({
-        "filename": "zkpHealthAuthorityToken.sol",
-        "name": "ZkpHealthAuthorityToken",
+        "filename": "dataProvidersNFTs.sol",
+        "name": "DataProvidersNFTs",
     });
 
     await contractsHelper.add({
-        "filename": "zkpHealthResearcherToken.sol",
-        "name": "ZkpHealthResearcherToken",
+        "filename": "dataAnalyzersNFTs.sol",
+        "name": "DataAnalyzersNFTs",
     });
 
     await contractsHelper.add({
-        "filename": "zkpHealthVerifier.sol",
-        "name": "ZkpHealthVerifier",
+        "filename": "verifierProvenance.sol",
+        "name": "VerifierProvenance",
         "is_verifier": true,
         "circuit_name": "schnorr", // i.e., name of the directory that contains the circuit
-        "circuit_purpose": "proof_of_provenance", // i.e., health_function
+        "circuit_purpose": "proof_of_provenance", // i.e., statement_function
         "abi_generator": function generateAbi(args) {
             // right side: args.{name_of_key_in_request_body}
             const publicKey = args.public_key;
@@ -94,12 +94,12 @@ async function deployContracts() {
     });
 
     await contractsHelper.add({
-        "filename": "zkpHealth.sol",
-        "name": "ZkpHealth",
+        "filename": "factFortress.sol",
+        "name": "FactFortress",
         "args": [
-            contractsHelper.getAddress("ZkpHealthAuthorityToken"),
-            contractsHelper.getAddress("ZkpHealthResearcherToken"),
-            contractsHelper.getAddress("ZkpHealthVerifier"),
+            contractsHelper.getAddress("DataProvidersNFTs"),
+            contractsHelper.getAddress("DataAnalyzersNFTs"),
+            contractsHelper.getAddress("VerifierProvenance"),
         ],
     });
 
@@ -117,10 +117,10 @@ app.get("/available_functions", getAvailableFunctionsController);
 app.get("/reset_accounts", resetAccountsController); // reset all accounts
 
 // authorizations (NFTs)
-app.get("/authorize_authority", authorizeAuthorityController); // authorize an authority (hospital) (mint NFT and send)
-app.post("/authorize_researcher", authorizeResearcherController); // authorize a researcher (mint NFT and send)
-app.get("/authority_token_id", getAuthorityTokenIdController); // get NFT ID associated with authority address
-app.get("/researcher_token_id", getResearcherTokenIdController); // get NFT ID associated with researcher address
+app.get("/authorize_provider", authorizeProviderController); // authorize a data provider (mint NFT and send)
+app.post("/authorize_analyzer", authorizeDataAnalyzerController); // authorize a data analyzer (mint NFT and send)
+app.get("/provider_token_id", getProviderTokenIdController); // get NFT ID associated with a data provider address
+app.get("/analyzer_token_id", getAnalyzerTokenIdController); // get NFT ID associated with a data analyzer address
 app.get("/all_access_policies", getAllAccessPoliciesController); // get all access policies
 app.get("/access_policies", getAccessPoliciesController); // get access policy by address
 

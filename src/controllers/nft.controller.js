@@ -1,14 +1,14 @@
 const {
-    authorizeAuthority,
-    authorizeResearcher,
-    getAuthorityTokenId,
-    getResearcherTokenId,
+    authorizeProvider,
+    authorizeAnalyzer,
+    getProviderTokenId,
+    getAnalyzerTokenId,
     getAllAccessPolicies,
     getAccessPolicies
 } = require("./../actions/tokens.js");
 const { getFrom } = require("./common.controller.js");
 
-async function authorizeAuthorityController(
+async function authorizeProviderController(
     req,
     res,
     next
@@ -24,11 +24,11 @@ async function authorizeAuthorityController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyzer|any" }',
         });
     }
 
-    const result = await authorizeAuthority(from, recipient);
+    const result = await authorizeProvider(from, recipient);
 
     if (result.error) {
         res.status(500).json({
@@ -39,7 +39,7 @@ async function authorizeAuthorityController(
     }
 }
 
-async function authorizeResearcherController(
+async function authorizeDataAnalyzerController(
     req,
     res,
     next
@@ -55,7 +55,7 @@ async function authorizeResearcherController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|hospitalA|hospitalB|hospitalC|researcher|any" }',
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyzer|any" }',
         });
     }
 
@@ -66,7 +66,7 @@ async function authorizeResearcherController(
         });
     }
 
-    const result = await authorizeResearcher(from, recipient, accessPolicies);
+    const result = await authorizeAnalyzer(from, recipient, accessPolicies);
 
     if (result.error) {
         res.status(500).json({
@@ -77,7 +77,7 @@ async function authorizeResearcherController(
     }
 }
 
-async function getAuthorityTokenIdController(
+async function getProviderTokenIdController(
     req,
     res,
     next
@@ -89,7 +89,7 @@ async function getAuthorityTokenIdController(
         });
     }
 
-    const result = await getAuthorityTokenId(address);
+    const result = await getProviderTokenId(address);
 
     if (result.error) {
         res.status(500).json({
@@ -100,7 +100,7 @@ async function getAuthorityTokenIdController(
     }
 }
 
-async function getResearcherTokenIdController(
+async function getAnalyzerTokenIdController(
     req,
     res,
     next
@@ -112,7 +112,7 @@ async function getResearcherTokenIdController(
         });
     }
 
-    const result = await getResearcherTokenId(address);
+    const result = await getAnalyzerTokenId(address);
 
     if (result.error) {
         res.status(500).json({
@@ -163,10 +163,10 @@ async function getAccessPoliciesController(
 }
 
 module.exports = {
-    authorizeAuthorityController,
-    authorizeResearcherController,
-    getAuthorityTokenIdController,
-    getResearcherTokenIdController,
+    authorizeProviderController,
+    authorizeDataAnalyzerController,
+    getProviderTokenIdController,
+    getAnalyzerTokenIdController,
     getAllAccessPoliciesController,
     getAccessPoliciesController
 }

@@ -1,7 +1,7 @@
 const { contractsHelper } = require('../contracts/contracts.js');
 
 async function verifyPublicInputsPoP(publicKey, proof) {
-    const sc = contractsHelper.getContractByName("ZkpHealth");
+    const sc = contractsHelper.getContractByName("FactFortress");
 
     try {
         const publicInputsMatch = await sc.methods.verifyPublicInputsPoP(
@@ -27,12 +27,12 @@ async function verifyPublicInputsPoP(publicKey, proof) {
     }
 }
 
-async function verifyProof(healthFunction, proof) {
-    const sc = contractsHelper.getContractByName("ZkpHealth");
+async function verifyProof(statementFunction, proof) {
+    const sc = contractsHelper.getContractByName("FactFortress");
 
     try {
         const proofStatus = await sc.methods.verifyProof(
-            healthFunction, proof,
+            statementFunction, proof,
         ).call();
 
         if (proofStatus) {
