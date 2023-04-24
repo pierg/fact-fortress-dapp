@@ -9,7 +9,7 @@ By enabling the validation of data integrity without revealing the data itself, 
 ![Flow](./docs/flow.png)
 
 - [Fact Fortress DApp](#fact-fortress-dapp)
-  - [Related Respositories](#related-respositories)
+  - [Related Repositories](#related-repositories)
   - [Prerequisites](#prerequisites)
   - [Run](#run)
     - [Run the DApp](#run-the-dapp)
@@ -36,7 +36,7 @@ By enabling the validation of data integrity without revealing the data itself, 
       - [6 | Check Authorized Data Analyzer's Token ID](#6--check-authorized-data-analyzers-token-id)
       - [7 | Check All Access Policies](#7--check-all-access-policies)
 
-## Related Respositories
+## Related Repositories
 
 - Circuits generator: [https://github.com/pierg/fact-fortress-circuits](https://github.com/pierg/fact-fortress-circuits)
 - Frontend: [https://github.com/pierg/fact-fortress-frontend](https://github.com/pierg/fact-fortress-frontend)
@@ -453,7 +453,7 @@ curl --location 'http://localhost:3000/verify_proof' \
 
 ### Flow 2. Manage Authorizations (NFTs)
 
-| WARNING: Before running this flow, ensure to reset the accounts and authorizations using the frontend helper (implemented for demonstrations purposes only): `GET http://localhost:3000/reset_accounts` |
+| WARNING: Before running this flow, ensure to reset the accounts and authorizations using the frontend helper (implemented for demonstration purposes only): `GET http://localhost:3000/reset_accounts` |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 
