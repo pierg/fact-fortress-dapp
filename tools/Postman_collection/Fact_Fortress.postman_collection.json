@@ -483,7 +483,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"private_key\": \"98f73670b22c67c1c2b092c5167d1317b661d82db9777751dd6b310efa7c4e17\",\n\t\"message\": {\n        \"patient_id_0\": {\n            \"genetic_data\": {\n                \"rs10757274\": \"AA\",\n                \"rs562556\": \"AA\",\n                \"rs429358\": \"TT\",\n                \"rs7412\": \"TT\",\n                \"rs1801133\": \"TT\"\n            },\n            \"name\": \"Charlie\"\n        },\n        \"patient_id_1\": {\n            \"genetic_data\": {\n                \"rs10757274\": \"GG\",\n                \"rs562556\": \"AG\",\n                \"rs429358\": \"TT\",\n                \"rs7412\": \"CT\",\n                \"rs1801133\": \"TT\"\n            },\n            \"name\": \"Alice\"\n        }\n\t}\n}",
+							"raw": "{\n\t\"private_key\": \"98f73670b22c67c1c2b092c5167d1317b661d82db9777751dd6b310efa7c4e17\",\n\t\"message\": {\n        \"d1\": [ 2, 1, 2, 0, 0, 0, 2, 1, 2, 0, 0, 2, 0, 2, 2, 1, 1, 0, 0, 0, 2, 0, 0, 0, 1, 1, 2, 2, 0, 2, 0, 0],\n        \"d2\": [ 23, 5, 15, 29]\n\t}\n}",
 							"options": {
 								"raw": {
 									"language": "json"

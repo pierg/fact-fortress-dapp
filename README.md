@@ -264,29 +264,11 @@ POST http://localhost:3000/sign_message
 curl --location 'http://localhost:3000/sign_message' \
 --header 'Content-Type: application/json' \
 --data '{
-    "private_key": "ca1a2b52a7405f06f71c03cbaada78559aa86a0e2d01321540012f3762a12818",
-    "message": {
-        "patient_id_0": {
-            "genetic_data": {
-                "rs10757274": "AA",
-                "rs562556": "AA",
-                "rs429358": "TT",
-                "rs7412": "TT",
-                "rs1801133": "TT"
-            },
-            "name": "Charlie"
-        },
-        "patient_id_1": {
-            "genetic_data": {
-                "rs10757274": "GG",
-                "rs562556": "AG",
-                "rs429358": "TT",
-                "rs7412": "CT",
-                "rs1801133": "TT"
-            },
-            "name": "Alice"
-        }
-    }
+	"private_key": "98f73670b22c67c1c2b092c5167d1317b661d82db9777751dd6b310efa7c4e17",
+	"message": {
+        "d1": [ 2, 1, 2, 0, 0, 0, 2, 1, 2, 0, 0, 2, 0, 2, 2, 1, 1, 0, 0, 0, 2, 0, 0, 0, 1, 1, 2, 2, 0, 2, 0, 0],
+        "d2": [ 23, 5, 15, 29]
+	}
 }'
 
 {
