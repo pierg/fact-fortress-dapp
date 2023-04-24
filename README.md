@@ -9,10 +9,12 @@ By enabling the validation of data integrity without revealing the data itself, 
 ![Flow](./docs/flow.png)
 
 - [Fact Fortress DApp](#fact-fortress-dapp)
+  - [Related Respositories](#related-respositories)
   - [Prerequisites](#prerequisites)
   - [Run](#run)
-    - [Run the backend](#run-the-backend)
-    - [Run the frontend](#run-the-frontend)
+    - [Run the DApp](#run-the-dapp)
+    - [Independently run the backend](#independently-run-the-backend)
+    - [Independently run the frontend](#independently-run-the-frontend)
     - [Run the unit tests](#run-the-unit-tests)
   - [Backend End-to-End Flows](#backend-end-to-end-flows)
     - [Flow 1. Generate and Verify a Proof](#flow-1-generate-and-verify-a-proof)
@@ -34,11 +36,16 @@ By enabling the validation of data integrity without revealing the data itself, 
       - [6 | Check Authorized Data Analyzer's Token ID](#6--check-authorized-data-analyzers-token-id)
       - [7 | Check All Access Policies](#7--check-all-access-policies)
 
+## Related Respositories
+
+- Circuits generator: [https://github.com/pierg/fact-fortress-circuits](https://github.com/pierg/fact-fortress-circuits)
+- Frontend: [https://github.com/pierg/fact-fortress-frontend](https://github.com/pierg/fact-fortress-frontend)
 
 ## Prerequisites
 
 - NodeJS LTS [https://nodejs.org/en/download](https://nodejs.org/en/download)
 - pnpm [https://pnpm.io/fr/installation](https://pnpm.io/fr/installation)
+- make
 
 Install the backend and the frontend:
 
@@ -51,7 +58,17 @@ cd fact-fortress-frontend && pnpm install
 
 ## Run
 
-### Run the backend
+### Run the DApp
+
+To deploy the backend and the frontend together, run the following command from the root directory:
+
+```
+make run
+```
+
+This command launches the backend, then opens the frontend in the browser (`http://localhost:8080`).
+
+### Independently run the backend
 
 From the root directory, run:
 
@@ -63,7 +80,7 @@ pnpm backend
 
 A Postman collection is provided to interact with the backend: `tools/Postman_collection/Fact_Fortress.postman_collection.json`
 
-### Run the frontend
+### Independently run the frontend
 
 ![Unit tests](./docs/frontend.png)
 
@@ -87,7 +104,7 @@ From the root directory, run:
 pnpm run test
 ```
 
-These tests notably contain an end-to-end flow, from the authorization of authorities to the on-chain verification of the proof of Schnorr signature.
+These tests notably contain an end-to-end flow, from the authorization of data providers to the on-chain verification of the proof of Schnorr signature.
 
 ## Backend End-to-End Flows
 
@@ -95,9 +112,9 @@ These tests notably contain an end-to-end flow, from the authorization of author
 
 #### 1 | Generate the public/private keys pair
 
-*Authorities generate a private/public key pair based on the Grumpkin elliptic curve used by Noir.*
+*Data providers generate a private/public key pair based on the Grumpkin elliptic curve used by Noir.*
 
-| WARNING: This action should be performed offline. This endpoint is just a helper. Authorities are expected to generate the keys themselves. |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Data providers are expected to generate the keys themselves. |
 | -------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
@@ -126,7 +143,7 @@ curl --location 'http://localhost:3000/key_pair'
 
 #### 2 | Authorize the data provider to upload its public key *(On-Chain)*
 
-*Authorities have to be authorized to upload their public keys on the blockchain (otherwise, anyone could do it). To do so, an NFT-based mechanism is used. The owner of the NFT smart contract has to authorize data providers once by sending them NFTs for this purpose.*
+*Data providers have to be authorized to upload their public keys on the blockchain (otherwise, anyone could do it). To do so, an NFT-based mechanism is used. The owner of the NFT smart contract has to authorize data providers once by sending them NFTs for this purpose.*
 
 ```
 GET http://localhost:3000/authorize_provider
@@ -158,7 +175,7 @@ curl --location 'http://localhost:3000/authorize_provider?address=0x98526c571e32
 
 #### 3 | Upload the public key *(On-Chain)*
 
-*Authorities upload their public key (for the first time or when they generate a new one). This process enables the verification of the public inputs in the context of the proof of provenance.*
+*Data providers upload their public key (for the first time or when they generate a new one). This process enables the verification of the public inputs in the context of the proof of provenance.*
 
 ```
 PUT http://localhost:3000/publickey
@@ -224,9 +241,9 @@ curl --location 'http://localhost:3000/publickey?name=ABC&version=0'
 
 #### 4 | Hash and Sign Data
 
-*Authorities have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the Data.*
+*Data providers have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the Data.*
 
-| WARNING: This action should be performed offline. This endpoint is just a helper. Authorities are expected to hash and sign the Data themselves. |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Data providers are expected to hash and sign the Data themselves. |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
@@ -290,7 +307,7 @@ curl --location 'http://localhost:3000/sign_message' \
 
 #### 5 | Store the signature *(On-Chain)*
 
-*Authorities store the signature on the blockchain. That enables the verification of the proof of provenance.*
+*Data providers store the signature on the blockchain. That enables the verification of the proof of provenance.*
 
 ```
 GET http://localhost:3000/upload_signature
@@ -333,9 +350,9 @@ curl --location 'http://localhost:3000/upload_signature?public_key=0x077418dea85
 
 #### 6 | Generate the Proof
 
-*Researchers generate the proof (should be done online).*
+*Data analyzers generate the proof (should be done online).*
 
-| WARNING: This action should be performed offline. This endpoint is just a helper. Researchers are expected to generate the proofs themselves. |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Data analyzers are expected to generate the proofs themselves. |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```

@@ -1,83 +1,44 @@
-# 'ISC-License' \
-Copyright (c) 2019, Timothée Mazzucotelli \
-Permission to use, copy, modify, and/or distribute this software for any \
-purpose with or without fee is hereby granted, provided that the above \
-copyright notice and this permission notice appear in all copies. \
-THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES \
-WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF \
-MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR \
-ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES \
-WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN \
-ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF \
-OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. \
+FRONTEND_DIR = fact-fortress-frontend
+FRONTEND_URL = http://localhost:8080
 
-.DEFAULT_GOAL := help
-SHELL := bash
+.PHONY: install run
 
-DUTY = $(shell [ -n "${VIRTUAL_ENV}" ] || echo pdm run) duty
+install:
+	node_version=`node -v`; \
+	if ! echo $$node_version | grep -qE '^v18\.'; then \
+		command -v nvm >/dev/null 2>&1 || \
+			curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash && \
+			. ~/.nvm/nvm.sh && \
+			nvm install 18; \
+		. ~/.nvm/nvm.sh && \
+		nvm use 18; \
+	fi
+	command -v pnpm >/dev/null 2>&1 || { \
+		curl -fsSL https://get.pnpm.io/v6.21.js | node - add --global pnpm \
+	}
 
-args = $(foreach a,$($(subst -,_,$1)_args),$(if $(value $a),$a="$($a)"))
-check_quality_args = files
-docs_serve_args = host port
-release_args = version
-test_args = match
+run:
+	lsof -ti :3000 | xargs kill -9 || true # kill previous instance of the backend
+	lsof -ti :8545 | xargs kill -9 || true # kill previous instance of Ganache
+	lsof -ti :8080 | xargs kill -9 || true # kill previous instance of the frontend
+	pnpm install
+	pnpm backend &
+	echo "Waiting for the backend to be up and running..."
+	sleep 30
+	if [ ! -d "fact-fortress-frontend" ]; then \
+		git clone git@github.com:pierg/fact-fortress-frontend.git; \
+	fi
+	cd $(FRONTEND_DIR) && pnpm install
+	pnpm frontend &
+	echo "Waiting for the $(FRONTEND_DIR) to be up and running..."
+	sleep 10
+	@if command -v open >/dev/null 2>&1; then \
+		open $(FRONTEND_URL); \
+	elif command -v xdg-open >/dev/null 2>&1; then \
+		xdg-open $(FRONTEND_URL); \
+	fi
 
-BASIC_DUTIES = \
-	changelog \
-	check-dependencies \
-	clean \
-	coverage \
-	docs \
-	docs-deploy \
-	docs-regen \
-	docs-serve \
-	format \
-	release \
-	tox
-
-QUALITY_DUTIES = \
-	check-quality \
-	check-jn-quality \
-	check-docs \
-	check-types \
-	check-jn-types \
-	test
-
-.PHONY: help
-help:
-	@$(DUTY) --list
-
-.PHONY: lock
-lock:
-	@pdm lock
-
-.PHONY: check
-check:
-	@$(DUTY) check-quality check-jn-quality check-types check-jn-types check-docs check-dependencies
-
-.PHONY: uninstall
-uninstall:
-	rm -rf .coverage*
-	rm -rf .mypy_cache
-	rm -rf .pytest_cache
-	rm -rf tests/.pytest_cache
-	rm -rf build
-	rm -rf dist
-	rm -rf htmlcov
-	rm -rf pip-wheel-metadata
-	rm -rf site
-	rm -rf .venv
-	find . -type d -name __pycache__ | xargs rm -rf
-	find . -type d -name __pypackages__ | xargs rm -rf
-	find . -name pdm.lock | xargs rm -rf
-	find . -name .pdm.toml | xargs rm -rf
-	find . -name '*.rej' | xargs rm -rf
-
-
-.PHONY: $(BASIC_DUTIES)
-$(BASIC_DUTIES):
-	@$(DUTY) $@ $(call args,$@)
-
-.PHONY: $(QUALITY_DUTIES)
-$(QUALITY_DUTIES):
-	pdm run duty $@ $(call args,$@)
+update:
+	git pull && pnpm install
+	cd $(FRONTEND_DIR) && git pull && pnpm install
+	make run
