@@ -30,7 +30,7 @@ run:
 	fi
 	cd $(FRONTEND_DIR) && pnpm install
 	pnpm frontend &
-	echo "Waiting for the $(FRONTEND_DIR) to be up and running..."
+	echo "Waiting for the frontend to be up and running..."
 	sleep 10
 	@if command -v open >/dev/null 2>&1; then \
 		open $(FRONTEND_URL); \
