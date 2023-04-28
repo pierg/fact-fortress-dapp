@@ -332,9 +332,9 @@ curl --location 'http://localhost:3000/upload_signature?public_key=0x077418dea85
 
 #### 6 | Generate the Proof
 
-*Data analyzers generate the proof (should be done online).*
+*Data analysts generate the proof (should be done online).*
 
-| WARNING: This action should be performed offline. This endpoint is just a helper. Data analyzers are expected to generate the proofs themselves. |
+| WARNING: This action should be performed offline. This endpoint is just a helper. Data analysts are expected to generate the proofs themselves. |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
@@ -383,7 +383,7 @@ curl --location 'http://localhost:3000/generate_proof?public_key=0x0dd7811f6af9d
 
 #### 7 | [ZKP::Proof of Provenance] Verify the Public Inputs *(On-Chain)*
 
-*Verifiers verify the public inputs of the proof of provenance. This is a preliminary step to the verification of the proof of provenance itself (step 8). This step ensures that the data analyzer has used the expected public key and signature as public inputs. It can also be performed off-chain.*
+*Verifiers verify the public inputs of the proof of provenance. This is a preliminary step to the verification of the proof of provenance itself (step 8). This step ensures that the data analyst has used the expected public key and signature as public inputs. It can also be performed off-chain.*
 
 ```
 POST http://localhost:3000/verify_public_inputs
@@ -459,7 +459,7 @@ curl --location 'http://localhost:3000/verify_proof' \
 
 #### 1 | Check All Access Policies (Default Policy)
 
-*Get registered access policies when no data analyzer has been authorized yet: only the default access policy is returned.*
+*Get registered access policies when no data analyst has been authorized yet: only the default access policy is returned.*
 
 ```
 GET http://localhost:3000/all_access_policies
@@ -514,10 +514,10 @@ curl --location 'http://localhost:3000/provider_token_id?address=0x98526c571e324
 
 #### 3 | Check Unauthorized Data Analyzer's Token ID (No Token)
 
-*An unauthorized data analyzer has no token ID*
+*An unauthorized data analyst has no token ID*
 
 ```
-GET http://localhost:3000/analyzer_token_id
+GET http://localhost:3000/analyst_token_id
 ```
 
 * **Input**
@@ -529,7 +529,7 @@ GET http://localhost:3000/analyzer_token_id
 *Example*
 
 ```
-curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
+curl --location 'http://localhost:3000/analyst_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
 
 {
     "error": "Address does not have a token"
@@ -557,7 +557,7 @@ GET http://localhost:3000/authorize_provider
 *Example*
 
 ```
-curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
+curl --location 'http://localhost:3000/analyst_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
 
 {
     "address": "0x98526c571e324028250B0f5f247Ca4F1b575fadB",
@@ -569,16 +569,16 @@ curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A
 
 #### 5 | Authorize a Data Analyzer
 
-*Authorize a data analyzer with a set of access policies*
+*Authorize a data analyst with a set of access policies*
 
 ```
-POST http://localhost:3000/authorize_analyzer
+POST http://localhost:3000/authorize_analyst
 ```
 
 * **Input**
     * (header) `from: owner` Only the owner of the smart contract can call the underlying function
-    * (parameter) `address` Address of the data analyzer
-    * (body) `access_policies` Set of access policies for this data analyzer
+    * (parameter) `address` Address of the data analyst
+    * (body) `access_policies` Set of access policies for this data analyst
 * **Output**
     * `address` Address of the data provider
     * `token_id` ID of the NFT sent to the data provider
@@ -586,7 +586,7 @@ POST http://localhost:3000/authorize_analyzer
 *Example*
 
 ```
-curl --location 'http://localhost:3000/authorize_analyzer?address=0x5455280E6c20A01de3e846d683562AdeA6891026' \
+curl --location 'http://localhost:3000/authorize_analyst?address=0x5455280E6c20A01de3e846d683562AdeA6891026' \
 --header 'from: owner' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -607,23 +607,23 @@ curl --location 'http://localhost:3000/authorize_analyzer?address=0x5455280E6c20
 
 #### 6 | Check Authorized Data Analyzer's Token ID
 
-*Now that the data analyzer has been approved, her token ID can be retrieved*
+*Now that the data analyst has been approved, her token ID can be retrieved*
 
 ```
-GET http://localhost:3000/analyzer_token_id
+GET http://localhost:3000/analyst_token_id
 ```
 
 * **Input**
-    * (parameter) `address` Address of the data analyzer
+    * (parameter) `address` Address of the data analyst
 * **Output**
-    * `address` Address of the data analyzer
+    * `address` Address of the data analyst
     * `token_id` ID of the NFT sent to the data provider
-    * `access_policies` Set of access policies for this data analyzer
+    * `access_policies` Set of access policies for this data analyst
   
 *Example*
 
 ```
-curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
+curl --location 'http://localhost:3000/analyst_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026'
 
 {
     "address": "0x5455280E6c20A01de3e846d683562AdeA6891026",
@@ -640,7 +640,7 @@ curl --location 'http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A
 
 #### 7 | Check All Access Policies
 
-*Now that at least on data analyzer has been authorized, the set of all access policies has been updated by the smart contract*
+*Now that at least on data analyst has been authorized, the set of all access policies has been updated by the smart contract*
 
 ```
 GET http://localhost:3000/all_access_policies

@@ -57,8 +57,8 @@ async function deployContracts() {
     });
 
     await contractsHelper.add({
-        "filename": "dataAnalyzersNFTs.sol",
-        "name": "DataAnalyzersNFTs",
+        "filename": "dataAnalystsNFTs.sol",
+        "name": "DataAnalystsNFTs",
     });
 
     await contractsHelper.add({
@@ -98,7 +98,7 @@ async function deployContracts() {
         "name": "FactFortress",
         "args": [
             contractsHelper.getAddress("DataProvidersNFTs"),
-            contractsHelper.getAddress("DataAnalyzersNFTs"),
+            contractsHelper.getAddress("DataAnalystsNFTs"),
             contractsHelper.getAddress("VerifierProvenance"),
         ],
     });
@@ -118,9 +118,9 @@ app.get("/reset_accounts", resetAccountsController); // reset all accounts
 
 // authorizations (NFTs)
 app.get("/authorize_provider", authorizeProviderController); // authorize a data provider (mint NFT and send)
-app.post("/authorize_analyzer", authorizeDataAnalyzerController); // authorize a data analyzer (mint NFT and send)
+app.post("/authorize_analyst", authorizeDataAnalyzerController); // authorize a data analyst (mint NFT and send)
 app.get("/provider_token_id", getProviderTokenIdController); // get NFT ID associated with a data provider address
-app.get("/analyzer_token_id", getAnalyzerTokenIdController); // get NFT ID associated with a data analyzer address
+app.get("/analyst_token_id", getAnalyzerTokenIdController); // get NFT ID associated with a data analyst address
 app.get("/all_access_policies", getAllAccessPoliciesController); // get all access policies
 app.get("/access_policies", getAccessPoliciesController); // get access policy by address
 

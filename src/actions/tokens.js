@@ -38,7 +38,7 @@ async function unauthorizeProvider(from, address) {
 }
 
 async function authorizeAnalyzer(from, recipient, accessPolicies) {
-    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         const receipt = await sc.methods.authorizeAnalyzer(
@@ -46,7 +46,7 @@ async function authorizeAnalyzer(from, recipient, accessPolicies) {
             accessPolicies
         ).send({ from, gas: '1000000' });
         const tokenId = receipt.events.Transfer.returnValues.tokenId;
-        console.log(`data analyzer authorized: ${tokenId} (${accessPolicies}) tx ${receipt.transactionHash}`);
+        console.log(`data analyst authorized: ${tokenId} (${accessPolicies}) tx ${receipt.transactionHash}`);
         return {
             "address": recipient,
             token_id: tokenId,
@@ -60,11 +60,11 @@ async function authorizeAnalyzer(from, recipient, accessPolicies) {
 }
 
 async function unauthorizeAnalyzer(from, address) {
-    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         await sc.methods.unauthorizeAnalyzer(address).send({ from, gas: '1000000' });
-        console.log(`[reset] Data analyzer ${address} has been unauthorized`);
+        console.log(`[reset] Data analyst ${address} has been unauthorized`);
         return {
             address,
             "unauthorized": true,
@@ -104,7 +104,7 @@ async function getProviderTokenId(address) {
 }
 
 async function getAnalyzerTokenId(address) {
-    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         const tokenId = await sc.methods.userToToken(address).call();
@@ -130,7 +130,7 @@ async function getAnalyzerTokenId(address) {
 }
 
 async function getAllAccessPolicies() {
-    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         const accessPolicies = await sc.methods.getAllAccessPolicies().call();
@@ -147,7 +147,7 @@ async function getAllAccessPolicies() {
 }
 
 async function removeAllAccessPolicies(from) {
-    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         await sc.methods.removeAllAccessPolicies().send({ from, gas: '1000000' });
@@ -164,7 +164,7 @@ async function removeAllAccessPolicies(from) {
 }
 
 async function getAccessPolicies(address) {
-    const sc = contractsHelper.getContractByName("DataAnalyzersNFTs");
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         const accessPolicies = await sc.methods.getAccessPolicies(address).call();

@@ -42,7 +42,7 @@
         "ganache": "^7.8.0",
         "solc": "^0.8.19",
         "solidity-coverage": "^0.8.2",
-        "truffle": "^5.8.3",
+        "truffle": "^5.8.4",
         "web3": "^1.9.0"
     },
     "engines": {

@@ -45,7 +45,7 @@
 							"response": []
 						},
 						{
-							"name": "Authorize data analyzer (mint)",
+							"name": "Authorize data analyst (mint)",
 							"request": {
 								"method": "POST",
 								"header": [
@@ -65,14 +65,14 @@
 									}
 								},
 								"url": {
-									"raw": "http://localhost:3000/authorize_analyzer?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
+									"raw": "http://localhost:3000/authorize_analyst?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"authorize_analyzer"
+										"authorize_analyst"
 									],
 									"query": [
 										{
@@ -110,19 +110,19 @@
 							"response": []
 						},
 						{
-							"name": "Get data analyzer token ID",
+							"name": "Get data analyst token ID",
 							"request": {
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "http://localhost:3000/analyzer_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
+									"raw": "http://localhost:3000/analyst_token_id?address=0x5455280E6c20A01de3e846d683562AdeA6891026",
 									"protocol": "http",
 									"host": [
 										"localhost"
 									],
 									"port": "3000",
 									"path": [
-										"analyzer_token_id"
+										"analyst_token_id"
 									],
 									"query": [
 										{
@@ -375,7 +375,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/accounts?account_type=data_providers",
+							"raw": "http://localhost:3000/accounts?account_type=data_analysts",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -387,7 +387,7 @@
 							"query": [
 								{
 									"key": "account_type",
-									"value": "data_providers"
+									"value": "data_analysts"
 								}
 							]
 						}

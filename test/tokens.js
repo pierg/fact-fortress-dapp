@@ -1,5 +1,5 @@
 const DataProvidersNFTs = artifacts.require("DataProvidersNFTs");
-const DataAnalyzersNFTs = artifacts.require("DataAnalyzersNFTs");
+const DataAnalystsNFTs = artifacts.require("DataAnalystsNFTs");
 
 contract("DataProvidersNFTs", (accounts) => {
     let dataProvidersNFTs;
@@ -34,46 +34,46 @@ contract("DataProvidersNFTs", (accounts) => {
     });
 });
 
-contract("should authorize a data analyzer", (accounts) => {
-    let dataAnalyzersNFTs;
+contract("should authorize a data analyst", (accounts) => {
+    let dataAnalystsNFTs;
 
     const defaultPolicy = "default_policy";
 
     beforeEach(async() => {
-        dataAnalyzersNFTs = await DataAnalyzersNFTs.new();
+        dataAnalystsNFTs = await DataAnalystsNFTs.new();
     });
 
-    it("should authorize a data analyzer", async() => {
-        const analyzer = accounts[9];
+    it("should authorize a data analyst", async() => {
+        const analyst = accounts[9];
 
         const accessPolicies = [];
 
         // Mint a new token and get the ID
-        const tokenId = await dataAnalyzersNFTs.authorizeAnalyzer(analyzer, accessPolicies);
+        const tokenId = await dataAnalystsNFTs.authorizeAnalyzer(analyst, accessPolicies);
 
         // Check that the token was minted and assigned to the correct address
-        assert.equal(await dataAnalyzersNFTs.ownerOf(tokenId.receipt.logs[0].args.tokenId), analyzer);
+        assert.equal(await dataAnalystsNFTs.ownerOf(tokenId.receipt.logs[0].args.tokenId), analyst);
     });
 
     it("should get the list of access policies", async() => {
         // Check the default policy
-        let allAccessTypes0 = await dataAnalyzersNFTs.getAllAccessPolicies();
+        let allAccessTypes0 = await dataAnalystsNFTs.getAllAccessPolicies();
 
         expect(allAccessTypes0).to.have.deep.members([defaultPolicy]);
 
         // Mint a new token
-        await dataAnalyzersNFTs.authorizeAnalyzer(accounts[9], ["TYPE_A", "TYPE_B", "TYPE_C"]);
+        await dataAnalystsNFTs.authorizeAnalyzer(accounts[9], ["TYPE_A", "TYPE_B", "TYPE_C"]);
 
         // Check that the list of access policies has been updated
-        let allAccessTypes1 = await dataAnalyzersNFTs.getAllAccessPolicies();
+        let allAccessTypes1 = await dataAnalystsNFTs.getAllAccessPolicies();
 
         expect(allAccessTypes1).to.have.deep.members([defaultPolicy, "TYPE_A", "TYPE_B", "TYPE_C"])
 
-        // Mint a new token for a new data analyzer
-        await dataAnalyzersNFTs.authorizeAnalyzer(accounts[8], ["TYPE_X", "TYPE_B", "TYPE_C"]);
+        // Mint a new token for a new data analyst
+        await dataAnalystsNFTs.authorizeAnalyzer(accounts[8], ["TYPE_X", "TYPE_B", "TYPE_C"]);
 
         // Check that the list of access policies has been updated
-        const allAccessTypes2 = await dataAnalyzersNFTs.getAllAccessPolicies();
+        const allAccessTypes2 = await dataAnalystsNFTs.getAllAccessPolicies();
 
         expect(allAccessTypes2).to.have.deep.members([defaultPolicy, "TYPE_A", "TYPE_B", "TYPE_C", "TYPE_X"]);
     });
@@ -86,44 +86,44 @@ contract("should authorize a data analyzer", (accounts) => {
         const accessPoliciesA = ["TYPE_A", "TYPE_B", "TYPE_C"];
         const accessPoliciesB = ["TYPE_X", "TYPE_B", "TYPE_C"];
 
-        // Data analyzer with a set of access policy
-        await dataAnalyzersNFTs.authorizeAnalyzer(analyzerA, accessPoliciesA);
+        // Data analyst with a set of access policy
+        await dataAnalystsNFTs.authorizeAnalyzer(analyzerA, accessPoliciesA);
 
-        const accessPolicies1 = await dataAnalyzersNFTs.getAccessPolicies(analyzerA);
+        const accessPolicies1 = await dataAnalystsNFTs.getAccessPolicies(analyzerA);
         expect(accessPolicies1).to.have.deep.members(accessPoliciesA);
 
-        // Data analyzer with a different set of access policies
-        await dataAnalyzersNFTs.authorizeAnalyzer(analyzerB, accessPoliciesB);
+        // Data analyst with a different set of access policies
+        await dataAnalystsNFTs.authorizeAnalyzer(analyzerB, accessPoliciesB);
 
-        const accessPolicies2 = await dataAnalyzersNFTs.getAccessPolicies(analyzerB);
+        const accessPolicies2 = await dataAnalystsNFTs.getAccessPolicies(analyzerB);
         expect(accessPolicies2).to.have.deep.members(accessPoliciesB);
 
-        // Data analyzer with no access policy (not authorized)
-        const accessPolicies3 = await dataAnalyzersNFTs.getAccessPolicies(analyzerC);
+        // Data analyst with no access policy (not authorized)
+        const accessPolicies3 = await dataAnalystsNFTs.getAccessPolicies(analyzerC);
         expect(accessPolicies3).to.have.deep.members([]);
     });
 
-    it("should unauthorize a data analyzer", async() => {
-        const analyzer = accounts[9];
+    it("should unauthorize a data analyst", async() => {
+        const analyst = accounts[9];
 
         const accessPolicies = ["TYPE_A", "TYPE_B", "TYPE_C"];
 
         // Mint a new token and get the ID
-        let tokenId = await dataAnalyzersNFTs.authorizeAnalyzer(analyzer, accessPolicies);
+        let tokenId = await dataAnalystsNFTs.authorizeAnalyzer(analyst, accessPolicies);
 
         // Check that the token was minted and assigned to the correct address
-        assert.equal(await dataAnalyzersNFTs.ownerOf(tokenId.receipt.logs[0].args.tokenId), analyzer);
+        assert.equal(await dataAnalystsNFTs.ownerOf(tokenId.receipt.logs[0].args.tokenId), analyst);
 
-        // Unauthorize the data analyzer
-        await dataAnalyzersNFTs.unauthorizeAnalyzer(analyzer);
+        // Unauthorize the data analyst
+        await dataAnalystsNFTs.unauthorizeAnalyzer(analyst);
 
         // Check that her token has been resetted
-        token = await dataAnalyzersNFTs.userToToken(analyzer);
+        token = await dataAnalystsNFTs.userToToken(analyst);
 
         assert.equal(token._tokenId, 0);
 
         // Check that her access policies have been resetted
-        expect(await dataAnalyzersNFTs.getAccessPolicies(analyzer)).to.have.deep.members([]);
+        expect(await dataAnalystsNFTs.getAccessPolicies(analyst)).to.have.deep.members([]);
     });
 
     it("should reset all policies", async() => {
@@ -132,17 +132,17 @@ contract("should authorize a data analyzer", (accounts) => {
         const accessPolicies = ["TYPE_A", "TYPE_B", "TYPE_C"];
 
         // Mint a new token and get the ID
-        await dataAnalyzersNFTs.authorizeAnalyzer(tokenRecipient, accessPolicies);
+        await dataAnalystsNFTs.authorizeAnalyzer(tokenRecipient, accessPolicies);
 
         // Check all access policies
-        expect(await dataAnalyzersNFTs.getAllAccessPolicies())
+        expect(await dataAnalystsNFTs.getAllAccessPolicies())
             .to.have.deep.members([defaultPolicy, ...accessPolicies]);
 
         // Reset all policies
-        await dataAnalyzersNFTs.removeAllAccessPolicies();
+        await dataAnalystsNFTs.removeAllAccessPolicies();
 
         // Ensure that policies are not set to default
-        expect(await dataAnalyzersNFTs.getAllAccessPolicies())
+        expect(await dataAnalystsNFTs.getAllAccessPolicies())
             .to.have.deep.members([defaultPolicy]);
     });
 });

@@ -4,7 +4,7 @@
 pragma solidity ^0.8.1;
 
 import "./dataProvidersNFTs.sol";
-import "./dataAnalyzersNFTs.sol";
+import "./dataAnalystsNFTs.sol";
 import "./verifierProvenance.sol";
 
 contract Verifier {
@@ -16,7 +16,7 @@ contract Verifier {
 contract FactFortress {
     address private _owner;
     DataProvidersNFTs private _dataProvidersNFTs;
-    DataAnalyzersNFTs private _dataAnalyzersNFTs;
+    DataAnalystsNFTs private _dataAnalyzersNFTs;
     VerifierProvenance private _verifierProvenance;
 
     // Public keys
@@ -45,7 +45,7 @@ contract FactFortress {
         _dataProvidersNFTs = DataProvidersNFTs(
             dataProvidersNFTsAddress
         );
-        _dataAnalyzersNFTs = DataAnalyzersNFTs(
+        _dataAnalyzersNFTs = DataAnalystsNFTs(
             dataAnalyzersNFTsAddress
         );
         _verifierProvenance = VerifierProvenance(VerifierProvenanceAddress);

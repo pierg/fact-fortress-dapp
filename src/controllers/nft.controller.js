@@ -24,7 +24,7 @@ async function authorizeProviderController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyzer|any" }',
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyst|any" }',
         });
     }
 
@@ -55,7 +55,7 @@ async function authorizeDataAnalyzerController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyzer|any" }',
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyst|any" }',
         });
     }
 

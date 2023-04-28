@@ -20,7 +20,7 @@ const MathSourceCode = fs.readFileSync(getOpenZeppelinPath("/utils/math/Math.sol
 
 // core folder
 const dataProvidersNFTsSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/dataProvidersNFTs.sol"));
-const dataAnalyzersNFTsSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/dataAnalyzersNFTs.sol"));
+const dataAnalyzersNFTsSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/dataAnalystsNFTs.sol"));
 const verifierProvenanceSourceCode = fs.readFileSync(resolve(__dirname, "../../contracts/verifierProvenance.sol"));
 
 const buildPath = resolve(__dirname, "./build");
@@ -38,7 +38,7 @@ function findImports(path) {
     if (path === "@openzeppelin/contracts/utils/introspection/IERC165.sol") return { contents: `${IERC165SourceCode}` };
     if (path === "@openzeppelin/contracts/utils/math/Math.sol") return { contents: `${MathSourceCode}` };
     if (path === "dataProvidersNFTs.sol") return { contents: `${dataProvidersNFTsSourceCode}` };
-    if (path === "dataAnalyzersNFTs.sol") return { contents: `${dataAnalyzersNFTsSourceCode}` };
+    if (path === "dataAnalystsNFTs.sol") return { contents: `${dataAnalyzersNFTsSourceCode}` };
     if (path === "verifierProvenance.sol") return { contents: `${verifierProvenanceSourceCode}` };
     else return { error: "File not found" };
 }

@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 // This contract manages ERC721 tokens (non-fungible tokens) to allow
-// data analyzers to manage their public keys on-chain
-contract DataAnalyzersNFTs is ERC721 {
+// data analysts to manage their public keys on-chain
+contract DataAnalystsNFTs is ERC721 {
     address private _owner;
 
     using Counters for Counters.Counter;
@@ -39,7 +39,7 @@ contract DataAnalyzersNFTs is ERC721 {
         _allaccessPolicies.push("default_policy");
     }
 
-    // mint (create) a new token for and send it to a data analyzer
+    // mint (create) a new token for and send it to a data analyst
     // with a set of access policies
     function authorizeAnalyzer(
         address user,
@@ -76,7 +76,7 @@ contract DataAnalyzersNFTs is ERC721 {
         delete _userToToken[user];
     }
 
-    // allows a data analyzer to transfer its token to another address
+    // allows a data analyst to transfer its token to another address
     // (e.g. a new wallet)
     // Note: the access policies remain the same
     function transferFrom(

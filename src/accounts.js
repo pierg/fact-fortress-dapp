@@ -4,7 +4,7 @@
 const AccountsTypes = {
     nft_contract_owner: 0,
     data_provider: 1,
-    data_analyzer: 2,
+    data_analyst: 2,
     data_verifier: 3,
 };
 
@@ -49,14 +49,14 @@ const Accounts = [{
     },
     {
         account_name: "Analyzer A",
-        account_type: AccountsTypes.data_analyzer,
+        account_type: AccountsTypes.data_analyst,
         account_id: AccountsIds.AnalyzerA,
         address: "0xac46159C08f103f7fF87ED138CFf7e389aac0550",
         private_key: "0x21c136d432cf0611d6b9d5dafdcb9a86231403e5efab85fba1bac87d86849269",
     },
     {
         account_name: "Analyzer B",
-        account_type: AccountsTypes.data_analyzer,
+        account_type: AccountsTypes.data_analyst,
         account_id: AccountsIds.AnalyzerB,
         address: "0x5455280E6c20A01de3e846d683562AdeA6891026",
         private_key: "0x8c0d02417be0e9d5757e1aca722ede60b245ada295593cb0161d4138c291dea9",

@@ -1,6 +1,6 @@
 const FactFortress = artifacts.require("FactFortress");
 const DataProvidersNFTs = artifacts.require("DataProvidersNFTs");
-const DataAnalyzersNFTs = artifacts.require("DataAnalyzersNFTs");
+const DataAnalystsNFTs = artifacts.require("DataAnalystsNFTs");
 const VerifierProvenance = artifacts.require("VerifierProvenance");
 
 const { BarretenbergHelper, hashData } = require("./helpers");
@@ -72,7 +72,7 @@ contract("FactFortress", function(accounts) {
     // contracts
     let factFortressInstance;
     let dataProvidersNFTsInstance;
-    let dataAnalyzersNFTsInstance;
+    let dataAnalystsNFTsInstance;
     let verifierProvenanceInstance;
 
     // accounts
@@ -104,11 +104,11 @@ contract("FactFortress", function(accounts) {
 
     beforeEach(async() => {
         dataProvidersNFTsInstance = await DataProvidersNFTs.new();
-        dataAnalyzersNFTsInstance = await DataAnalyzersNFTs.new();
+        dataAnalystsNFTsInstance = await DataAnalystsNFTs.new();
         verifierProvenanceInstance = await VerifierProvenance.new();
         factFortressInstance = await FactFortress.new(
             dataProvidersNFTsInstance.address,
-            dataAnalyzersNFTsInstance.address,
+            dataAnalystsNFTsInstance.address,
             verifierProvenanceInstance.address
         );
     });
@@ -519,21 +519,21 @@ contract("FactFortress", function(accounts) {
 
                 // [DATA ANALYZER] //////////////////////////////////////////////
 
-                // Step 4. Data analyzer gets the data provider's public key
+                // Step 4. Data analyst gets the data provider's public key
 
-                // a) Data shared with the data analyzer
+                // a) Data shared with the data analyst
                 const providerNameP = name; // communicated by the data provider
                 const publicKeyVersionP = 0; // communicated by the data provider
 
-                // b) Data fetched by the data analyzer on-chain
+                // b) Data fetched by the data analyst on-chain
                 const providerPublicKeyP = await factFortressInstance.getPublicKey(
                     providerNameP,
                     publicKeyVersionP
                 );
 
-                // Step 5. Data analyzer generates the proof off-chain
+                // Step 5. Data analyst generates the proof off-chain
 
-                // a) Data shared with the data analyzer
+                // a) Data shared with the data analyst
                 const providerHashP = hash; // communicated by the data provider
                 const providerSignatureP = signature; // communicated by the data provider
 
@@ -545,7 +545,7 @@ contract("FactFortress", function(accounts) {
                 });
                 const proof = await create_proof(prover, acir, abi);
 
-                // c) (sanity check) The data analyzer verifies off-chain that the proof is valid
+                // c) (sanity check) The data analyst verifies off-chain that the proof is valid
                 const verified = await verify_proof(verifier, proof);
                 expect(verified).eq(true);
 
@@ -556,7 +556,7 @@ contract("FactFortress", function(accounts) {
                 // a) Data shared with the verifier
                 const providerNameV = name; // communicated by the data provider
                 const publicKeyVersionV = 0; // communicated by the data provider
-                const proofV = proof; // communicated by the data analyzer (on-chain or off-chain?)
+                const proofV = proof; // communicated by the data analyst (on-chain or off-chain?)
 
                 // b) Data fetched by the verifier on the blockchain
                 const providerPublicKeyV = await factFortressInstance.getPublicKey(

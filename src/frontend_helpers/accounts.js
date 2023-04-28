@@ -43,10 +43,10 @@ async function getAccountsController(
         accounts = sanitize(
             getAccountsByType(AccountsTypes.data_provider)
         );
-    } else if (accountType.includes("analyzer")) {
-        accounts = sanitize(getAccountsByType(AccountsTypes.data_analyzer));
+    } else if (accountType.includes("analyst")) {
+        accounts = sanitize(getAccountsByType(AccountsTypes.data_analyst));
 
-        // get access policies for each data analyzer
+        // get access policies for each data analyst
         for (let i = 0; i < accounts.length; ++i) {
             const accessPolicies = await getAccessPolicies(accounts[i].address);
             Object.assign(accounts[i], { "access_policies ": accessPolicies.accessPolicies });
@@ -77,7 +77,7 @@ async function resetAccountsController(
     if (typeof from === undefined || !from) {
         return res.status(500).json({
             error: "`from` header is not properly set",
-            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyzer|any" }',
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyst|any" }',
         });
     }
 
@@ -88,9 +88,9 @@ async function resetAccountsController(
         r.push(await unauthorizeProvider(from, provider.address));
     }
 
-    // reset data analyzers tokens
-    for (const analyzer of getAccountsByType(AccountsTypes.data_analyzer)) {
-        r.push(await unauthorizeAnalyzer(from, analyzer.address));
+    // reset data analysts tokens
+    for (const analyst of getAccountsByType(AccountsTypes.data_analyst)) {
+        r.push(await unauthorizeAnalyzer(from, analyst.address));
     }
 
     r.push(await removeAllAccessPolicies(from));
