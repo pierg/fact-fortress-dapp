@@ -30,10 +30,10 @@ By enabling the validation of data integrity without revealing the data itself, 
     - [Flow 2. Manage Authorizations (NFTs)](#flow-2-manage-authorizations-nfts)
       - [1 | Check All Access Policies (Default Policy)](#1--check-all-access-policies-default-policy)
       - [2 | Check Unauthorized Data Provider's Token ID (No Token)](#2--check-unauthorized-data-providers-token-id-no-token)
-      - [3 | Check Unauthorized Data Analyzer's Token ID (No Token)](#3--check-unauthorized-data-analyzers-token-id-no-token)
+      - [3 | Check Unauthorized Data Analyst's Token ID (No Token)](#3--check-unauthorized-data-analysts-token-id-no-token)
       - [4 | Authorize a Data Provider](#4--authorize-a-data-provider)
-      - [5 | Authorize a Data Analyzer](#5--authorize-a-data-analyzer)
-      - [6 | Check Authorized Data Analyzer's Token ID](#6--check-authorized-data-analyzers-token-id)
+      - [5 | Authorize a Data Analyst](#5--authorize-a-data-analyst)
+      - [6 | Check Authorized Data Analyst's Token ID](#6--check-authorized-data-analysts-token-id)
       - [7 | Check All Access Policies](#7--check-all-access-policies)
 
 ## Related Repositories
@@ -512,7 +512,7 @@ curl --location 'http://localhost:3000/provider_token_id?address=0x98526c571e324
 
 - - -
 
-#### 3 | Check Unauthorized Data Analyzer's Token ID (No Token)
+#### 3 | Check Unauthorized Data Analyst's Token ID (No Token)
 
 *An unauthorized data analyst has no token ID*
 
@@ -567,7 +567,7 @@ curl --location 'http://localhost:3000/analyst_token_id?address=0x5455280E6c20A0
 
 - - -
 
-#### 5 | Authorize a Data Analyzer
+#### 5 | Authorize a Data Analyst
 
 *Authorize a data analyst with a set of access policies*
 
@@ -605,7 +605,7 @@ curl --location 'http://localhost:3000/authorize_analyst?address=0x5455280E6c20A
 
 - - -
 
-#### 6 | Check Authorized Data Analyzer's Token ID
+#### 6 | Check Authorized Data Analyst's Token ID
 
 *Now that the data analyst has been approved, her token ID can be retrieved*
 
