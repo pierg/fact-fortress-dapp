@@ -2,7 +2,7 @@ const { AccountsTypes, getAccountsByType } = require("../accounts.js");
 const {
     getAccessPolicies,
     unauthorizeProvider,
-    unauthorizeAnalyzer,
+    unauthorizeAnalyst,
     removeAllAccessPolicies
 } = require("../actions/tokens.js");
 const { getFrom } = require("../controllers/common.controller.js");
@@ -90,7 +90,7 @@ async function resetAccountsController(
 
     // reset data analysts tokens
     for (const analyst of getAccountsByType(AccountsTypes.data_analyst)) {
-        r.push(await unauthorizeAnalyzer(from, analyst.address));
+        r.push(await unauthorizeAnalyst(from, analyst.address));
     }
 
     r.push(await removeAllAccessPolicies(from));

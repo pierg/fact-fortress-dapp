@@ -37,11 +37,11 @@ async function unauthorizeProvider(from, address) {
     }
 }
 
-async function authorizeAnalyzer(from, recipient, accessPolicies) {
+async function authorizeAnalyst(from, recipient, accessPolicies) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
-        const receipt = await sc.methods.authorizeAnalyzer(
+        const receipt = await sc.methods.authorizeAnalyst(
             recipient,
             accessPolicies
         ).send({ from, gas: '1000000' });
@@ -59,11 +59,11 @@ async function authorizeAnalyzer(from, recipient, accessPolicies) {
     }
 }
 
-async function unauthorizeAnalyzer(from, address) {
+async function unauthorizeAnalyst(from, address) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
-        await sc.methods.unauthorizeAnalyzer(address).send({ from, gas: '1000000' });
+        await sc.methods.unauthorizeAnalyst(address).send({ from, gas: '1000000' });
         console.log(`[reset] Data analyst ${address} has been unauthorized`);
         return {
             address,
@@ -103,7 +103,7 @@ async function getProviderTokenId(address) {
     }
 }
 
-async function getAnalyzerTokenId(address) {
+async function getAnalystTokenId(address) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
@@ -186,10 +186,10 @@ async function getAccessPolicies(address) {
 module.exports = {
     authorizeProvider,
     unauthorizeProvider,
-    authorizeAnalyzer,
-    unauthorizeAnalyzer,
+    authorizeAnalyst,
+    unauthorizeAnalyst,
     getProviderTokenId,
-    getAnalyzerTokenId,
+    getAnalystTokenId,
     getAllAccessPolicies,
     removeAllAccessPolicies,
     getAccessPolicies

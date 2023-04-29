@@ -13,8 +13,8 @@ const AccountsIds = {
     ProviderA: 1,
     ProviderB: 2,
     ProviderC: 3,
-    AnalyzerA: 4,
-    AnalyzerB: 5,
+    AnalystA: 4,
+    AnalystB: 5,
     Verifier: 6,
 };
 
@@ -48,16 +48,16 @@ const Accounts = [{
         private_key: "0x772b419408f183239782970166382c79e2a4289a11eb189a266e86e5ad87ea0a",
     },
     {
-        account_name: "Analyzer A",
+        account_name: "Analyst A",
         account_type: AccountsTypes.data_analyst,
-        account_id: AccountsIds.AnalyzerA,
+        account_id: AccountsIds.AnalystA,
         address: "0xac46159C08f103f7fF87ED138CFf7e389aac0550",
         private_key: "0x21c136d432cf0611d6b9d5dafdcb9a86231403e5efab85fba1bac87d86849269",
     },
     {
-        account_name: "Analyzer B",
+        account_name: "Analyst B",
         account_type: AccountsTypes.data_analyst,
-        account_id: AccountsIds.AnalyzerB,
+        account_id: AccountsIds.AnalystB,
         address: "0x5455280E6c20A01de3e846d683562AdeA6891026",
         private_key: "0x8c0d02417be0e9d5757e1aca722ede60b245ada295593cb0161d4138c291dea9",
     },

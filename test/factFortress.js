@@ -517,7 +517,7 @@ contract("FactFortress", function(accounts) {
                     from: providerC,
                 });
 
-                // [DATA ANALYZER] //////////////////////////////////////////////
+                // [DATA ANALYST] //////////////////////////////////////////////
 
                 // Step 4. Data analyst gets the data provider's public key
 

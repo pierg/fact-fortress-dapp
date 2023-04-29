@@ -14,7 +14,7 @@ contract DataAnalystsNFTs is ERC721 {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
-    struct AnalyzerToken {
+    struct AnalystToken {
         uint256 _tokenId;
         string[] _accessPolicies;
     }
@@ -27,9 +27,9 @@ contract DataAnalystsNFTs is ERC721 {
 
     // address => token ID
     // (0 if the address has not token)
-    mapping(address => AnalyzerToken) private _userToToken;
+    mapping(address => AnalystToken) private _userToToken;
 
-    constructor() ERC721("Fact Fortress Analyzer Token", "FFA") {
+    constructor() ERC721("Fact Fortress Analyst Token", "FFA") {
         _owner = msg.sender;
         initializeDefaultPolicies();
     }
@@ -41,7 +41,7 @@ contract DataAnalystsNFTs is ERC721 {
 
     // mint (create) a new token for and send it to a data analyst
     // with a set of access policies
-    function authorizeAnalyzer(
+    function authorizeAnalyst(
         address user,
         string[] memory accessPolicies
     ) external returns (uint256) {
@@ -53,7 +53,7 @@ contract DataAnalystsNFTs is ERC721 {
         uint256 newItemId = _tokenIds.current();
         _mint(user, newItemId);
 
-        _userToToken[user] = AnalyzerToken(newItemId, accessPolicies);
+        _userToToken[user] = AnalystToken(newItemId, accessPolicies);
 
         for (uint256 i = 0; i < accessPolicies.length; i++) {
             if (!_accessPolicies[accessPolicies[i]]) {
@@ -67,7 +67,7 @@ contract DataAnalystsNFTs is ERC721 {
 
     // remove an authorization
     // TODO(Guillaume): improve the implementation
-    function unauthorizeAnalyzer(address user) external {
+    function unauthorizeAnalyst(address user) external {
         require(msg.sender == _owner, "Caller is not the owner"); // TODO(Guillaume): extend to authorities
 
         // TODO(Guillaume): remove access policies specific to this user
@@ -97,7 +97,7 @@ contract DataAnalystsNFTs is ERC721 {
 
     function userToToken(
         address user
-    ) external view returns (AnalyzerToken memory) {
+    ) external view returns (AnalystToken memory) {
         return _userToToken[user];
     }
 

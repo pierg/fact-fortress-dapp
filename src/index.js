@@ -6,9 +6,9 @@ const morgan = require('morgan')
 const { healthController } = require("./controllers/health.controller.js");
 const {
     authorizeProviderController,
-    authorizeDataAnalyzerController,
+    authorizeDataAnalystController,
     getProviderTokenIdController,
-    getAnalyzerTokenIdController,
+    getAnalystTokenIdController,
     getAllAccessPoliciesController,
     getAccessPoliciesController,
 } = require("./controllers/nft.controller.js");
@@ -120,9 +120,9 @@ app.get("/reset_accounts", resetAccountsController); // reset all accounts
 
 // authorizations (NFTs)
 app.get("/authorize_provider", authorizeProviderController); // authorize a data provider (mint NFT and send)
-app.post("/authorize_analyst", authorizeDataAnalyzerController); // authorize a data analyst (mint NFT and send)
+app.post("/authorize_analyst", authorizeDataAnalystController); // authorize a data analyst (mint NFT and send)
 app.get("/provider_token_id", getProviderTokenIdController); // get NFT ID associated with a data provider address
-app.get("/analyst_token_id", getAnalyzerTokenIdController); // get NFT ID associated with a data analyst address
+app.get("/analyst_token_id", getAnalystTokenIdController); // get NFT ID associated with a data analyst address
 app.get("/all_access_policies", getAllAccessPoliciesController); // get all access policies
 app.get("/access_policies", getAccessPoliciesController); // get access policy by address
 

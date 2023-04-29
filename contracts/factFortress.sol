@@ -16,7 +16,7 @@ contract Verifier {
 contract FactFortress {
     address private _owner;
     DataProvidersNFTs private _dataProvidersNFTs;
-    DataAnalystsNFTs private _dataAnalyzersNFTs;
+    DataAnalystsNFTs private _dataAnalystNFTs;
     VerifierProvenance private _verifierProvenance;
 
     // Public keys
@@ -38,15 +38,15 @@ contract FactFortress {
 
     constructor(
         address dataProvidersNFTsAddress,
-        address dataAnalyzersNFTsAddress,
+        address dataAnalystsNFTsAddress,
         address VerifierProvenanceAddress
     ) {
         _owner = msg.sender;
         _dataProvidersNFTs = DataProvidersNFTs(
             dataProvidersNFTsAddress
         );
-        _dataAnalyzersNFTs = DataAnalystsNFTs(
-            dataAnalyzersNFTsAddress
+        _dataAnalystNFTs = DataAnalystsNFTs(
+            dataAnalystsNFTsAddress
         );
         _verifierProvenance = VerifierProvenance(VerifierProvenanceAddress);
 

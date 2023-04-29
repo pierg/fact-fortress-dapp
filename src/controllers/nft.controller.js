@@ -1,8 +1,8 @@
 const {
     authorizeProvider,
-    authorizeAnalyzer,
+    authorizeAnalyst,
     getProviderTokenId,
-    getAnalyzerTokenId,
+    getAnalystTokenId,
     getAllAccessPolicies,
     getAccessPolicies
 } = require("./../actions/tokens.js");
@@ -39,7 +39,7 @@ async function authorizeProviderController(
     }
 }
 
-async function authorizeDataAnalyzerController(
+async function authorizeDataAnalystController(
     req,
     res,
     next
@@ -66,7 +66,7 @@ async function authorizeDataAnalyzerController(
         });
     }
 
-    const result = await authorizeAnalyzer(from, address, accessPolicies);
+    const result = await authorizeAnalyst(from, address, accessPolicies);
 
     if (result.error) {
         res.status(500).json({
@@ -100,7 +100,7 @@ async function getProviderTokenIdController(
     }
 }
 
-async function getAnalyzerTokenIdController(
+async function getAnalystTokenIdController(
     req,
     res,
     next
@@ -112,7 +112,7 @@ async function getAnalyzerTokenIdController(
         });
     }
 
-    const result = await getAnalyzerTokenId(address);
+    const result = await getAnalystTokenId(address);
 
     if (result.error) {
         res.status(500).json({
@@ -164,9 +164,9 @@ async function getAccessPoliciesController(
 
 module.exports = {
     authorizeProviderController,
-    authorizeDataAnalyzerController,
+    authorizeDataAnalystController,
     getProviderTokenIdController,
-    getAnalyzerTokenIdController,
+    getAnalystTokenIdController,
     getAllAccessPoliciesController,
     getAccessPoliciesController
 }
