@@ -111,7 +111,7 @@ async function getAnalystTokenId(address) {
         const tokenId = await sc.methods.userToToken(address).call();
         console.log(`Address ${address} has token #${tokenId}`);
 
-        if (tokenId._tokenId == 0) {
+        if (tokenId.tokenId == 0) {
             return {
                 error: "Address does not have a token",
             };
@@ -119,8 +119,8 @@ async function getAnalystTokenId(address) {
 
         return {
             address,
-            token_id: tokenId._tokenId,
-            access_policies: tokenId._accessPolicies,
+            token_id: tokenId.tokenId,
+            access_policies: tokenId.accessPolicies,
         };
     } catch (e) {
         console.error(e);

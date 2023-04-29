@@ -18,8 +18,8 @@ contract DataAnalystsNFTs is ERC721 {
     Counters.Counter private _tokenIds;
 
     struct AnalystToken {
-        uint256 _tokenId;
-        string[] _accessPolicies;
+        uint256 tokenId;
+        string[] accessPolicies;
     }
 
     // set of access policies
@@ -106,7 +106,7 @@ contract DataAnalystsNFTs is ERC721 {
         _transfer(from, to, tokenId);
 
         // update map associating the tokens with their owners
-        _userToToken[to]._tokenId = tokenId;
+        _userToToken[to].tokenId = tokenId;
     }
 
     function userToToken(
@@ -130,7 +130,7 @@ contract DataAnalystsNFTs is ERC721 {
     function getAccessPolicies(
         address user
     ) external view returns (string[] memory) {
-        return _userToToken[user]._accessPolicies;
+        return _userToToken[user].accessPolicies;
     }
 
     // reset all access policies

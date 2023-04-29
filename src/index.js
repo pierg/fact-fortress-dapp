@@ -34,6 +34,10 @@ const {
     verifyPublicInputsPoPController,
     verifyProofController
 } = require("./controllers/proof.controller.js");
+const {
+    getDataController,
+    setDataController,
+} = require("./controllers/data.controller.js");
 
 const express = require("express");
 const app = express();
@@ -132,6 +136,10 @@ app.get("/access_policies", getAccessPoliciesController); // get access policy b
 // public keys
 app.get("/publickey", getPublicKeyController); // get public key
 app.put("/publickey", setPublicKeyController); // set public key
+
+// data
+app.post("/set_data", setDataController); // set data source
+app.get("/get_data", getDataController); // get data source
 
 // signature
 app.post("/upload_signature", uploadSignatureController); // upload the signature on chain

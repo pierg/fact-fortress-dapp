@@ -157,7 +157,7 @@ contract("DataAnalystsNFTs", (accounts) => {
         // Check that her token has been resetted
         token = await dataAnalystsNFTs.userToToken(analyst);
 
-        assert.equal(token._tokenId, 0);
+        assert.equal(token.tokenId, 0);
 
         // Check that her access policies have been resetted
         expect(await dataAnalystsNFTs.getAccessPolicies(analyst)).to.have.deep.members([]);
