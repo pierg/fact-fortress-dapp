@@ -48,12 +48,13 @@ contract("DataAnalystsNFTs", (accounts) => {
     const analystB = accounts[3];
     const analystC = accounts[4];
 
-    const defaultPolicies = ["TYPE_A", "TYPE_B", "TYPE_C", "TYPE_X"];
+    const default_policy = "default_policy";
+    const allPolicies = ["TYPE_A", "TYPE_B", "TYPE_C", "TYPE_X"];
 
     beforeEach(async() => {
         dataProvidersNFTs = await DataProvidersNFTs.new({ from: owner });
         dataAnalystsNFTs = await DataAnalystsNFTs.new(dataProvidersNFTs.address, { from: owner });
-        await dataAnalystsNFTs.setAllAccessPolicies(defaultPolicies);
+        await dataAnalystsNFTs.setAllAccessPolicies(allPolicies);
     });
 
     it("should authorize a data analyst (by owner)", async() => {
@@ -103,7 +104,7 @@ contract("DataAnalystsNFTs", (accounts) => {
         // Check the default policy
         let allAccessPolicies = await dataAnalystsNFTs.getAllAccessPolicies();
 
-        expect(allAccessPolicies).to.have.deep.members(defaultPolicies);
+        expect(allAccessPolicies).to.have.deep.members([default_policy, ...allPolicies]);
     });
 
     it("should get respective access policies", async() => {
@@ -156,13 +157,13 @@ contract("DataAnalystsNFTs", (accounts) => {
 
         // Check all access policies
         expect(await dataAnalystsNFTs.getAllAccessPolicies())
-            .to.have.deep.members(defaultPolicies);
+            .to.have.deep.members([default_policy, ...allPolicies]);
 
         // Reset all policies
         await dataAnalystsNFTs.removeAllAccessPolicies();
 
         // Ensure that policies are not set to default
         expect(await dataAnalystsNFTs.getAllAccessPolicies())
-            .to.have.deep.members([]);
+            .to.have.deep.members([default_policy]);
     });
 });

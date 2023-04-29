@@ -37,6 +37,11 @@ contract DataAnalystsNFTs is ERC721 {
     ) ERC721("Fact Fortress Analyst Token", "FFA") {
         _owner = msg.sender;
         _dataProvidersNFTs = DataProvidersNFTs(dataProvidersNFTsAddress);
+        initializeDefaultPolicies();
+    }
+
+    function initializeDefaultPolicies() internal {
+        _allaccessPolicies.push("default_policy");
     }
 
     // mint (create) a new token for and send it to a data analyst
@@ -136,6 +141,7 @@ contract DataAnalystsNFTs is ERC721 {
         }
 
         delete _allaccessPolicies;
+        initializeDefaultPolicies();
     }
 
     function setAllAccessPolicies(string[] memory accessPolicies) external {
