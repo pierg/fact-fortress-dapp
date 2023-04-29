@@ -1,4 +1,5 @@
 const { contractsHelper } = require('../contracts/contracts.js');
+const clc = require('cli-color');
 
 async function authorizeProvider(from, recipient) {
     const sc = contractsHelper.getContractByName("DataProvidersNFTs");
@@ -12,7 +13,7 @@ async function authorizeProvider(from, recipient) {
             token_id: tokenId,
         };
     } catch (e) {
-        console.error(e.reason);
+        console.error(clc.red(e.reason));
         return {
             error: e
         };
@@ -30,18 +31,18 @@ async function unauthorizeProvider(from, address) {
             "unauthorized": true,
         };
     } catch (e) {
-        console.error(e);
+        console.error(clc.red(e));
         return {
             error: "Address does not have a token",
         };
     }
 }
 
-async function authorizeAnalyzer(from, recipient, accessPolicies) {
+async function authorizeAnalyst(from, recipient, accessPolicies) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
-        const receipt = await sc.methods.authorizeAnalyzer(
+        const receipt = await sc.methods.authorizeAnalyst(
             recipient,
             accessPolicies
         ).send({ from, gas: '1000000' });
@@ -52,25 +53,25 @@ async function authorizeAnalyzer(from, recipient, accessPolicies) {
             token_id: tokenId,
         };
     } catch (e) {
-        console.error(e.reason);
+        console.error(clc.red(e.reason));
         return {
             error: e
         };
     }
 }
 
-async function unauthorizeAnalyzer(from, address) {
+async function unauthorizeAnalyst(from, address) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
-        await sc.methods.unauthorizeAnalyzer(address).send({ from, gas: '1000000' });
+        await sc.methods.unauthorizeAnalyst(address).send({ from, gas: '1000000' });
         console.log(`[reset] Data analyst ${address} has been unauthorized`);
         return {
             address,
             "unauthorized": true,
         };
     } catch (e) {
-        console.error(e);
+        console.error(clc.red(e));
         return {
             error: "Address does not have a token",
         };
@@ -103,14 +104,14 @@ async function getProviderTokenId(address) {
     }
 }
 
-async function getAnalyzerTokenId(address) {
+async function getAnalystTokenId(address) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
     try {
         const tokenId = await sc.methods.userToToken(address).call();
         console.log(`Address ${address} has token #${tokenId}`);
 
-        if (tokenId._tokenId == 0) {
+        if (tokenId.tokenId == 0) {
             return {
                 error: "Address does not have a token",
             };
@@ -118,8 +119,8 @@ async function getAnalyzerTokenId(address) {
 
         return {
             address,
-            token_id: tokenId._tokenId,
-            access_policies: tokenId._accessPolicies,
+            token_id: tokenId.tokenId,
+            access_policies: tokenId.accessPolicies,
         };
     } catch (e) {
         console.error(e);
@@ -142,6 +143,25 @@ async function getAllAccessPolicies() {
         console.error(e);
         return {
             error: "Address does not have a token",
+        };
+    }
+}
+
+async function setAllAccessPolicies(from, accessPolicies) {
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
+
+    try {
+        await sc.methods.setAllAccessPolicies(
+            accessPolicies
+        ).send({ from, gas: '1000000' });
+
+        return {
+            "access_policies_set": accessPolicies,
+        };
+    } catch (e) {
+        console.error(clc.red(e.reason));
+        return {
+            error: e
         };
     }
 }
@@ -186,11 +206,12 @@ async function getAccessPolicies(address) {
 module.exports = {
     authorizeProvider,
     unauthorizeProvider,
-    authorizeAnalyzer,
-    unauthorizeAnalyzer,
+    authorizeAnalyst,
+    unauthorizeAnalyst,
     getProviderTokenId,
-    getAnalyzerTokenId,
+    getAnalystTokenId,
     getAllAccessPolicies,
+    setAllAccessPolicies,
     removeAllAccessPolicies,
     getAccessPolicies
 };

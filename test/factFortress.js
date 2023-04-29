@@ -79,7 +79,7 @@ contract("FactFortress", function(accounts) {
     const providerA = accounts[0];
     const providerB = accounts[1];
     const providerC = accounts[2];
-    const anyone = accounts[3];
+    const analyst = accounts[3];
 
     // ZKP verifier part
     let compiledProgram, acir, prover, verifier, validAbi;
@@ -104,13 +104,15 @@ contract("FactFortress", function(accounts) {
 
     beforeEach(async() => {
         dataProvidersNFTsInstance = await DataProvidersNFTs.new();
-        dataAnalystsNFTsInstance = await DataAnalystsNFTs.new();
+        dataAnalystsNFTsInstance = await DataAnalystsNFTs.new(dataProvidersNFTsInstance.address);
         verifierProvenanceInstance = await VerifierProvenance.new();
         factFortressInstance = await FactFortress.new(
             dataProvidersNFTsInstance.address,
             dataAnalystsNFTsInstance.address,
             verifierProvenanceInstance.address
         );
+
+        await dataAnalystsNFTsInstance.setAllAccessPolicies(["authorization_ABC", "authorization_XYZ"]);
     });
 
     after(async() => {
@@ -127,7 +129,7 @@ contract("FactFortress", function(accounts) {
     // PUBLIC KEYS MANAGEMENT
 
     describe("Public keys management with NFTs", async() => {
-        it("should allow an authorized data provider with a valid ZKP token to add their public key", async() => {
+        it("should allow an authorized data provider with a valid token to add their public key", async() => {
             // Mint a new ZKP token for providerA
             await dataProvidersNFTsInstance.authorizeProvider(providerA);
 
@@ -148,7 +150,7 @@ contract("FactFortress", function(accounts) {
             );
         });
 
-        it("should allow an authorized data provider with a valid ZKP token to add new public keys", async() => {
+        it("should allow an authorized data provider with a valid token to add new public keys", async() => {
             // Mint a new ZKP token for providerA
             await dataProvidersNFTsInstance.authorizeProvider(providerA);
 
@@ -325,44 +327,112 @@ contract("FactFortress", function(accounts) {
                 );
             }
         });
+
+        it("should allow an authorized data provider to transfer their token and the new address to update their public key", async() => {
+            const providerANewAddress = accounts[2];
+
+            // Mint a new ZKP token for providerA
+            await dataProvidersNFTsInstance.authorizeProvider(providerA);
+            const tokenId = await dataProvidersNFTsInstance.userToToken(providerA);
+
+            // Set providerA's public key
+            const name = "Provider A";
+            const publicKey = helper.getRandomGrumpkinPublicKey();
+            await factFortressInstance.setPublicKey(name, publicKey, {
+                from: providerA,
+            });
+
+            // Transfer the token to the new address
+            await dataProvidersNFTsInstance.transferFrom(
+                providerA,
+                providerANewAddress,
+                tokenId, { from: providerA }
+            );
+
+            // Set providerA's new public key with the new address
+            const newPublicKey = helper.getRandomGrumpkinPublicKey();
+            await factFortressInstance.setPublicKey(name, newPublicKey, {
+                from: providerANewAddress,
+            });
+
+            // Verify that providerA's new public key was set correctly
+            const retrievedNewPublicKey = await factFortressInstance.getLatestPublicKey(
+                name
+            );
+            assert.equal(
+                retrievedNewPublicKey,
+                newPublicKey,
+                "Public key was not set correctly"
+            );
+        });
     });
 
-    it("should allow an authorized data provider to transfer their token and the new address to update their public key", async() => {
-        const providerANewAddress = accounts[2];
+    // DATA ACCESS MANAGEMENT
 
-        // Mint a new ZKP token for providerA
-        await dataProvidersNFTsInstance.authorizeProvider(providerA);
-        const tokenId = await dataProvidersNFTsInstance.userToToken(providerA);
+    describe("Data access management", async() => {
+        it("should allow an authorized provider to set a data source", async() => {
+            const dataSourceId = "id-abc";
+            const accessPolicies = ["authorization_ABC"];
 
-        // Set providerA's public key
-        const name = "Provider A";
-        const publicKey = helper.getRandomGrumpkinPublicKey();
-        await factFortressInstance.setPublicKey(name, publicKey, {
-            from: providerA,
+            const dataSourceUrl = "https://example.com/abc";
+            const dataSourceCredentials = "xyz";
+
+            // Authorize providerA
+            await dataProvidersNFTsInstance.authorizeProvider(providerA);
+
+            // Authorize analyst
+            await dataAnalystsNFTsInstance.authorizeAnalyst(
+                analyst,
+                accessPolicies, { from: providerA }
+            );
+
+            // Set data source as providerA
+            await factFortressInstance.setDataSource(
+                dataSourceId,
+                dataSourceUrl,
+                dataSourceCredentials,
+                accessPolicies, { from: providerA }
+            );
+
+            // Check access to data source
+            const dataSource = await factFortressInstance.getDataSource(dataSourceId, { from: analyst });
+
+            expect(dataSource.url).eq(dataSourceUrl);
+            expect(dataSource.credentials).eq(dataSourceCredentials);
         });
 
-        // Transfer the token to the new address
-        await dataProvidersNFTsInstance.transferFrom(
-            providerA,
-            providerANewAddress,
-            tokenId, { from: providerA }
-        );
+        it("should not allow a data analyst with mismatching data access policy to access the data", async() => {
+            const dataSourceId = "id-abc";
+            const accessPoliciesA = ["authorization_ABC"];
+            const accessPoliciesB = ["authorization_XYZ"];
 
-        // Set providerA's new public key with the new address
-        const newPublicKey = helper.getRandomGrumpkinPublicKey();
-        await factFortressInstance.setPublicKey(name, newPublicKey, {
-            from: providerANewAddress,
+            const dataSourceUrl = "https://example.com/abc";
+            const dataSourceCredentials = "xyz";
+
+            // Authorize providerA
+            await dataProvidersNFTsInstance.authorizeProvider(providerA);
+
+            // Authorize analyst with access policies A
+            await dataAnalystsNFTsInstance.authorizeAnalyst(
+                analyst,
+                accessPoliciesA, { from: providerA }
+            );
+
+            // Set data source as providerA with _different_ access policies
+            await factFortressInstance.setDataSource(
+                dataSourceId,
+                dataSourceUrl,
+                dataSourceCredentials,
+                accessPoliciesB, { from: providerA }
+            );
+
+            // Try to access the data source (should fail)
+            await expect(
+                factFortressInstance.getDataSource(dataSourceId, { from: analyst })
+            ).to.be.rejectedWith(
+                "VM Exception while processing transaction: revert Not authorized to access the data source (access policy error)"
+            );
         });
-
-        // Verify that providerA's new public key was set correctly
-        const retrievedNewPublicKey = await factFortressInstance.getLatestPublicKey(
-            name
-        );
-        assert.equal(
-            retrievedNewPublicKey,
-            newPublicKey,
-            "Public key was not set correctly"
-        );
     });
 
     // PROOFS VERIFICATION
@@ -370,7 +440,7 @@ contract("FactFortress", function(accounts) {
     describe("Verification of proofs", async() => {
         const hash = hashData(healthData);
 
-        describe("simplified flow", async() => {
+        describe("Simplified flow", async() => {
             it("signature stored", async() => {
                 const privateKey = randomBytes(32);
                 const signature = helper.signHash(privateKey, hash);
@@ -492,7 +562,7 @@ contract("FactFortress", function(accounts) {
             });
         });
 
-        describe("complete flow", async() => {
+        describe("Complete flow", async() => {
             it("valid proof", async() => {
                 // [DATA PROVIDER] ////////////////////////////////////////////////
 
@@ -517,7 +587,7 @@ contract("FactFortress", function(accounts) {
                     from: providerC,
                 });
 
-                // [DATA ANALYZER] //////////////////////////////////////////////
+                // [DATA ANALYST] //////////////////////////////////////////////
 
                 // Step 4. Data analyst gets the data provider's public key
 

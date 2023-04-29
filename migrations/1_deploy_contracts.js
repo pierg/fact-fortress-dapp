@@ -5,7 +5,7 @@ const FactFortress = artifacts.require("FactFortress");
 
 module.exports = function(deployer) {
     deployer.deploy(DataProvidersNFTs).then(function() {
-        deployer.deploy(DataAnalystsNFTs).then(function() {
+        deployer.deploy(DataAnalystsNFTs, DataProvidersNFTs.address).then(function() {
             deployer.deploy(VerifierProvenance).then(function() {
                 return deployer.deploy(
                     FactFortress,

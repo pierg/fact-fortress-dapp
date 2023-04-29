@@ -6,10 +6,11 @@ const morgan = require('morgan')
 const { healthController } = require("./controllers/health.controller.js");
 const {
     authorizeProviderController,
-    authorizeDataAnalyzerController,
+    authorizeDataAnalystController,
     getProviderTokenIdController,
-    getAnalyzerTokenIdController,
+    getAnalystTokenIdController,
     getAllAccessPoliciesController,
+    setAllAccessPoliciesController,
     getAccessPoliciesController,
 } = require("./controllers/nft.controller.js");
 const {
@@ -34,6 +35,10 @@ const {
     verifyPublicInputsPoPController,
     verifyProofController
 } = require("./controllers/proof.controller.js");
+const {
+    getDataController,
+    setDataController,
+} = require("./controllers/data.controller.js");
 
 const express = require("express");
 const app = express();
@@ -61,6 +66,9 @@ async function deployContracts() {
     await contractsHelper.add({
         "filename": "dataAnalystsNFTs.sol",
         "name": "DataAnalystsNFTs",
+        "args": [
+            contractsHelper.getAddress("DataProvidersNFTs"),
+        ],
     });
 
     await contractsHelper.add({
@@ -120,15 +128,20 @@ app.get("/reset_accounts", resetAccountsController); // reset all accounts
 
 // authorizations (NFTs)
 app.get("/authorize_provider", authorizeProviderController); // authorize a data provider (mint NFT and send)
-app.post("/authorize_analyst", authorizeDataAnalyzerController); // authorize a data analyst (mint NFT and send)
+app.post("/authorize_analyst", authorizeDataAnalystController); // authorize a data analyst (mint NFT and send)
 app.get("/provider_token_id", getProviderTokenIdController); // get NFT ID associated with a data provider address
-app.get("/analyst_token_id", getAnalyzerTokenIdController); // get NFT ID associated with a data analyst address
+app.get("/analyst_token_id", getAnalystTokenIdController); // get NFT ID associated with a data analyst address
+app.post("/all_access_policies", setAllAccessPoliciesController); // set all access policies
 app.get("/all_access_policies", getAllAccessPoliciesController); // get all access policies
 app.get("/access_policies", getAccessPoliciesController); // get access policy by address
 
 // public keys
 app.get("/publickey", getPublicKeyController); // get public key
 app.put("/publickey", setPublicKeyController); // set public key
+
+// data
+app.post("/set_data", setDataController); // set data source
+app.get("/get_data", getDataController); // get data source
 
 // signature
 app.post("/upload_signature", uploadSignatureController); // upload the signature on chain

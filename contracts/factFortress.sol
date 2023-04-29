@@ -8,7 +8,7 @@ import "./dataAnalystsNFTs.sol";
 import "./verifierProvenance.sol";
 
 contract Verifier {
-    function verify(bytes calldata) external view returns (bool result){}
+    function verify(bytes calldata) external view returns (bool result) {}
 }
 
 // This contract manages the data provider's public keys and verifies, directly and indirectly
@@ -16,7 +16,7 @@ contract Verifier {
 contract FactFortress {
     address private _owner;
     DataProvidersNFTs private _dataProvidersNFTs;
-    DataAnalystsNFTs private _dataAnalyzersNFTs;
+    DataAnalystsNFTs private _dataAnalystsNFTs;
     VerifierProvenance private _verifierProvenance;
 
     // Public keys
@@ -30,6 +30,18 @@ contract FactFortress {
     // with a name that is not its own)
     mapping(string => uint256) private _tokenIds;
 
+    // Data Access
+
+    // TODO(Guillaume): to improve (for demo purposes)
+    struct DataSource {
+        string url;
+        string credentials;
+        string[] accessPolicies;
+    }
+
+    // data id => { url, credentials, access policies }
+    mapping(string => DataSource) private _dataSource;
+
     // Signatures: hash(signature) => hash(public key)
     mapping(bytes32 => bytes32) private _signatures;
 
@@ -38,16 +50,12 @@ contract FactFortress {
 
     constructor(
         address dataProvidersNFTsAddress,
-        address dataAnalyzersNFTsAddress,
+        address dataAnalystsNFTsAddress,
         address VerifierProvenanceAddress
     ) {
         _owner = msg.sender;
-        _dataProvidersNFTs = DataProvidersNFTs(
-            dataProvidersNFTsAddress
-        );
-        _dataAnalyzersNFTs = DataAnalystsNFTs(
-            dataAnalyzersNFTsAddress
-        );
+        _dataProvidersNFTs = DataProvidersNFTs(dataProvidersNFTsAddress);
+        _dataAnalystsNFTs = DataAnalystsNFTs(dataAnalystsNFTsAddress);
         _verifierProvenance = VerifierProvenance(VerifierProvenanceAddress);
 
         _verifiers["proof_of_provenance"] = VerifierProvenanceAddress;
@@ -106,7 +114,55 @@ contract FactFortress {
     }
 
     //TODO(Guillaume): implement a function to remove public keys
-    
+
+    // DATA ACCESS MANAGEMENT
+
+    function getDataSource(
+        string memory dataId
+    ) external view returns (DataSource memory) {
+        require(
+            _dataAnalystsNFTs.userToToken(msg.sender).tokenId > 0,
+            "Caller is not authorized to get a data source (no data analyst token)"
+        );
+
+        string[] memory analystAccessPolicies = _dataAnalystsNFTs
+            .getAccessPolicies(msg.sender);
+
+        // check access policies
+        // TODO(Guillaume): improve this implementation (for demo purposes)
+        for (
+            uint256 i = 0;
+            i < _dataSource[dataId].accessPolicies.length;
+            i++
+        ) {
+            for (uint256 j = 0; j < analystAccessPolicies.length; j++) {
+                if (
+                    keccak256(
+                        abi.encodePacked(_dataSource[dataId].accessPolicies[i])
+                    ) == keccak256(abi.encodePacked(analystAccessPolicies[j]))
+                ) {
+                    return _dataSource[dataId];
+                }
+            }
+        }
+
+        revert('Not authorized to access the data source (access policy error)');
+    }
+
+    function setDataSource(
+        string memory dataId,
+        string memory url,
+        string memory credentials,
+        string[] memory accessPolicies
+    ) external {
+        require(
+            _dataProvidersNFTs.userToToken(msg.sender) > 0,
+            "Caller is not authorized to set a data source"
+        );
+
+        _dataSource[dataId] = DataSource(url, credentials, accessPolicies);
+    }
+
     // ZKP PROOF VERIFICATION
 
     // public key `x` and `y`
