@@ -61,6 +61,9 @@ async function deployContracts() {
     await contractsHelper.add({
         "filename": "dataAnalystsNFTs.sol",
         "name": "DataAnalystsNFTs",
+        "args": [
+            contractsHelper.getAddress("DataProvidersNFTs"),
+        ],
     });
 
     await contractsHelper.add({

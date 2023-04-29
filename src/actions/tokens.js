@@ -1,4 +1,5 @@
 const { contractsHelper } = require('../contracts/contracts.js');
+const clc = require('cli-color');
 
 async function authorizeProvider(from, recipient) {
     const sc = contractsHelper.getContractByName("DataProvidersNFTs");
@@ -12,7 +13,7 @@ async function authorizeProvider(from, recipient) {
             token_id: tokenId,
         };
     } catch (e) {
-        console.error(e.reason);
+        console.error(clc.red(e.reason));
         return {
             error: e
         };
@@ -30,7 +31,7 @@ async function unauthorizeProvider(from, address) {
             "unauthorized": true,
         };
     } catch (e) {
-        console.error(e);
+        console.error(clc.red(e));
         return {
             error: "Address does not have a token",
         };
@@ -52,7 +53,7 @@ async function authorizeAnalyst(from, recipient, accessPolicies) {
             token_id: tokenId,
         };
     } catch (e) {
-        console.error(e.reason);
+        console.error(clc.red(e.reason));
         return {
             error: e
         };
@@ -70,7 +71,7 @@ async function unauthorizeAnalyst(from, address) {
             "unauthorized": true,
         };
     } catch (e) {
-        console.error(e);
+        console.error(clc.red(e));
         return {
             error: "Address does not have a token",
         };

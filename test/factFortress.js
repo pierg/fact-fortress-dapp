@@ -104,7 +104,7 @@ contract("FactFortress", function(accounts) {
 
     beforeEach(async() => {
         dataProvidersNFTsInstance = await DataProvidersNFTs.new();
-        dataAnalystsNFTsInstance = await DataAnalystsNFTs.new();
+        dataAnalystsNFTsInstance = await DataAnalystsNFTs.new(dataProvidersNFTsInstance.address);
         verifierProvenanceInstance = await VerifierProvenance.new();
         factFortressInstance = await FactFortress.new(
             dataProvidersNFTsInstance.address,
@@ -370,7 +370,7 @@ contract("FactFortress", function(accounts) {
     describe("Verification of proofs", async() => {
         const hash = hashData(healthData);
 
-        describe("simplified flow", async() => {
+        describe("Simplified flow", async() => {
             it("signature stored", async() => {
                 const privateKey = randomBytes(32);
                 const signature = helper.signHash(privateKey, hash);
@@ -492,7 +492,7 @@ contract("FactFortress", function(accounts) {
             });
         });
 
-        describe("complete flow", async() => {
+        describe("Complete flow", async() => {
             it("valid proof", async() => {
                 // [DATA PROVIDER] ////////////////////////////////////////////////
 

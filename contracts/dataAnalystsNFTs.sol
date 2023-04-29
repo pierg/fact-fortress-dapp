@@ -3,6 +3,8 @@
 
 pragma solidity ^0.8.1;
 
+import "./dataProvidersNFTs.sol";
+
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
@@ -10,6 +12,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 // data analysts to manage their public keys on-chain
 contract DataAnalystsNFTs is ERC721 {
     address private _owner;
+    DataProvidersNFTs private _dataProvidersNFTs;
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -29,9 +32,12 @@ contract DataAnalystsNFTs is ERC721 {
     // (0 if the address has not token)
     mapping(address => AnalystToken) private _userToToken;
 
-    constructor() ERC721("Fact Fortress Analyst Token", "FFA") {
+    constructor(
+        address dataProvidersNFTsAddress
+    ) ERC721("Fact Fortress Analyst Token", "FFA") {
         _owner = msg.sender;
         initializeDefaultPolicies();
+        _dataProvidersNFTs = DataProvidersNFTs(dataProvidersNFTsAddress);
     }
 
     // set default access policies
@@ -45,8 +51,12 @@ contract DataAnalystsNFTs is ERC721 {
         address user,
         string[] memory accessPolicies
     ) external returns (uint256) {
-        // only the owner of the contract should be able to mint
-        require(msg.sender == _owner, "Caller is not the owner");
+        // only the owner of the contract or a data provider should be able to mint
+        require(
+            (msg.sender == _owner) ||
+                (_dataProvidersNFTs.userToToken(msg.sender) > 0),
+            "Caller is not the owner nor a data provider"
+        );
 
         _tokenIds.increment();
 
@@ -68,7 +78,11 @@ contract DataAnalystsNFTs is ERC721 {
     // remove an authorization
     // TODO(Guillaume): improve the implementation
     function unauthorizeAnalyst(address user) external {
-        require(msg.sender == _owner, "Caller is not the owner"); // TODO(Guillaume): extend to authorities
+        require(
+            (msg.sender == _owner) ||
+                (_dataProvidersNFTs.userToToken(msg.sender) > 0),
+            "Caller is not the owner nor a data provider"
+        );
 
         // TODO(Guillaume): remove access policies specific to this user
         //                  (for demo purposes, will be delegated to the backend)
