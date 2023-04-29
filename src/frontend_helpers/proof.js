@@ -62,22 +62,17 @@ class CircuitHelper {
     }
 }
 
+// required for the demo to assist the frontend to generate proofs 
 async function initCircuitsHelpers() {
-    console.log(clc.black.bgWhite('\n Initializing verifiers... '));
-    const barretenbergWasm = await BarretenbergWasm.new();
-    barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
     circuitHelper = new CircuitHelper();
 
     for (const contractName in contractsHelper.contracts) {
         const contract = contractsHelper.contracts[contractName];
         if (contract.is_verifier) {
-            console.log(`Initializing verifier ${contractName}`);
             const circuitName = contractsHelper.contracts[contractName].circuit_name;
             await circuitHelper.add(circuitName, contract.abi_generator);
         }
     }
-
-    console.log(clc.green("► initialized verifiers ✓"));
 }
 
 async function computeProof(statementFunction, args) {

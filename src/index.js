@@ -53,7 +53,6 @@ app.use(function(req, res, next) {
 });
 
 async function deployContracts() {
-    console.log(clc.black.bgWhite('\n Deploying contracts... '));
     await contractsHelper.add({
         "filename": "dataProvidersNFTs.sol",
         "name": "DataProvidersNFTs",
@@ -106,7 +105,7 @@ async function deployContracts() {
         ],
     });
 
-    console.log(clc.green("► contracts deployed ✓"));
+    console.log(clc.green("► Contracts deployed ✓"));
 }
 
 // frontend helpers -- in Production, should be done offline --
@@ -142,7 +141,7 @@ deployContracts().then(() => {
     // init circuits helpers in the background (takes time)
     initCircuitsHelpers().then(async() => {
         const server = app.listen(port, () =>
-            console.log(clc.green.bold(`► server started on port ${port} ✓`))
+            console.log(clc.green.bold(`► Server started on port ${port} ✓`))
         );
 
         process.on("SIGTERM", shutDown);

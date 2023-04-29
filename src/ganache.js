@@ -15,7 +15,7 @@ const ganacherServer = ganache.server({
 
 // Start the server
 ganacherServer.listen(8545, () => {
-    console.log(clc.green('► Ganache launched ✓'));
+    console.log(clc.green('► Ganache launched (demo mode) ✓'));
 });
 
 // Export the server object as a module
