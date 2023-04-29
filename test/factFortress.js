@@ -111,6 +111,8 @@ contract("FactFortress", function(accounts) {
             dataAnalystsNFTsInstance.address,
             verifierProvenanceInstance.address
         );
+
+        await dataAnalystsNFTsInstance.setAllAccessPolicies(["authorization_ABC", "authorization_XYZ"]);
     });
 
     after(async() => {
@@ -127,7 +129,7 @@ contract("FactFortress", function(accounts) {
     // PUBLIC KEYS MANAGEMENT
 
     describe("Public keys management with NFTs", async() => {
-        it("should allow an authorized data provider with a valid ZKP token to add their public key", async() => {
+        it("should allow an authorized data provider with a valid token to add their public key", async() => {
             // Mint a new ZKP token for providerA
             await dataProvidersNFTsInstance.authorizeProvider(providerA);
 
@@ -148,7 +150,7 @@ contract("FactFortress", function(accounts) {
             );
         });
 
-        it("should allow an authorized data provider with a valid ZKP token to add new public keys", async() => {
+        it("should allow an authorized data provider with a valid token to add new public keys", async() => {
             // Mint a new ZKP token for providerA
             await dataProvidersNFTsInstance.authorizeProvider(providerA);
 
@@ -428,7 +430,7 @@ contract("FactFortress", function(accounts) {
             await expect(
                 factFortressInstance.getDataSource(dataSourceId, { from: analyst })
             ).to.be.rejectedWith(
-                "VM Exception while processing transaction: revert Not authorized to access the data source"
+                "VM Exception while processing transaction: revert Not authorized to access the data source (access policy error)"
             );
         });
     });

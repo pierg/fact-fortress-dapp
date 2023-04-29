@@ -36,13 +36,7 @@ contract DataAnalystsNFTs is ERC721 {
         address dataProvidersNFTsAddress
     ) ERC721("Fact Fortress Analyst Token", "FFA") {
         _owner = msg.sender;
-        initializeDefaultPolicies();
         _dataProvidersNFTs = DataProvidersNFTs(dataProvidersNFTsAddress);
-    }
-
-    // set default access policies
-    function initializeDefaultPolicies() internal {
-        _allaccessPolicies.push("default_policy");
     }
 
     // mint (create) a new token for and send it to a data analyst
@@ -58,19 +52,18 @@ contract DataAnalystsNFTs is ERC721 {
             "Caller is not the owner nor a data provider"
         );
 
+        for (uint256 i = 0; i < accessPolicies.length; i++) {
+            if (!_accessPolicies[accessPolicies[i]]) {
+                revert("unknown policy");
+            }
+        }
+
         _tokenIds.increment();
 
         uint256 newItemId = _tokenIds.current();
         _mint(user, newItemId);
 
         _userToToken[user] = AnalystToken(newItemId, accessPolicies);
-
-        for (uint256 i = 0; i < accessPolicies.length; i++) {
-            if (!_accessPolicies[accessPolicies[i]]) {
-                _allaccessPolicies.push(accessPolicies[i]);
-            }
-            _accessPolicies[accessPolicies[i]] = true;
-        }
 
         return newItemId;
     }
@@ -143,6 +136,21 @@ contract DataAnalystsNFTs is ERC721 {
         }
 
         delete _allaccessPolicies;
-        initializeDefaultPolicies();
+    }
+
+    function setAllAccessPolicies(string[] memory accessPolicies) external {
+        // only the owner of the contract or a data provider should be able to set all access policies
+        require(
+            (msg.sender == _owner) ||
+                (_dataProvidersNFTs.userToToken(msg.sender) > 0),
+            "Caller is not the owner nor a data provider"
+        );
+
+        for (uint256 i = 0; i < accessPolicies.length; i++) {
+            if (!_accessPolicies[accessPolicies[i]]) {
+                _allaccessPolicies.push(accessPolicies[i]);
+            }
+            _accessPolicies[accessPolicies[i]] = true;
+        }
     }
 }

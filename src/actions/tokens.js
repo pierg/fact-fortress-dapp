@@ -147,6 +147,25 @@ async function getAllAccessPolicies() {
     }
 }
 
+async function setAllAccessPolicies(from, accessPolicies) {
+    const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
+
+    try {
+        await sc.methods.setAllAccessPolicies(
+            accessPolicies
+        ).send({ from, gas: '1000000' });
+
+        return {
+            "access_policies_set": accessPolicies,
+        };
+    } catch (e) {
+        console.error(clc.red(e.reason));
+        return {
+            error: e
+        };
+    }
+}
+
 async function removeAllAccessPolicies(from) {
     const sc = contractsHelper.getContractByName("DataAnalystsNFTs");
 
@@ -192,6 +211,7 @@ module.exports = {
     getProviderTokenId,
     getAnalystTokenId,
     getAllAccessPolicies,
+    setAllAccessPolicies,
     removeAllAccessPolicies,
     getAccessPolicies
 };

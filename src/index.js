@@ -10,6 +10,7 @@ const {
     getProviderTokenIdController,
     getAnalystTokenIdController,
     getAllAccessPoliciesController,
+    setAllAccessPoliciesController,
     getAccessPoliciesController,
 } = require("./controllers/nft.controller.js");
 const {
@@ -130,6 +131,7 @@ app.get("/authorize_provider", authorizeProviderController); // authorize a data
 app.post("/authorize_analyst", authorizeDataAnalystController); // authorize a data analyst (mint NFT and send)
 app.get("/provider_token_id", getProviderTokenIdController); // get NFT ID associated with a data provider address
 app.get("/analyst_token_id", getAnalystTokenIdController); // get NFT ID associated with a data analyst address
+app.post("/all_access_policies", setAllAccessPoliciesController); // set all access policies
 app.get("/all_access_policies", getAllAccessPoliciesController); // get all access policies
 app.get("/access_policies", getAccessPoliciesController); // get access policy by address
 

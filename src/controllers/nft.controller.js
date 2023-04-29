@@ -4,7 +4,8 @@ const {
     getProviderTokenId,
     getAnalystTokenId,
     getAllAccessPolicies,
-    getAccessPolicies
+    getAccessPolicies,
+    setAllAccessPolicies
 } = require("./../actions/tokens.js");
 const { getFrom } = require("./common.controller.js");
 
@@ -139,6 +140,38 @@ async function getAllAccessPoliciesController(
     }
 }
 
+async function setAllAccessPoliciesController(
+    req,
+    res,
+    next
+) {
+    const from = getFrom(req);
+    if (typeof from === undefined || !from) {
+        return res.status(500).json({
+            error: "`from` header is not properly set",
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyst|any" }',
+        });
+    }
+
+    const accessPolicies = req.body["access_policies"];
+    if (!accessPolicies) {
+        return res.status(500).json({
+            error: "no access policies array has been provided in the body of the request",
+        });
+    }
+
+    const result = await setAllAccessPolicies(from, accessPolicies);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+}
+
+
 async function getAccessPoliciesController(
     req,
     res,
@@ -168,5 +201,6 @@ module.exports = {
     getProviderTokenIdController,
     getAnalystTokenIdController,
     getAllAccessPoliciesController,
+    setAllAccessPoliciesController,
     getAccessPoliciesController
 }

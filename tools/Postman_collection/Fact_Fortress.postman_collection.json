@@ -14,6 +14,59 @@
 					"name": "NFTs",
 					"item": [
 						{
+							"name": "Set all access policies",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "from",
+										"value": "owner",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"access_policies\": [\n        \"TYPE_A\",\n        \"TYPE_B\",\n        \"TYPE_C\"\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:3000/all_access_policies",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"all_access_policies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all access policies",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/all_access_policies",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"all_access_policies"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Authorize data provider (mint)",
 							"request": {
 								"method": "GET",
@@ -57,7 +110,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"access_policies\": [\n        \"TYPE_A\",\n        \"TYPE_B\",\n        \"TYPE_C\",\n        \"validator\"\n    ]\n}",
+									"raw": "{\n    \"access_policies\": [\n        \"TYPE_A\",\n        \"TYPE_B\",\n        \"TYPE_C\"\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -129,25 +182,6 @@
 											"key": "address",
 											"value": "0x5455280E6c20A01de3e846d683562AdeA6891026"
 										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Get all access policies",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "http://localhost:3000/all_access_policies",
-									"protocol": "http",
-									"host": [
-										"localhost"
-									],
-									"port": "3000",
-									"path": [
-										"all_access_policies"
 									]
 								}
 							},
