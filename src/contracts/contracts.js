@@ -1,6 +1,7 @@
 const { compile } = require('./compile.js');
 const { deploy } = require('./deploy.js');
 const web3 = require('./../web3.js');
+const clc = require('cli-color');
 
 class ContractsHelper {
     constructor() {

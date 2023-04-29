@@ -1,19 +1,15 @@
 const { contractsHelper } = require('../contracts/contracts.js');
+const clc = require('cli-color');
 
 async function verifyPublicInputsPoP(publicKey, proof) {
     const sc = contractsHelper.getContractByName("FactFortress");
+    let publicInputsMatch;
 
     try {
-        const publicInputsMatch = await sc.methods.verifyPublicInputsPoP(
+        publicInputsMatch = await sc.methods.verifyPublicInputsPoP(
             publicKey,
             proof,
         ).call();
-
-        if (publicInputsMatch) {
-            console.log(`Proof uses ${publicKey} as public input`)
-        } else {
-            console.log(`Proof does NOT use ${publicKey} as public input`)
-        }
 
         return {
             public_input_match: publicInputsMatch
@@ -24,24 +20,23 @@ async function verifyPublicInputsPoP(publicKey, proof) {
             public_input_match: false,
             error: e,
         };
+    } finally {
+        if (publicInputsMatch) {
+            console.log(clc.green(`Proof uses ${publicKey} as public input`))
+        } else {
+            console.log(clc.red(`Proof does NOT use ${publicKey} as public input`))
+        }
     }
 }
 
 async function verifyProof(statementFunction, proof) {
     const sc = contractsHelper.getContractByName("FactFortress");
+    let proofStatus;
 
     try {
-        const proofStatus = await sc.methods.verifyProof(
+        proofStatus = await sc.methods.verifyProof(
             statementFunction, proof,
         ).call();
-
-        if (proofStatus) {
-            console.log(`
-            Proof is valid `)
-        } else {
-            console.log(`
-            Proof is invalid `)
-        }
 
         return {
             valid_proof_of_provenance: proofStatus
@@ -52,7 +47,12 @@ async function verifyProof(statementFunction, proof) {
             valid_proof_of_provenance: false,
             error: e,
         };
+    } finally {
+        if (proofStatus) {
+            console.log(clc.green(`Proof is valid `))
+        } else {
+            console.log(clc.red(`Proof is invalid `))
+        }
     }
 }
-
 module.exports = { verifyPublicInputsPoP, verifyProof }

@@ -1,4 +1,5 @@
 const ganache = require('ganache');
+const clc = require('cli-color');
 
 // Create a new Ganache server
 const ganacherServer = ganache.server({
@@ -14,7 +15,7 @@ const ganacherServer = ganache.server({
 
 // Start the server
 ganacherServer.listen(8545, () => {
-    console.log('► Ganache launched ✓');
+    console.log(clc.green('► Ganache launched ✓'));
 });
 
 // Export the server object as a module

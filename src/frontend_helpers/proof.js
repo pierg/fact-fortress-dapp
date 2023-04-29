@@ -7,6 +7,7 @@ const { resolve } = require("path");
 const { BarretenbergWasm } = require("@noir-lang/barretenberg/dest/wasm");
 const { BarretenbergHelper } = require("../../test/helpers.js");
 const { contractsHelper } = require("../contracts/contracts.js");
+const clc = require('cli-color');
 
 const fs = require("fs");
 
@@ -62,7 +63,7 @@ class CircuitHelper {
 }
 
 async function initCircuitsHelpers() {
-    console.log('--------- initializing verifiers --------');
+    console.log(clc.black.bgWhite('\n Initializing verifiers... '));
     const barretenbergWasm = await BarretenbergWasm.new();
     barretenbergHelper = new BarretenbergHelper(barretenbergWasm);
     circuitHelper = new CircuitHelper();
@@ -76,7 +77,7 @@ async function initCircuitsHelpers() {
         }
     }
 
-    console.log("► initialized verifiers ✓");
+    console.log(clc.green("► initialized verifiers ✓"));
 }
 
 async function computeProof(statementFunction, args) {

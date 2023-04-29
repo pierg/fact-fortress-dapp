@@ -1,4 +1,5 @@
 const { contractsHelper } = require('../contracts/contracts.js');
+const clc = require('cli-color');
 
 async function setPublicKey(from, name, publicKey) {
     const sc = contractsHelper.getContractByName("FactFortress");
@@ -28,10 +29,10 @@ async function setPublicKey(from, name, publicKey) {
 
 async function getPublicKey(name, version) {
     const sc = contractsHelper.getContractByName("FactFortress");
+    let publicKey;
 
     try {
-        const publicKey = await sc.methods.getPublicKey(
-            name,
+        publicKey = await sc.methods.getPublicKey(name,
             version
         ).call();
 
@@ -43,6 +44,12 @@ async function getPublicKey(name, version) {
         return {
             error: e
         };
+    } finally {
+        if (publicKey) {
+            console.log(`Fetched public key ${publicKey} for ${name} v${version}`)
+        } else {
+            console.log(clc.red(`No public key found for ${name} v${version}`))
+        }
     }
 }
 

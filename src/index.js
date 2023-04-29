@@ -1,5 +1,7 @@
 const { initCircuitsHelpers } = require("./frontend_helpers/proof.js");
 const { contractsHelper } = require("./contracts/contracts.js");
+const clc = require('cli-color');
+const morgan = require('morgan')
 
 const { healthController } = require("./controllers/health.controller.js");
 const {
@@ -36,6 +38,7 @@ const {
 const express = require("express");
 const app = express();
 app.use(express.json());
+app.use(morgan('dev'))
 
 // server port
 const port = 3000;
@@ -50,7 +53,7 @@ app.use(function(req, res, next) {
 });
 
 async function deployContracts() {
-    console.log('---------- deploying contracts ----------');
+    console.log(clc.black.bgWhite('\n Deploying contracts... '));
     await contractsHelper.add({
         "filename": "dataProvidersNFTs.sol",
         "name": "DataProvidersNFTs",
@@ -103,7 +106,7 @@ async function deployContracts() {
         ],
     });
 
-    console.log("► contracts deployed ✓");
+    console.log(clc.green("► contracts deployed ✓"));
 }
 
 // frontend helpers -- in Production, should be done offline --
@@ -139,7 +142,7 @@ deployContracts().then(() => {
     // init circuits helpers in the background (takes time)
     initCircuitsHelpers().then(async() => {
         const server = app.listen(port, () =>
-            console.log(`► server started on port ${port} ✓`)
+            console.log(clc.green.bold(`► server started on port ${port} ✓`))
         );
 
         process.on("SIGTERM", shutDown);
