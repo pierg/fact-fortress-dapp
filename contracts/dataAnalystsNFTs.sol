@@ -26,7 +26,7 @@ contract DataAnalystsNFTs is ERC721 {
     // TODO(Guillaume): to improve (set of strings...), obviously;
     //                  okayish just for demo purposes
     mapping(string => bool) private _accessPolicies;
-    string[] private _allaccessPolicies;
+    string[] private _allAccessPolicies;
 
     // address => token ID
     // (0 if the address has not token)
@@ -41,7 +41,7 @@ contract DataAnalystsNFTs is ERC721 {
     }
 
     function initializeDefaultPolicies() internal {
-        _allaccessPolicies.push("default_policy");
+        _allAccessPolicies.push("default_policy");
     }
 
     // mint (create) a new token for and send it to a data analyst
@@ -122,7 +122,7 @@ contract DataAnalystsNFTs is ERC721 {
     }
 
     function getAllAccessPolicies() external view returns (string[] memory) {
-        return _allaccessPolicies;
+        return _allAccessPolicies;
     }
 
     function getAccessPolicies(
@@ -136,11 +136,11 @@ contract DataAnalystsNFTs is ERC721 {
     function removeAllAccessPolicies() external {
         require(msg.sender == _owner, "Caller is not the owner");
 
-        for (uint256 i = 0; i < _allaccessPolicies.length; i++) {
-            delete _accessPolicies[_allaccessPolicies[i]];
+        for (uint256 i = 0; i < _allAccessPolicies.length; i++) {
+            delete _accessPolicies[_allAccessPolicies[i]];
         }
 
-        delete _allaccessPolicies;
+        delete _allAccessPolicies;
         initializeDefaultPolicies();
     }
 
@@ -154,7 +154,7 @@ contract DataAnalystsNFTs is ERC721 {
 
         for (uint256 i = 0; i < accessPolicies.length; i++) {
             if (!_accessPolicies[accessPolicies[i]]) {
-                _allaccessPolicies.push(accessPolicies[i]);
+                _allAccessPolicies.push(accessPolicies[i]);
             }
             _accessPolicies[accessPolicies[i]] = true;
         }

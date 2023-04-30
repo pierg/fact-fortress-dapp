@@ -15,7 +15,8 @@ const {
 } = require("./controllers/nft.controller.js");
 const {
     getPublicKeyController,
-    setPublicKeyController
+    setPublicKeyController,
+    resetPublicKeysController
 } = require("./controllers/publicKeys.controller.js");
 const {
     generateKeyPairController,
@@ -138,6 +139,7 @@ app.get("/access_policies", getAccessPoliciesController); // get access policy b
 // public keys
 app.get("/publickey", getPublicKeyController); // get public key
 app.put("/publickey", setPublicKeyController); // set public key
+app.get("/reset_public_keys", resetPublicKeysController); // reset all public keys
 
 // data
 app.post("/set_data", setDataController); // set data source

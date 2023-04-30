@@ -546,6 +546,31 @@
 					"response": []
 				},
 				{
+					"name": "Reset public keys",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "from",
+								"value": "owner",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3000/reset_public_keys",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reset_public_keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Health",
 					"request": {
 						"method": "GET",

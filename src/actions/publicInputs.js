@@ -73,4 +73,23 @@ async function storeSignature(from, publicKey, signature) {
     }
 }
 
-module.exports = { getPublicKey, setPublicKey, storeSignature };
+async function resetPublicKeys(from) {
+    const sc = contractsHelper.getContractByName("FactFortress");
+
+    try {
+        await sc.methods.removeAllPublicKeys().send({ from, gas: '1000000' });
+
+        console.log(`Public keys resetted`);
+
+        return {
+            "public_keys_resetted": true,
+        };
+    } catch (e) {
+        console.error(e);
+        return {
+            error: e
+        };
+    }
+}
+
+module.exports = { getPublicKey, setPublicKey, storeSignature, resetPublicKeys };

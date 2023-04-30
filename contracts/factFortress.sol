@@ -24,6 +24,7 @@ contract FactFortress {
 
     // name => list of public keys
     mapping(string => string[]) public publicKeys;
+    string[] publicKeyEntries;
 
     // name => token ID
     // (used to prevent a data provider to associate its public key
@@ -104,6 +105,7 @@ contract FactFortress {
         } else {
             // associate the name with the token ID
             _tokenIds[name] = tokenId;
+            publicKeyEntries.push(name);
         }
 
         publicKeys[name].push(publicKey);
@@ -113,7 +115,19 @@ contract FactFortress {
         return version;
     }
 
-    //TODO(Guillaume): implement a function to remove public keys
+    // TODO(Guillaume): improve this implementation (for demonstration purposes)
+    function removeAllPublicKeys() external {
+        require(
+            msg.sender == _owner,
+            "Caller is not authorized to remove all public keys"
+        );
+
+        for (uint256 i = 0; i < publicKeyEntries.length; i++) {
+            delete publicKeys[publicKeyEntries[i]];
+        }
+
+        delete publicKeyEntries;
+    }
 
     // DATA ACCESS MANAGEMENT
 
@@ -146,7 +160,9 @@ contract FactFortress {
             }
         }
 
-        revert('Not authorized to access the data source (access policy error)');
+        revert(
+            "Not authorized to access the data source (access policy error)"
+        );
     }
 
     function setDataSource(

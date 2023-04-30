@@ -1,6 +1,7 @@
 const {
     setPublicKey,
     getPublicKey,
+    resetPublicKeys,
 } = require("./../actions/publicInputs.js");
 const { getFrom } = require("./common.controller.js");
 
@@ -80,4 +81,28 @@ async function setPublicKeyController(
     }
 }
 
-module.exports = { getPublicKeyController, setPublicKeyController }
+async function resetPublicKeysController(
+    req,
+    res,
+    next
+) {
+    const from = getFrom(req);
+    if (typeof from === undefined || !from) {
+        return res.status(500).json({
+            error: "`from` header is not properly set",
+            expected_header: '{ "from": "owner|providerA|providerB|providerC|analyst|any" }',
+        });
+    }
+
+    const result = await resetPublicKeys(from);
+
+    if (result.error) {
+        res.status(500).json({
+            error: result.error,
+        });
+    } else {
+        res.status(200).json(result);
+    }
+}
+
+module.exports = { getPublicKeyController, setPublicKeyController, resetPublicKeysController }
