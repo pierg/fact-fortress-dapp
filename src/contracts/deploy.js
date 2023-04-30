@@ -4,7 +4,7 @@ const web3 = require('./../web3.js');
 async function deploy(contract, arguments) {
     const account = getAccountsByType(AccountsIds.Owner)[0].address;
 
-    await web3.eth.personal.unlockAccount(account, '');
+    await web3.eth.personal.unlockAccount(account, '', 0);
 
     const bytecode = contract.evm.bytecode.object;
     const abi = contract.abi;
