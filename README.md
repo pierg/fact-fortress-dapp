@@ -32,9 +32,10 @@ By enabling the validation of data integrity without revealing the data itself, 
       - [2 | Check Unauthorized Data Provider's Token ID (No Token)](#2--check-unauthorized-data-providers-token-id-no-token)
       - [3 | Check Unauthorized Data Analyst's Token ID (No Token)](#3--check-unauthorized-data-analysts-token-id-no-token)
       - [4 | Authorize a Data Provider](#4--authorize-a-data-provider)
-      - [5 | Authorize a Data Analyst](#5--authorize-a-data-analyst)
-      - [6 | Check Authorized Data Analyst's Token ID](#6--check-authorized-data-analysts-token-id)
-      - [7 | Check All Access Policies](#7--check-all-access-policies)
+      - [5 | Set all data access policies](#5--set-all-data-access-policies)
+      - [6 | Authorize a Data Analyst](#6--authorize-a-data-analyst)
+      - [7 | Check Authorized Data Analyst's Token ID](#7--check-authorized-data-analysts-token-id)
+      - [8 | Check All Access Policies](#8--check-all-access-policies)
 
 ## Related Repositories
 
@@ -115,7 +116,7 @@ These tests notably contain an end-to-end flow, from the authorization of data p
 *Data providers generate a private/public key pair based on the Grumpkin elliptic curve used by Noir.*
 
 | WARNING: This action should be performed offline. This endpoint is just a helper. Data providers are expected to generate the keys themselves. |
-| -------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
 GET http://localhost:3000/key_pair
@@ -244,7 +245,7 @@ curl --location 'http://localhost:3000/publickey?name=ABC&version=0'
 *Data providers have to (SHA-256) hash and sign (using the Grumpkin elliptic curve) the Data.*
 
 | WARNING: This action should be performed offline. This endpoint is just a helper. Data providers are expected to hash and sign the Data themselves. |
-| ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --------------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
 POST http://localhost:3000/sign_message
@@ -335,7 +336,7 @@ curl --location 'http://localhost:3000/upload_signature?public_key=0x077418dea85
 *Data analysts generate the proof (should be done online).*
 
 | WARNING: This action should be performed offline. This endpoint is just a helper. Data analysts are expected to generate the proofs themselves. |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- |
 
 ```
 POST http://localhost:3000/generate_proof
@@ -454,7 +455,7 @@ curl --location 'http://localhost:3000/verify_proof' \
 ### Flow 2. Manage Authorizations (NFTs)
 
 | WARNING: Before running this flow, ensure to reset the accounts and authorizations using the frontend helper (implemented for demonstration purposes only): `GET http://localhost:3000/reset_accounts` |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 
 
 #### 1 | Check All Access Policies (Default Policy)
@@ -566,8 +567,46 @@ curl --location 'http://localhost:3000/analyst_token_id?address=0x5455280E6c20A0
 ```
 
 - - -
+#### 5 | Set all data access policies
 
-#### 5 | Authorize a Data Analyst
+*Define all data access policies*
+
+```
+POST http://localhost:3000/all_access_policies
+```
+
+* **Input**
+    * (header) `from: owner` Only the owner of the smart contract can call the underlying function
+    * (body) `access_policies` Set of all access policies
+* **Output**
+    * `access_policies` Set of all access policies
+
+*Example*
+
+```
+curl --location 'http://localhost:3000/all_access_policies' \
+--header 'from: owner' \
+--header 'Content-Type: application/json' \
+--data '{
+    "access_policies": [
+        "TYPE_A",
+        "TYPE_B",
+        "TYPE_C",
+    ]
+}'
+
+{
+    "access_policies": [
+        "TYPE_A",
+        "TYPE_B",
+        "TYPE_C",
+    ]
+}
+```
+
+- - -
+
+#### 6 | Authorize a Data Analyst
 
 *Authorize a data analyst with a set of access policies*
 
@@ -578,7 +617,7 @@ POST http://localhost:3000/authorize_analyst
 * **Input**
     * (header) `from: owner` Only the owner of the smart contract can call the underlying function
     * (parameter) `address` Address of the data analyst
-    * (body) `access_policies` Set of access policies for this data analyst
+    * (body) `access_policies` Set of access policies for this data analyst (should be a subset of all access policies)
 * **Output**
     * `address` Address of the data provider
     * `token_id` ID of the NFT sent to the data provider
@@ -605,7 +644,7 @@ curl --location 'http://localhost:3000/authorize_analyst?address=0x5455280E6c20A
 
 - - -
 
-#### 6 | Check Authorized Data Analyst's Token ID
+#### 7 | Check Authorized Data Analyst's Token ID
 
 *Now that the data analyst has been approved, her token ID can be retrieved*
 
@@ -618,7 +657,7 @@ GET http://localhost:3000/analyst_token_id
 * **Output**
     * `address` Address of the data analyst
     * `token_id` ID of the NFT sent to the data provider
-    * `access_policies` Set of access policies for this data analyst
+    * `access_policies` Set of access policies for this data analyst (should be a subset of all access policies)
   
 *Example*
 
@@ -638,7 +677,7 @@ curl --location 'http://localhost:3000/analyst_token_id?address=0x5455280E6c20A0
 
 - - -
 
-#### 7 | Check All Access Policies
+#### 8 | Check All Access Policies
 
 *Now that at least on data analyst has been authorized, the set of all access policies has been updated by the smart contract*
 
@@ -666,4 +705,3 @@ curl --location 'http://localhost:3000/all_access_policies'
     ]
 }
 ```
-
