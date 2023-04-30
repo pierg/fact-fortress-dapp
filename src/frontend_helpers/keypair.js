@@ -36,6 +36,10 @@ async function signMessage(privateKey, message) {
     return {
         hash,
         signature,
+        message: {
+            type: "info",
+            message: "message signed with the private keys"
+        }
     };
 }
 

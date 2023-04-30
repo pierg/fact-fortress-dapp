@@ -5,13 +5,13 @@
     },
     "data": [{
             "name": "Data_1",
-            "description": "Two-dimensional matrix from Provider_A",
-            "provider": "Provider_A"
+            "description": "Two-dimensional matrix from Provider_C",
+            "provider": "Provider_C"
         },
         {
             "name": "Data_2",
-            "description": "Vector of quantized double from Provider_A",
-            "provider": "Provider_A"
+            "description": "Vector of quantized double from Provider_C",
+            "provider": "Provider_C"
         }
     ]
 }
