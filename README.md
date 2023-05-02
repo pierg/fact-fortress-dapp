@@ -71,8 +71,8 @@ For more information, check out our website at: [https://pierg.github.io/fact-fo
 
 ## Related Repositories
 
-- Circuits generator: [https://github.com/pierg/fact-fortress-circuits](https://github.com/pierg/fact-fortress-circuits)
-- Frontend: [https://github.com/pierg/fact-fortress-frontend](https://github.com/pierg/fact-fortress-frontend)
+- Circuits generator: [https://github.com/pierg/fact-fortress-compiler](https://github.com/pierg/fact-fortress-compiler)
+- Frontend: [https://github.com/pierg/fact-fortress-web](https://github.com/pierg/fact-fortress-web)
 
 ## Prerequisites
 
