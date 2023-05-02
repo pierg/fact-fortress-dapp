@@ -1,6 +1,6 @@
 # Fact Fortress Dapp
-<p align="left">
-  <img src="./docs/logo-dapp-500.png" alt="Fact Fortress Logo" width="150"/>
+<p align="center">
+  <img src="./docs/logo-dapp-500.png" alt="Fact Fortress Logo" width="400"/>
 </p>
 
 This repository contains the code for the back-end of Fact Fortress, implemented in Ethereum.
